@@ -3,7 +3,7 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 export const constantRoutes = [
   {
     path: '/login',
-    component: () => import('@/views/login/index.vue'),
+    component: () => import('~/views/login/index.vue'),
     hidden: true
   },
   {
@@ -12,7 +12,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'dashboard',
-        component: () => import('@/views/dashboard/index.vue'),
+        component: () => import('~/views/dashboard/index.vue'),
         name: 'Dashboard',
         meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
       }
