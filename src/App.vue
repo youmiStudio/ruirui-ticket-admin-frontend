@@ -6,9 +6,10 @@
 </template>
 
 <script lang="ts" setup>
-const count = ref(0);
-
-const increment = ()=>{
-  count.value++
-}
+import { Ref } from 'vue';
+  
+const count: Ref<number> = ref(0);
+const increment = () => {
+  count.value++;
+};
 </script>
