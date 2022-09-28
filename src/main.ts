@@ -10,6 +10,7 @@ import pinia from './store';
 // import "element-plus/dist/index.css";
 
 // or use cdn, uncomment cdn link in `index.html`
+import 'virtual:svg-icons-register';
 
 import '~/styles/index.scss';
 import 'uno.css';
