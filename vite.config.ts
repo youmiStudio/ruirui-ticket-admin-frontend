@@ -16,7 +16,6 @@ import {
   transformerVariantGroup
 } from 'unocss';
 
-const pathSrc = path.resolve(__dirname, 'src');
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
@@ -25,7 +24,7 @@ function resolve(dir) {
 export default defineConfig({
   resolve: {
     alias: {
-      '~/': `${pathSrc}/`,
+      '~/': resolve('src/'),
       '@': resolve('src')
     }
   },
@@ -48,7 +47,7 @@ export default defineConfig({
           importStyle: 'sass'
         })
       ],
-      dts: 'src/components.d.ts'
+      dts: resolve('types') + '/components.d.ts'
     }),
 
     // https://github.com/antfu/unocss
@@ -73,7 +72,7 @@ export default defineConfig({
         globalsPropValue: true // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
       },
       imports: ['vue', 'vue-router'],
-      dts: 'src/auto-imports.d.ts'
+      dts: resolve('types') + '/auto-imports.d.ts'
     })
   ]
 });
