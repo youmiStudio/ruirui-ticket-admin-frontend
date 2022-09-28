@@ -8,6 +8,8 @@ import AutoImport from 'unplugin-auto-import/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
 
 import Unocss from 'unocss/vite';
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
+
 import {
   presetAttributify,
   presetIcons,
@@ -23,9 +25,16 @@ function resolve(dir) {
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
-    alias: {
-      '~/': resolve('src/'),
-    }
+    alias: [
+      {
+        find: /@\//,
+        replacement: resolve('src') + '/'
+      },
+      {
+        find: /~\//,
+        replacement: resolve('src') + '/'
+      }
+    ]
   },
   css: {
     preprocessorOptions: {
@@ -72,6 +81,14 @@ export default defineConfig({
       },
       imports: ['vue', 'vue-router'],
       dts: resolve('types') + '/auto-imports.d.ts'
+    }),
+
+    createSvgIconsPlugin({
+      // 指定需要缓存的图标文件夹
+      iconDirs: [path.resolve(process.cwd(), 'src/icons/svg')],
+      // 指定symbolId格式
+      symbolId: 'icon-[dir]-[name]',
+      svgoOptions: true
     })
   ]
 });
