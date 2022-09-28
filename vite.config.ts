@@ -17,12 +17,16 @@ import {
 } from 'unocss';
 
 const pathSrc = path.resolve(__dirname, 'src');
+function resolve(dir) {
+  return path.join(__dirname, dir);
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
   resolve: {
     alias: {
-      '~/': `${pathSrc}/`
+      '~/': `${pathSrc}/`,
+      '@': resolve('src')
     }
   },
   css: {
@@ -64,12 +68,12 @@ export default defineConfig({
     AutoImport({
       resolvers: [ElementPlusResolver()],
       eslintrc: {
-        enabled: true, // Default `false`
+        enabled: false, // Default `false`
         filepath: './.eslintrc-auto-import.json', // Default `./.eslintrc-auto-import.json`
         globalsPropValue: true // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
       },
-      imports: ['vue', 'vue-router', 'vuex', 'vue-i18n'],
-      dts: pathSrc + '/auto-imports.d.ts'
+      imports: ['vue', 'vue-router'],
+      dts: 'src/auto-imports.d.ts'
     })
   ]
 });
