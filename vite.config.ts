@@ -41,7 +41,6 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
     VITE_DROP_CONSOLE,
     VITE_GLOB_OUTPUT_DIR
   } = viteEnv;
-  console.log(VITE_GLOB_OUTPUT_DIR);
 
   return {
     base: VITE_PUBLIC_PATH,

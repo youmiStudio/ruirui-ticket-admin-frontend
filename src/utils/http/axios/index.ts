@@ -3,6 +3,10 @@ import { showMessage } from './status';
 import { IResponse } from './type';
 import { getToken } from '~/utils/auth';
 
+import { useGlobSetting } from '@/hooks/setting';
+
+const globSetting = useGlobSetting();
+
 // 如果请求话费了超过 `timeout` 的时间，请求将被中断
 axios.defaults.timeout = 5000;
 // 表示跨域请求时是否需要使用凭证
@@ -11,7 +15,7 @@ axios.defaults.withCredentials = false;
 // 允许跨域
 axios.defaults.headers.post['Access-Control-Allow-Origin-Type'] = '*';
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_GLOB_API_URL + '',
+  baseURL: globSetting.apiUrl + '',
   timeout: 5000
   // transformRequest: [
   //   function (data) {
@@ -47,7 +51,7 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(response.data);
     }
     showMessage('网络连接异常,请稍后再试!');
-  },
+  }
 );
 
 // axios实例拦截请求
@@ -61,19 +65,21 @@ axiosInstance.interceptors.request.use(
   },
   (error: any) => {
     return Promise.reject(error);
-  },
+  }
 );
 
 const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
   const conf = config;
   return new Promise((resolve) => {
-    axiosInstance.request<any, AxiosResponse<IResponse>>(conf).then((res: AxiosResponse<IResponse>) => {
-      // resolve(res as unknown as Promise<T>);
-      const {
-        data: { result },
-      } = res;
-      resolve(result as T);
-    });
+    axiosInstance
+      .request<any, AxiosResponse<IResponse>>(conf)
+      .then((res: AxiosResponse<IResponse>) => {
+        // resolve(res as unknown as Promise<T>);
+        const {
+          data: { result }
+        } = res;
+        resolve(result as T);
+      });
   });
 };
 

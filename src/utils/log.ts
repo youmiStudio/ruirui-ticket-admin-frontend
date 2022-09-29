@@ -1,4 +1,7 @@
-const projectName = import.meta.env.VITE_GLOB_APP_TITLE;
+import { useGlobSetting } from '@/hooks/setting';
+const globSetting = useGlobSetting();
+
+const projectName = globSetting.title;
 
 export function warn(message: string) {
   console.warn(`[${projectName} warn]:${message}`);

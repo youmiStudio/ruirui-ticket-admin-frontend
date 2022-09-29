@@ -1,6 +1,15 @@
 export {};
 
 declare global {
+  export interface GlobalConfig {
+    // Site title
+    title: string;
+    // Service interface url
+    apiUrl: string;
+    // Upload url
+    uploadUrl?: string;
+  }
+
   interface ViteEnvConfig {
     readonly VITE_PORT: number;
 

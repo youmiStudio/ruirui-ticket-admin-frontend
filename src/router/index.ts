@@ -1,4 +1,8 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import {
+  createRouter,
+  createWebHashHistory,
+  createWebHistory
+} from 'vue-router';
 
 export const constantRoutes = [
   {
@@ -17,7 +21,7 @@ export const constantRoutes = [
         meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
       }
     ]
-  },
+  }
 ];
 
 export const asyncRoutes = [];
