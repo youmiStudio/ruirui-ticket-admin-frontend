@@ -4,7 +4,7 @@ import {
   createWebHistory
 } from 'vue-router';
 
-export const constantRoutes = [
+export const constantRoutes: RouteItem[] = [
   {
     path: '/login',
     component: () => import('~/views/login/index.vue'),
@@ -24,11 +24,12 @@ export const constantRoutes = [
   }
 ];
 
-export const asyncRoutes = [];
+export const asyncRoutes: RouteItem[] = [];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: constantRoutes
+  routes: constantRoutes,
+  scrollBehavior: () => ({ left: 0, top: 0 })
 });
 
 export default router;

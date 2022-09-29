@@ -3,13 +3,9 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router';
 import pinia from './store';
-// import "~/styles/element/index.scss";
 
-// import ElementPlus from "element-plus";
-// import all element css, uncommented next line
-// import "element-plus/dist/index.css";
+import './permission'
 
-// or use cdn, uncomment cdn link in `index.html`
 import 'virtual:svg-icons-register';
 
 import '~/styles/index.scss';
