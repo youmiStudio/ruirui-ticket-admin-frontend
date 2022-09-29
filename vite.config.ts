@@ -1,26 +1,10 @@
 import path from 'path';
 import { defineConfig, ConfigEnv, UserConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
+
 import { loadEnv } from 'vite';
-
-import Components from 'unplugin-vue-components/vite';
-import AutoImport from 'unplugin-auto-import/vite';
-
-import Unocss from 'unocss/vite';
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
-import { viteMockServe } from 'vite-plugin-mock';
-
 import { wrapperEnv } from './build/utils';
 import { createProxy } from './build/vite/proxy';
-
-import {
-  presetAttributify,
-  presetIcons,
-  presetUno,
-  transformerDirectives,
-  transformerVariantGroup
-} from 'unocss';
+import { createVitePlugins } from './build/vite/plugins';
 
 function resolve(dir: string) {
   return path.join(__dirname, dir);
@@ -97,57 +81,6 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       brotliSize: false,
       chunkSizeWarningLimit: 2000
     },
-    plugins: [
-      vue(),
-      Components({
-        // allow auto load markdown components under `./src/components/`
-        extensions: ['vue', 'md'],
-        // allow auto import and register components used in markdown
-        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
-        resolvers: [
-          ElementPlusResolver({
-            importStyle: 'sass'
-          })
-        ],
-        dts: resolve('types') + '/components.d.ts'
-      }),
-
-      // https://github.com/antfu/unocss
-      // see unocss.config.ts for config
-      Unocss({
-        presets: [
-          presetUno(),
-          presetAttributify(),
-          presetIcons({
-            scale: 1.2,
-            warn: true
-          })
-        ],
-        transformers: [transformerDirectives(), transformerVariantGroup()]
-      }),
-
-      AutoImport({
-        resolvers: [ElementPlusResolver()],
-        eslintrc: {
-          enabled: false, // Default `false`
-          filepath: './.eslintrc-auto-import.json', // Default `./.eslintrc-auto-import.json`
-          globalsPropValue: true // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
-        },
-        imports: ['vue', 'vue-router'],
-        dts: resolve('types') + '/auto-imports.d.ts'
-      }),
-
-      createSvgIconsPlugin({
-        // 指定需要缓存的图标文件夹
-        iconDirs: [resolve('src/icons/svg')],
-        // 指定symbolId格式
-        symbolId: 'icon-[dir]-[name]',
-        svgoOptions: true
-      }),
-
-      viteMockServe({
-        mockPath: resolve('mock')
-      })
-    ]
+    plugins: createVitePlugins(viteEnv, isBuild)
   };
 });
