@@ -1,6 +1,6 @@
 import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-import { resolve } from '../../../utils';
+import { resolve } from '../../utils';
 
 export function configVuecomponents(isBuild?: boolean) {
   const vueComponentsPlugin = Components({

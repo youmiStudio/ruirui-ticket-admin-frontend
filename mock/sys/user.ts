@@ -26,6 +26,7 @@ const users = {
   }
 };
 
+
 module.exports = [
   // user login
   {
@@ -52,7 +53,7 @@ module.exports = [
 
   // get user info
   {
-    url: '/api/user/info.*',
+    url: '/api/user/info',
     method: 'get',
     response: (config) => {
       const { token } = config.query;

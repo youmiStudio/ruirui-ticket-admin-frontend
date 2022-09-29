@@ -1,5 +1,5 @@
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons';
-import { resolve } from '../../../utils';
+import { resolve } from '../../utils';
 
 export function configSvgIcons(isBuild?: boolean) {
   const svgIconsPlugin = createSvgIconsPlugin({

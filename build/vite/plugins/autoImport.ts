@@ -1,6 +1,6 @@
 import AutoImport from 'unplugin-auto-import/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers';
-import { resolve } from '../../../utils';
+import { resolve } from '../../utils';
 
 export function configAutoImport(isBuild?: boolean) {
   const autoImportPlugin = AutoImport({

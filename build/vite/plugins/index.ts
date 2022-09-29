@@ -1,11 +1,11 @@
 import vue from '@vitejs/plugin-vue';
 import { PluginOption } from 'vite';
 
-import { configVuecomponents } from './plugin/components';
-import { configUnocss } from './plugin/unocss';
-import { configAutoImport } from './plugin/autoImport';
-import { configSvgIcons } from './plugin/svgIcons';
-import { configMock } from './plugin/mock';
+import { configVuecomponents } from './components';
+import { configUnocss } from './unocss';
+import { configAutoImport } from './autoImport';
+import { configSvgIcons } from './svgIcons';
+import { configMock } from './mock';
 
 type vitePlugins = PluginOption[] | undefined;
 
@@ -13,6 +13,10 @@ export function createVitePlugins(
   viteEnvConfig: ViteEnvConfig,
   isBuild: boolean
 ): vitePlugins {
+  const {
+    VITE_USE_MOCK,
+  } = viteEnvConfig;
+
   const vitePlugins: vitePlugins = [
     // have to
     vue()
@@ -26,7 +30,7 @@ export function createVitePlugins(
 
   vitePlugins.push(configSvgIcons(isBuild));
 
-  vitePlugins.push(configMock(isBuild));
+  VITE_USE_MOCK && vitePlugins.push(configMock(isBuild));
 
   return vitePlugins;
 }

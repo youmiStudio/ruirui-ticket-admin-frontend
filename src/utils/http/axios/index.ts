@@ -35,7 +35,6 @@ axiosInstance.interceptors.response.use(
     // } else if (response.data && response.data.token) {
     //   localStorage.setItem('app_token', response.data.token)
     // }
-
     if (response.status === 200) {
       return response;
     }
@@ -76,9 +75,9 @@ const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
       .then((res: AxiosResponse<IResponse>) => {
         // resolve(res as unknown as Promise<T>);
         const {
-          data: { result }
+          data
         } = res;
-        resolve(result as T);
+        resolve(data as T);
       });
   });
 };
