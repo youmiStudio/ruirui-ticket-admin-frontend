@@ -1,16 +1,23 @@
 {
-  "name": "element-plus-vite-starter",
+  "name": "vue-element-plus-admin-template",
   "private": true,
   "version": "0.1.0",
+  "author": {
+    "name": "leeyuze",
+    "email": "228487099@qq.com",
+    "url": "https://github.com/leeyuze"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "cross-env NODE_ENV=production vite build",
     "generate": "vite-ssg build",
     "preview": "vite preview",
     "typecheck": "vue-tsc --noEmit"
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "cross-env": "^7.0.3",
+    "dayjs": "^1.11.5",
     "element-plus": "^2.2.13",
     "pinia": "^2.0.22",
     "pinia-plugin-persistedstate": "^2.2.0",
@@ -28,12 +35,14 @@
     "eslint-plugin-n": "^15.3.0",
     "eslint-plugin-promise": "^6.0.1",
     "eslint-plugin-vue": "^9.5.1",
+    "mockjs": "^1.1.0",
     "sass": "^1.52.1",
     "typescript": "^4.8.4",
     "unocss": "^0.34.1",
     "unplugin-auto-import": "^0.11.2",
     "unplugin-vue-components": "^0.19.5",
     "vite": "^2.9.9",
+    "vite-plugin-mock": "^2.9.6",
     "vite-plugin-svg-icons": "^2.0.1",
     "vite-ssg": "^0.20.0",
     "vue-tsc": "^0.34.16"

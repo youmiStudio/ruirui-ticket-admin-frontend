@@ -13,14 +13,20 @@
     "lib": ["esnext", "dom"],
     "paths": {
       "~/*": ["src/*"],
+      "@/*": ["src/*"],
+      "#/*": ["types/*"]
     },
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vite/client"]
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "types/auto-imports.d.ts"
+    "types/**/*.ts",
+    "types/**/*.d.ts",
+    "build/**/*.ts",
+    "build/**/*.d.ts"
   ]
 }
