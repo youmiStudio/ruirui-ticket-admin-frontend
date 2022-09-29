@@ -28,8 +28,8 @@
       </el-form-item>
 
       <el-tooltip
-        v-model="capsTooltip"
-        content="Caps lock is On"
+        :visible="capsTooltip"
+        content="大写锁定打开"
         placement="right"
         manual
       >
@@ -46,7 +46,7 @@
             name="password"
             tabindex="2"
             autocomplete="on"
-            @keyup.native="checkCapslock"
+            @keyup="checkCapslock"
             @blur="capsTooltip = false"
             @keyup.enter.native="handleLogin(ruleFormRef)"
           />
@@ -62,7 +62,7 @@
         :loading="loading"
         type="primary"
         style="width: 100%; margin-bottom: 30px"
-        @click.native.prevent="handleLogin"
+        @click.native.prevent="handleLogin(ruleFormRef)"
         >Login</el-button
       >
 
@@ -102,8 +102,9 @@ import { validUsername } from '~/utils/validate';
 import type { UserRequestParams } from '~/api/user/types';
 import type { FormRules, FormInstance } from 'element-plus';
 import type { InternalRuleItem } from 'async-validator/dist-types/interface';
-import { PasswordTypeEnum } from './types';
+import { LoginTypeEnum } from '~/enums/userEnum';
 import { LocationQuery, LocationQueryValue } from 'vue-router';
+import { useUserStore } from '~/store';
 
 const validateUsername = (
   rule: InternalRuleItem,
@@ -128,11 +129,14 @@ const validatePassword = (
   }
 };
 
+const usreStore = useUserStore();
+
 const route = useRoute();
+const router = useRouter();
 
 const loginForm = reactive<UserRequestParams>({
-  username: '',
-  password: ''
+  username: 'admin',
+  password: '123456'
 });
 
 const loginRules = reactive<FormRules>({
@@ -145,9 +149,10 @@ const ruleFormRef = ref<FormInstance>();
 const loading = ref(false);
 const capsTooltip = ref(false);
 const showDialog = ref(false);
-const passwordType = ref(PasswordTypeEnum.PASSWORD);
+const passwordType = ref(LoginTypeEnum.PASSWORD);
 
-let redirect: LocationQueryValue | LocationQueryValue[] = undefined;
+let redirect: LocationQueryValue | LocationQueryValue[] | undefined = undefined;
+// query other than redirect.
 let otherQuery: LocationQuery = {};
 
 watch(
@@ -165,18 +170,21 @@ function checkCapslock(e: any): void {
 }
 
 function showPwd(): void {
-  if (passwordType.value === PasswordTypeEnum.PASSWORD) {
-    passwordType.value = PasswordTypeEnum.EMPTY;
+  if (passwordType.value === LoginTypeEnum.PASSWORD) {
+    passwordType.value = LoginTypeEnum.EMPTY;
   } else {
-    passwordType.value = PasswordTypeEnum.PASSWORD;
+    passwordType.value = LoginTypeEnum.PASSWORD;
   }
 }
 
 function handleLogin(formEl: FormInstance | undefined): boolean {
   if (!formEl) return false;
-  formEl.validate((valid) => {
+  formEl.validate(async (valid) => {
     if (valid) {
       loading.value = true;
+      await usreStore.login(loginForm);
+      router.push({ path: (redirect as string) || '/', query: otherQuery });
+      loading.value = false;
     } else {
       console.log('error submit!!');
       return false;
@@ -216,8 +224,8 @@ $cursor: #fff;
     height: 47px;
     width: 85%;
 
-
     .el-input__wrapper {
+      width: 100%;
       background: transparent;
       border: 0px;
       -webkit-appearance: none;
