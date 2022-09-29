@@ -99,7 +99,6 @@
 
 <script lang="ts" setup>
 import { validUsername } from '~/utils/validate';
-import type { UserRequestParams } from '~/api/user/types';
 import type { FormRules, FormInstance } from 'element-plus';
 import type { InternalRuleItem } from 'async-validator/dist-types/interface';
 import { LoginTypeEnum } from '~/enums/userEnum';

@@ -69,36 +69,19 @@ axiosInstance.interceptors.request.use(
 
 const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
   const conf = config;
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     axiosInstance
       .request<any, AxiosResponse<IResponse>>(conf)
       .then((res: AxiosResponse<IResponse>) => {
         // resolve(res as unknown as Promise<T>);
-        const {
-          data
-        } = res;
+        const { data } = res;
         resolve(data as T);
+      })
+      .catch((error) => {
+        reject(error);
       });
   });
 };
-
-// const request = <T = any>(config: AxiosRequestConfig, options?: AxiosRequestConfig): Promise<T> => {
-//   if (typeof config === 'string') {
-//     if (!options) {
-//       return axiosInstance.request<T, T>({
-//         url: config,
-//       });
-//       // throw new Error('请配置正确的请求参数');
-//     } else {
-//       return axiosInstance.request<T, T>({
-//         url: config,
-//         ...options,
-//       });
-//     }
-//   } else {
-//     return axiosInstance.request<T, T>(config);
-//   }
-// };
 
 export function get<T = any>(config: AxiosRequestConfig): Promise<T> {
   return request({ ...config, method: 'GET' });
@@ -110,11 +93,3 @@ export function post<T = any>(config: AxiosRequestConfig): Promise<T> {
 
 export default request;
 export type { AxiosInstance, AxiosResponse };
-/**
- * @description: 用户登录案例
- * @params {ILogin} params
- * @return {Promise}
- */
-// export const login = (params: ILogin): Promise<IResponse> => {
-//     return axiosInstance.post('user/login', params).then(res => res.data);
-// };
