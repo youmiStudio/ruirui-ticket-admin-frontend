@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   /**
    * @type {boolean} true | false
    * @description Whether show the settings right-panel
