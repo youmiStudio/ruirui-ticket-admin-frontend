@@ -4,13 +4,17 @@ import {
   createWebHistory
 } from 'vue-router';
 
+import permissionRouter from './modules/permission';
+
 export const constantRoutes: RouteItem[] = [
   {
+    name: 'login',
     path: '/login',
     component: () => import('~/views/login/index.vue'),
     hidden: true
   },
   {
+    name: 'index',
     path: '/',
     redirect: '/dashboard',
     children: [
@@ -21,10 +25,22 @@ export const constantRoutes: RouteItem[] = [
         meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
       }
     ]
+  },
+  {
+    name: '404',
+    path: '/404',
+    component: () => import('~/views/error-page/404.vue'),
+    hidden: true
+  },
+  {
+    name: '401',
+    path: '/401',
+    component: () => import('~/views/error-page/401.vue'),
+    hidden: true
   }
 ];
 
-export const asyncRoutes: RouteItem[] = [];
+export const asyncRoutes: RouteItem[] = [permissionRouter];
 
 const router = createRouter({
   history: createWebHashHistory(),

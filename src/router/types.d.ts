@@ -11,6 +11,8 @@ declare global {
   };
 
   declare type RouteItem = {
+    name: string;
+    alwaysShow?: boolean;
     hidden?: boolean;
     meta?: RouteMeta;
     children?: RouteItem[];

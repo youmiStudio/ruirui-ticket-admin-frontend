@@ -1,12 +1,22 @@
 import router from './router';
 import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css'; // progress bar style
-import { useUserStore } from '@/store';
+import { ElMessage } from 'element-plus';
+
+import { useUserStore, usePermissionStore } from '@/store';
 import { getToken } from '@/utils/auth';
 import getPageTitle from '@/utils/get-page-title';
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 const whiteList = ['/login', '/auth-redirect']; // no redirect whitelist
+
+const addErrorRoutes = () => {
+  router.addRoute({
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    redirect: '/404'
+  });
+};
 
 router.beforeEach(async (to, from, next) => {
   // start progress bar
@@ -24,16 +34,46 @@ router.beforeEach(async (to, from, next) => {
       NProgress.done(); // hack: https://github.com/PanJiaChen/vue-element-admin/pull/2939
     } else {
       const userStore = useUserStore();
+      const permissionStore = usePermissionStore();
+
       const hasRoles =
         userStore.getRoles?.length && userStore.getRoles?.length > 0;
       if (hasRoles) {
         next();
       } else {
-        const { roles } = await userStore.getInfo();
+        try {
+          // get user info
+          // note: roles must be a object array! such as: ['admin'] or ,['developer','editor']
+          const { roles } = await userStore.getInfo();
 
-        
+          // generate accessible routes map based on roles
+          const accessRoutes = await permissionStore.generateRoutes(roles);
+
+          // dynamically add accessible routes
+          accessRoutes.forEach((route) => {
+            const parentName = route.name;
+            // add father routes
+            router.addRoute(route);
+            route.children?.forEach((childRoute) => {
+              // add children routes
+              router.addRoute(parentName, childRoute);
+            });
+          });
+
+          // dynamically add errorPageRoutes
+          addErrorRoutes();
+
+          // hack method to ensure that addRoutes is complete
+          // set the replace: true, so the navigation will not leave a history record
+          next({ ...to, replace: true });
+        } catch (error) {
+          // remove token and go to login page to re-login
+          // await store.dispatch('user/resetToken')
+          ElMessage.error(error || 'Has Error');
+          next(`/login?redirect=${to.path}`);
+          NProgress.done();
+        }
       }
-      next();
     }
   } else {
     /* has no token*/
