@@ -12,7 +12,7 @@ const permissionRouter: RouteItem = {
       name: 'RolePermission',
       meta: {
         title: 'Role Permission',
-        roles: [RoleEnum.EDITOR]
+        roles: [RoleEnum.ADMIN]
       }
     }
   ]
