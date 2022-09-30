@@ -5,7 +5,7 @@ const permissionRouter: RouteItem = {
   path: '/permission',
   redirect: '/permission/role',
   alwaysShow: true, // will always show the root menu
-  children:[
+  children: [
     {
       path: 'role',
       component: () => import('@/views/permission/role/index.vue'),

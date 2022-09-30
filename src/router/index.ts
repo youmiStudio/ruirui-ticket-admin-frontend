@@ -4,6 +4,8 @@ import {
   createWebHistory
 } from 'vue-router';
 
+const Layout = () => import('~/layouts/default/index.vue');
+
 import permissionRouter from './modules/permission';
 
 export const constantRoutes: RouteItem[] = [
@@ -17,6 +19,7 @@ export const constantRoutes: RouteItem[] = [
     name: 'index',
     path: '/',
     redirect: '/dashboard',
+    component: Layout,
     children: [
       {
         path: 'dashboard',

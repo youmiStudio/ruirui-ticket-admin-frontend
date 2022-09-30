@@ -1,14 +1,15 @@
-const TokenKey = 'admin-token';
-const isLogin = () => {
-  return !!localStorage.getItem(TokenKey);
-};
-const getToken = () => {
-  return localStorage.getItem(TokenKey);
-};
-const setToken = (token: string) => {
-  localStorage.setItem(TokenKey, token);
-};
-const clearToken = () => {
-  localStorage.removeItem(TokenKey);
-};
-export { isLogin, getToken, setToken, clearToken };
+import Cookies from 'js-cookie';
+
+const TokenKey = 'Admin-Token';
+
+export function getToken() {
+  return Cookies.get(TokenKey);
+}
+
+export function setToken(token: string) {
+  return Cookies.set(TokenKey, token);
+}
+
+export function removeToken() {
+  return Cookies.remove(TokenKey);
+}
