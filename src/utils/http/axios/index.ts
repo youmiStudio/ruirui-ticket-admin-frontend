@@ -3,9 +3,9 @@ import { showMessage } from './status';
 import { IResponse } from './type';
 import { getToken } from '~/utils/auth';
 
-import { useGlobSetting } from '@/hooks/setting';
+import { useGlobSettings } from '~/hooks/settings';
 
-const globSetting = useGlobSetting();
+const globSetting = useGlobSettings();
 
 // 如果请求话费了超过 `timeout` 的时间，请求将被中断
 axios.defaults.timeout = 5000;

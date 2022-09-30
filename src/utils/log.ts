@@ -1,5 +1,5 @@
-import { useGlobSetting } from '@/hooks/setting';
-const globSetting = useGlobSetting();
+import { useGlobSettings } from '~/hooks/settings';
+const globSetting = useGlobSettings();
 
 const projectName = globSetting.title;
 

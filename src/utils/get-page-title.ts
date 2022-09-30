@@ -1,6 +1,6 @@
-import { useGlobSetting } from '@/hooks/setting';
+import { useGlobSettings } from '~/hooks/settings';
 
-const globSetting = useGlobSetting();
+const globSetting = useGlobSettings();
 
 export default function getPageTitle(pageTitle: unknown): string {
   const { title } = globSetting;
