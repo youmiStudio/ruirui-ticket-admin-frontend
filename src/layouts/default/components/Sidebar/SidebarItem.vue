@@ -12,26 +12,28 @@
           :index="resolvePath(onlyOneChild.path)"
           :class="{ 'submenu-title-noDropdown': !isNest }"
         >
-          <Item
-            :icon="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"
-            :title="onlyOneChild.meta.title"
-          />
+          <template
+            v-if="onlyOneChild.meta.icon || (item.meta && item.meta.icon)"
+          >
+            <svg-icon
+              :icon-class="
+                onlyOneChild.meta.icon || (item.meta && item.meta.icon)
+              "
+            />
+          </template>
+          <template #title>
+            <span slot="title">{{ onlyOneChild.meta.title }}</span>
+          </template>
         </el-menu-item>
       </Link>
     </template>
 
-    <el-sub-menu
-      v-else
-      ref="subMenu"
-      :index="resolvePath(item.path)"
-      popper-append-to-body
-    >
+    <el-sub-menu v-else ref="subMenu" :index="resolvePath(item.path)">
       <template #title>
-        <Item
-          v-if="item.meta"
-          :icon="item.meta && item.meta.icon"
-          :title="item.meta.title"
-        />
+        <template v-if="item.meta && item.meta.icon">
+          <svg-icon :icon-class="item.meta && item.meta.icon" />
+        </template>
+        <span>{{ item.meta.title }}</span>
       </template>
       <SidebarItem
         v-for="child in item.children"
@@ -48,7 +50,7 @@
 <script lang="ts" setup>
 import { isExternal } from '@/utils/validate';
 import { Ref } from 'vue';
-import path from 'path-browserify'
+import path from 'path-browserify';
 import Item from './Item.vue';
 import Link from './Link.vue';
 

@@ -27,7 +27,7 @@ const props = defineProps({
 const isExternal = computed(() => isExternalFn(props.iconClass));
 const iconName = computed(() => `#icon-${props.iconClass}`);
 const svgClass = computed(() => {
-  if (iconName) {
+  if (props.className) {
     return 'svg-icon ' + props.className;
   } else {
     return 'svg-icon';

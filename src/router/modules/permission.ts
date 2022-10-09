@@ -5,10 +5,11 @@ const permissionRouter: RouteItem = {
   name: 'Permission',
   path: '/permission',
   redirect: '/permission/role',
-  alwaysShow: true, // will always show the root menu
+  alwaysShow: false, // will always show the root menu
   component: Layout,
-  meta: {
+  meta:{
     title: 'Permission',
+    icon: 'documentation'
   },
   children: [
     {

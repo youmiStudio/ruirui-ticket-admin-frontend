@@ -1,30 +1,35 @@
-<template>
-  <template v-if="icon">
-    <template v-if="icon.includes('el-icon')">
-      <i class="icon sub-el-icon" />
-    </template>
-    <template v-else>
-      <svg-icon :icon-class="icon" />
-    </template>
-  </template>
-  <template v-if="title">
-    <span slot="title">{{title}}</span>
-  </template>
-</template>
+<script lang="tsx">
+import { VNode } from 'vue';
 
-<script lang="ts" setup>
-const props = defineProps({
-  icon: {
-    type: String,
-    default: ''
+export default defineComponent({
+  props: {
+    icon: {
+      type: String,
+      default: ''
+    },
+    title: {
+      type: String,
+      default: ''
+    }
   },
-  title: {
-    type: String,
-    default: ''
+  setup(props) {
+    const { icon, title } = props;
+    const vnodes: VNode[] = [];
+    if (icon) {
+      if (icon.includes('el-icon')) {
+        vnodes.push(<i class={[icon, 'sub-el-icon']} />);
+      } else {
+        vnodes.push(<svg-icon icon-class={icon} />);
+      }
+    }
+
+    if (title) {
+      vnodes.push(<span slot='title'>{(title)}</span>)
+    }
+
+    return () => vnodes
   }
 });
-
-const { icon, title } = props;
 </script>
 
 <style scoped>
