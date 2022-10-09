@@ -6,10 +6,7 @@ export const useTagsViewStore = defineStore({
     visitedViews: [],
     cachedViews: []
   }),
-  getters: {
-    visitedViews: (state) => state.visitedViews,
-    cachedViews: (state) => state.cachedViews
-  },
+  getters: {},
   actions: {
     addView(view: RouteItem) {
       this.addVisitedView(view);

@@ -12,10 +12,7 @@ export const useAppStore = defineStore({
     },
     device: 'desktop'
   }),
-  getters: {
-    sidebar: (state) => state.sidebar,
-    device: (state) => state.device
-  },
+  getters: {},
   actions: {
     toggleSideBar() {
       this.sidebar.opened = !this.sidebar.opened;
@@ -26,10 +23,10 @@ export const useAppStore = defineStore({
         Cookies.set('sidebarStatus', '0');
       }
     },
-    closeSideBar(withoutAnimation: boolean) {
+    closeSideBar(object: { withoutAnimation: boolean }) {
       Cookies.set('sidebarStatus', '0');
       this.sidebar.opened = false;
-      this.sidebar.withoutAnimation = withoutAnimation;
+      this.sidebar.withoutAnimation = object.withoutAnimation;
     },
     toggleDevice(device: string) {
       this.device = device;
