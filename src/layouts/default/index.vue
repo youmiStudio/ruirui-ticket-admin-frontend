@@ -6,6 +6,16 @@
       @click="handleClickOutside"
     />
     <Sidebar class="sidebar-container" />
+    <div :class="{'hasTagsView':needTagsView}" class="main-container">
+      <div :class="{'fixed-header':fixedHeader}">
+        <navbar />
+        <tags-view v-if="needTagsView" />
+      </div>
+      <app-main />
+      <right-panel v-if="showSettings">
+        <settings />
+      </right-panel>
+    </div>
   </div>
 </template>
 
@@ -13,13 +23,27 @@
 import { useAppStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import { useResizeHandler } from './hooks/resizeHandler';
+import { useGlobSettings } from '@/hooks/settings';
 
-import Sidebar from "./components/Sidebar/index.vue"
+import Sidebar from './components/Sidebar/index.vue';
 
 useResizeHandler();
 
 const appStore = useAppStore();
 const { sidebar, device } = storeToRefs(appStore);
+const globSettings = useGlobSettings();
+
+const showSettings = computed(()=>{
+  return globSettings.showSettings
+})
+
+const needTagsView = computed(()=>{
+  return globSettings.tagsView
+})
+
+const fixedHeader = computed(()=>{
+  return globSettings.fixedHeader
+})
 
 const classObj = computed(() => {
   return {

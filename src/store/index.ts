@@ -4,12 +4,19 @@ import { useAppStore } from './modules/app';
 import { useUserStore } from './modules/user';
 import { usePermissionStore } from './modules/permission';
 import { useTagsViewStore } from './modules/tagsView';
+import { useErrorLogsStore } from './modules/errorLogs';
 
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 
-export { useAppStore, useUserStore, usePermissionStore, useTagsViewStore };
+export {
+  useAppStore,
+  useUserStore,
+  usePermissionStore,
+  useTagsViewStore,
+  useErrorLogsStore
+};
 
 export default pinia;
