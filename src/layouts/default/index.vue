@@ -8,7 +8,7 @@
     <Sidebar class="sidebar-container" />
     <div :class="{'hasTagsView':needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
-        <navbar />
+        <Navbar />
         <tags-view v-if="needTagsView" />
       </div>
       <app-main />
@@ -26,6 +26,7 @@ import { useResizeHandler } from './hooks/resizeHandler';
 import { useGlobSettings } from '@/hooks/settings';
 
 import Sidebar from './components/Sidebar/index.vue';
+import Navbar from './components/Navbar.vue';
 
 useResizeHandler();
 

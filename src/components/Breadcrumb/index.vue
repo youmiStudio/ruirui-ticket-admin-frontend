@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts" setup name="Breadcrumb">
-import pathToRegexp from 'path-to-regexp';
+import  {compile} from 'path-to-regexp';
 import { RouteLocationRaw } from 'vue-router';
 import { BreadcrumbMatched } from './types';
 import { Ref } from 'vue';
@@ -70,7 +70,7 @@ function isDashboard(route: BreadcrumbMatched) {
 function pathCompile(path: string) {
   // To solve this problem https://github.com/PanJiaChen/vue-element-admin/issues/561
   const { params } = route;
-  var toPath = pathToRegexp.compile(path);
+  var toPath = compile(path);
   return toPath(params);
 }
 

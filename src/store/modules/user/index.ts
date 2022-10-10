@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
-import { getToken, setToken } from '~/utils/auth';
-import { login, getInfo } from '@/api/user';
+import { getToken, setToken, removeToken } from '~/utils/auth';
+import { login, getInfo, logout } from '@/api/user';
+import { useTagsViewStore } from '@/store';
 
 export const useUserStore = defineStore({
   id: 'user',
@@ -35,7 +36,7 @@ export const useUserStore = defineStore({
           });
       });
     },
-    getInfo():Promise<UserInfoData> {
+    getInfo(): Promise<UserInfoData> {
       return new Promise(async (resolve, reject) => {
         getInfo(this.token)
           .then((response) => {
@@ -59,6 +60,27 @@ export const useUserStore = defineStore({
               roles
             });
             resolve(data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    // user logout
+    logout(): Promise<''> {
+      return new Promise((resolve, reject) => {
+        logout(this.token)
+          .then(() => {
+            this.$patch({
+              token: '',
+              roles: []
+            });
+            removeToken();
+            const tagesView = useTagsViewStore();
+            // // reset visited views and cached views
+            // // to fixed https://github.com/PanJiaChen/vue-element-admin/issues/2485
+            tagesView.delAllViews();
+            resolve('');
           })
           .catch((error) => {
             reject(error);

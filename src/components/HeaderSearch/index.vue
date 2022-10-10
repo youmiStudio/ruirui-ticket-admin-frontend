@@ -19,7 +19,7 @@
       <el-option
         v-for="item in options"
         :key="item.item.path"
-        :value="item"
+        :value="item.item.path"
         :label="item.item.title.join(' > ')"
       />
     </el-select>
@@ -37,6 +37,7 @@ import { Ref } from 'vue';
 
 const permissionStore = usePermissionStore();
 const { routes } = storeToRefs(permissionStore);
+const route = useRoute();
 const router = useRouter();
 
 const search: Ref<string> = ref('');
@@ -54,17 +55,29 @@ watch(
   { immediate: true }
 );
 
-watch(searchPool, (list) => {
-  initFuse(list);
-});
+watch(
+  searchPool,
+  (list) => {
+    initFuse(list);
+  },
+  { immediate: true }
+);
 
-watch(show, (value) => {
-  if (value) {
-    document.body.addEventListener('click', close);
-  } else {
-    document.body.removeEventListener('click', close);
-  }
-});
+watch(
+  show,
+  (value) => {
+    if (value) {
+      document.body.addEventListener('click', close);
+    } else {
+      document.body.removeEventListener('click', close);
+    }
+  },
+  { immediate: true }
+);
+
+onBeforeMount(()=>{
+  search.value = route.path
+})
 
 function click() {
   show.value = !show.value;
@@ -79,8 +92,8 @@ function close() {
   show.value = false;
 }
 
-function change(val: SearchRoutes) {
-  router.push(val.path);
+function change(val: string) {
+  router.push(val);
   search.value = '';
   options.value = [];
   nextTick(() => {

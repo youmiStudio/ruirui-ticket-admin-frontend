@@ -45,6 +45,7 @@ export const constantRoutes: RouteItem[] = [
 
 export const asyncRoutes: RouteItem[] = [permissionRouter];
 
+
 const router = createRouter({
   history: createWebHashHistory(),
   routes: constantRoutes,

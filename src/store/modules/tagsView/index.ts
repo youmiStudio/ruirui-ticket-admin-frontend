@@ -87,7 +87,7 @@ export const useTagsViewStore = defineStore({
       });
     },
 
-    delAllViews(view: RouteItem) {
+    delAllViews() {
       return new Promise((resolve) => {
         this.delAllVisitedViews();
         this.delAllCachedViews()
