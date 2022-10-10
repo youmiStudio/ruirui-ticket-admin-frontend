@@ -14,8 +14,11 @@ declare module '@vue/runtime-core' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ErrorLog: typeof import('./../src/components/ErrorLog/index.vue')['default']
     Hamburger: typeof import('./../src/components/Hamburger/index.vue')['default']
+    HeaderSearch: typeof import('./../src/components/HeaderSearch/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Screenfull: typeof import('./../src/components/Screenfull/index.vue')['default']
+    SizeSelect: typeof import('./../src/components/SizeSelect/index.vue')['default']
     SvgIcon: typeof import('./../src/components/SvgIcon/index.vue')['default']
   }
 }
