@@ -75,9 +75,13 @@ watch(
   { immediate: true }
 );
 
-onBeforeMount(()=>{
-  search.value = route.path
-})
+watch(route, () => {
+  search.value = route.path;
+});
+
+onBeforeMount(() => {
+  search.value = route.path;
+});
 
 function click() {
   show.value = !show.value;
