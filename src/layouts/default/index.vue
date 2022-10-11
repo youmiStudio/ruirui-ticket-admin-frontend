@@ -9,12 +9,12 @@
     <div :class="{'hasTagsView':needTagsView}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
         <Navbar />
-        <tags-view v-if="needTagsView" />
+        <TagsView v-if="needTagsView" />
       </div>
       <app-main />
-      <right-panel v-if="showSettings">
+      <!-- <right-panel v-if="showSettings">
         <settings />
-      </right-panel>
+      </right-panel> -->
     </div>
   </div>
 </template>
@@ -27,6 +27,7 @@ import { useGlobSettings } from '@/hooks/settings';
 
 import Sidebar from './components/Sidebar/index.vue';
 import Navbar from './components/Navbar.vue';
+import TagsView from './components/TagsView/index.vue';
 
 useResizeHandler();
 

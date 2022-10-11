@@ -1,4 +1,12 @@
-import type { RouteRecordRaw, RouteMeta } from 'vue-router';
+import type {
+  RouteRecordRaw,
+  RouteMeta,
+  RouteLocationNormalizedLoaded,
+  RouteLocationRaw,
+  LocationQueryRaw,
+  RouteLocationPathRaw,
+  RouteLocationNamedRaw
+} from 'vue-router';
 import { RoleEnum } from '~/enums/roleEnum';
 
 declare module 'vue-router' {
@@ -15,11 +23,15 @@ declare module 'vue-router' {
 declare global {
   declare type RouteItem = {
     name: string;
+    title?: string;
     alwaysShow?: boolean;
     hidden?: boolean;
     meta?: RouteMeta;
     children?: RouteItem[];
     noShowingChildren?: boolean;
+    fullPath?: string;
+    path?: string;
+    query?: LocationQueryRaw;
   } & RouteRecordRaw;
 }
 

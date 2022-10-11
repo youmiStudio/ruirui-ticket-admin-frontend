@@ -1,6 +1,8 @@
 declare global {
+  declare type VisitedViews = RouteItem;
+  
   declare interface TagsViewStoreState {
-    visitedViews: RouteItem[];
+    visitedViews: VisitedViews[];
     cachedViews: string[];
   }
 }
