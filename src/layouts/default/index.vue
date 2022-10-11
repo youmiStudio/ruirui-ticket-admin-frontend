@@ -11,10 +11,7 @@
         <Navbar />
         <TagsView v-if="needTagsView" />
       </div>
-      <app-main />
-      <!-- <right-panel v-if="showSettings">
-        <settings />
-      </right-panel> -->
+      <AppMain />
     </div>
   </div>
 </template>
@@ -28,6 +25,7 @@ import { useGlobSettings } from '@/hooks/settings';
 import Sidebar from './components/Sidebar/index.vue';
 import Navbar from './components/Navbar.vue';
 import TagsView from './components/TagsView/index.vue';
+import AppMain from './components/AppMain.vue';
 
 useResizeHandler();
 
