@@ -21,6 +21,7 @@ export const useTagsViewStore = defineStore({
       );
     },
     addCachedView(view: VisitedViews) {
+      if(!view.name) return;
       if (this.cachedViews.includes(view.name)) return;
       if (view.meta && !view.meta.noCache) {
         this.cachedViews.push(view.name);
@@ -50,6 +51,7 @@ export const useTagsViewStore = defineStore({
     },
     delCachedView(view: VisitedViews) {
       return new Promise((resolve) => {
+        if(!view.name) return;
         const index = this.cachedViews.indexOf(view.name);
         index > -1 && this.cachedViews.splice(index, 1);
         resolve([...this.cachedViews]);
@@ -76,6 +78,7 @@ export const useTagsViewStore = defineStore({
     },
     delOthersCachedViews(view: VisitedViews) {
       return new Promise((resolve) => {
+        if(!view.name) return;
         const index = this.cachedViews.indexOf(view.name);
         if (index > -1) {
           this.cachedViews = this.cachedViews.slice(index, index + 1);
