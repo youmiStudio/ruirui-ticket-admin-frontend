@@ -1,11 +1,11 @@
 <template>
   <section class="app-main">
-    <router-view :key="key" v-slot="{ Component }">
+    <router-view v-slot="{ Component,route }">
       <transition name="fade-transform" mode="out-in">
-        <keep-alive>
+        <keep-alive :include="cachedViews">
           <suspense>
             <template #default>
-              <component :is="Component" />
+              <component :is="Component" :key="route.path" />
             </template>
           </suspense>
         </keep-alive>
@@ -19,9 +19,6 @@ import { useTagsViewStore } from '@/store';
 import { storeToRefs } from 'pinia';
 const tagsViewStore = useTagsViewStore();
 const { cachedViews } = storeToRefs(tagsViewStore);
-const $route = useRoute();
-
-const key = computed(() => $route.path);
 </script>
 
 <style lang="scss" scoped>
