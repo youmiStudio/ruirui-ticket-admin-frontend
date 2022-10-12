@@ -40,11 +40,22 @@ export const constantRoutes: RouteItem[] = [
     path: '/401',
     component: () => import('~/views/error-page/401.vue'),
     hidden: true
+  },
+  {
+    name: 'redirect',
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path(.*)',
+        component: () => import('@/views/redirect/index.vue')
+      }
+    ]
   }
 ];
 
 export const asyncRoutes: RouteItem[] = [permissionRouter];
-
 
 const router = createRouter({
   history: createWebHashHistory(),

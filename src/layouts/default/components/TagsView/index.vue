@@ -81,6 +81,11 @@ watch(visible, (value) => {
   }
 });
 
+onMounted(() => {
+  initTags()
+  addTags()
+});
+
 function isActive(route: RouteItem) {
   return route.path === $route.path;
 }
@@ -125,7 +130,6 @@ function initTags() {
 function addTags() {
   const { name } = $route;
   if (name) {
-    // this.$store.dispatch('tagsView/addView', $route)
     tagsViewStore.addView($route as any);
   }
   return false;
@@ -222,7 +226,6 @@ function openMenu(tag: VisitedViews, e: any) {
   $top.value = e.clientY;
   visible.value = true;
   selectedTag.value = tag;
-  console.log(tag);
 }
 
 function closeMenu() {

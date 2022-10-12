@@ -22,7 +22,7 @@ declare module 'vue-router' {
 
 declare global {
   declare type RouteItem = {
-    name: string;
+    name?: string;
     title?: string;
     alwaysShow?: boolean;
     hidden?: boolean;
