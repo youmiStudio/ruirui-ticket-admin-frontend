@@ -18,7 +18,8 @@ const permissionRouter: RouteItem = {
       name: 'RolePermission',
       meta: {
         title: 'Role Permission',
-        roles: [RoleEnum.ADMIN]
+        roles: [RoleEnum.ADMIN],
+        noCache: true
       }
     }
   ]
