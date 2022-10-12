@@ -1,6 +1,7 @@
 import vue from '@vitejs/plugin-vue';
 import { PluginOption } from 'vite';
 import vueJsx from '@vitejs/plugin-vue-jsx';
+import vueSetupExtend from 'vite-plugin-vue-setup-extend'
 
 import { configVuecomponents } from './components';
 import { configUnocss } from './unocss';
@@ -20,7 +21,8 @@ export function createVitePlugins(
   const vitePlugins: vitePlugins = [
     // have to
     vue(),
-    vueJsx()
+    vueJsx(),
+    vueSetupExtend()
   ];
 
   vitePlugins.push(configVuecomponents(isBuild));

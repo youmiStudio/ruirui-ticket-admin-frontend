@@ -1,7 +1,7 @@
 <template>
   <section class="app-main">
-    <router-view v-slot="{ Component,route }">
-      <transition name="fade-transform" mode="out-in">
+    <router-view v-slot="{ Component, route }">
+      <!-- <transition name="fade-transform" mode="out-in"> -->
         <keep-alive :include="cachedViews">
           <suspense>
             <template #default>
@@ -9,7 +9,7 @@
             </template>
           </suspense>
         </keep-alive>
-      </transition>
+      <!-- </transition> -->
     </router-view>
   </section>
 </template>
@@ -19,6 +19,7 @@ import { useTagsViewStore } from '@/store';
 import { storeToRefs } from 'pinia';
 const tagsViewStore = useTagsViewStore();
 const { cachedViews } = storeToRefs(tagsViewStore);
+
 </script>
 
 <style lang="scss" scoped>
