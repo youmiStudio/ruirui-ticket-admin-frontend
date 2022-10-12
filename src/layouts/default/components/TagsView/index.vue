@@ -1,9 +1,13 @@
 <template>
   <div ref="$el" id="tags-view-container" class="tags-view-container">
-    <scroll-pane ref="scrollPane" class="tags-view-wrapper">
+    <scroll-pane
+      ref="scrollPane"
+      class="tags-view-wrapper"
+      @scroll="handleScroll"
+    >
       <router-link
         v-for="tag in visitedViews"
-        ref="tag"
+        ref="tagRef"
         :key="tag.path"
         :class="isActive(tag) ? 'active' : ''"
         :to="{ path: tag.path, query: tag.query }"
@@ -54,11 +58,12 @@ const { visitedViews } = storeToRefs(tagsViewStore);
 const $route = useRoute();
 const $router = useRouter();
 
-const tag = ref<InstanceType<_RouterLinkI>>();
+const tagRef = ref<InstanceType<_RouterLinkI>>();
+const $el = ref<HTMLDivElement>();
+
 const scrollPane = ref();
 
 const visible = ref<boolean>(false);
-const $el = ref<HTMLDivElement>();
 const $top = ref<number>(0);
 const $left = ref<number>(0);
 const selectedTag = ref<VisitedViews>({} as VisitedViews);
@@ -82,8 +87,8 @@ watch(visible, (value) => {
 });
 
 onMounted(() => {
-  initTags()
-  addTags()
+  initTags();
+  addTags();
 });
 
 function isActive(route: RouteItem) {
@@ -136,7 +141,7 @@ function addTags() {
 }
 
 function moveToCurrentTag() {
-  const tags = tag.value;
+  const tags = tagRef.value;
   nextTick(() => {
     if (tags) {
       for (const tag of tags as any) {

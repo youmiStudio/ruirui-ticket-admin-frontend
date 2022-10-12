@@ -19,7 +19,7 @@ defineExpose({
 const $emit = defineEmits(['scroll']);
 
 const tagAndTagSpacing = 4; // tagAndTagSpacing
-// const left = ref<number>(0);
+const left = ref<number>(0);
 
 const scrollContainer = ref<
   InstanceType<typeof ElScrollbar> & {
@@ -41,6 +41,8 @@ onUnmounted(() => {
     scrollWrapper.value.removeEventListener('scroll', emitScroll);
 });
 
+
+
 function handleScroll(e: any) {
   const eventDelta = e.wheelDelta || -e.deltaY * 40;
   const $scrollWrapper = scrollWrapper.value;
@@ -58,7 +60,7 @@ function moveToTarget(currentTag: VisitedViews) {
   const $container = scrollWrapper.value;
   const $containerWidth = $container && $container.offsetWidth;
   const $scrollWrapper = scrollWrapper.value;
-  const tagList = $parentCtx.ctx.$refs.tag;
+  const tagList = $parentCtx.refs.tagRef;
 
   let firstTag = null;
   let lastTag = null;
