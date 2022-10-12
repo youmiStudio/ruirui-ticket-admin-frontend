@@ -2,6 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { showMessage } from './status';
 import { IResponse } from './type';
 import { getToken } from '~/utils/auth';
+import { ElMessage } from 'element-plus';
 
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 
@@ -17,28 +18,22 @@ axios.defaults.headers.post['Access-Control-Allow-Origin-Type'] = '*';
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: globSetting.apiUrl + '',
   timeout: 5000
-  // transformRequest: [
-  //   function (data) {
-  //     //由于使用的 form-data传数据所以要格式化
-  //     delete data.Authorization
-  //     data = qs.stringify(data)
-  //     return data
-  //   },
-  // ],
 });
 
 // axios实例拦截响应
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
-    // if (response.headers.authorization) {
-    //   localStorage.setItem('app_token', response.headers.authorization)
-    // } else if (response.data && response.data.token) {
-    //   localStorage.setItem('app_token', response.data.token)
-    // }
     if (response.status === 200) {
+      const res = response.data
+      if (res.code !== 0) {
+        ElMessage({
+          message: res.message || "Error",
+          type: 'error',
+          duration: 5 * 1000
+        });
+      }
       return response;
     }
-    showMessage(response.status);
     return response;
   },
   // 请求失败
@@ -58,7 +53,8 @@ axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     const token = getToken();
     if (token) {
-      // config.headers.Authorization = `${TokenPrefix}${token}`
+      config.headers = {};
+      config.headers.Authorization = `${token}`;
     }
     return config;
   },

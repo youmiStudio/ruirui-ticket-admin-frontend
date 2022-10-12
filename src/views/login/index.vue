@@ -139,7 +139,7 @@ const loginForm = reactive<UserRequestParams>({
 });
 
 const loginRules = reactive<FormRules>({
-  username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+  // username: [{ required: true, trigger: 'blur', validator: validateUsername }],
   password: [{ required: true, trigger: 'blur', validator: validatePassword }]
 });
 
@@ -181,8 +181,10 @@ function handleLogin(formEl: FormInstance | undefined): boolean {
   formEl.validate(async (valid) => {
     if (valid) {
       loading.value = true;
-      await usreStore.login(loginForm);
-      router.push({ path: (redirect as string) || '/', query: otherQuery });
+      const token = await usreStore.login(loginForm);
+      if(token) {
+        router.push({ path: (redirect as string) || '/', query: otherQuery });
+      }
       loading.value = false;
     } else {
       console.log('error submit!!');

@@ -69,8 +69,12 @@ router.beforeEach(async (to, from, next) => {
           next({ ...to, replace: true });
         } catch (error) {
           // remove token and go to login page to re-login
-          // await store.dispatch('user/resetToken')
-          ElMessage.error(error || 'Has Error');
+          const userStore = useUserStore();
+          await userStore.resetToken()
+          ElMessage({
+            message: "error || 'Has Error'",
+            type: 'error'
+          });
           next(`/login?redirect=${to.path}`);
           NProgress.done();
         }
@@ -78,7 +82,6 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     /* has no token*/
-
     if (whiteList.indexOf(to.path) !== -1) {
       // in the free login whitelist, go directly
       next();

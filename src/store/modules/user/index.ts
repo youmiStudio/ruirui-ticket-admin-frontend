@@ -22,13 +22,15 @@ export const useUserStore = defineStore({
       return new Promise(async (resolve, reject) => {
         login({ username: username.trim(), password })
           .then((response) => {
-            const {
-              data: { token }
-            } = response;
-            this.$patch({
-              token
-            });
-            setToken(token);
+            const { data } = response;
+            if (data) {
+              const { token } = data;
+              this.token = token;
+              if (token) {
+                setToken(token);
+              }
+            }
+
             resolve(response);
           })
           .catch((error) => {
@@ -85,6 +87,15 @@ export const useUserStore = defineStore({
           .catch((error) => {
             reject(error);
           });
+      });
+    },
+    // remove token
+    resetToken() {
+      return new Promise((resolve) => {
+        this.token = '';
+        this.roles = [];
+        removeToken();
+        setTimeout(() => {}, 500);
       });
     }
   }

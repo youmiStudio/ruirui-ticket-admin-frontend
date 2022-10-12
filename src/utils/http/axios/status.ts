@@ -35,7 +35,8 @@ export const showMessage = (status: number | string): string => {
       message = 'HTTP版本不受支持(505)';
       break;
     default:
-      message = `连接出错(${status})!`;
+      message = `${status}`;
   }
-  return `${message}，请检查网络或联系管理员！`;
+  message = `${message}，请检查网络或联系管理员！`;
+  return message;
 };
