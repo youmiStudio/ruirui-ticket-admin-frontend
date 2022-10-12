@@ -6,18 +6,17 @@ import { unref, nextTick, watch, computed, ref } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import { useEventListener } from '@/hooks/event/useEventListener';
 import echarts from '@/utils/lib/echarts';
-import  'echarts/theme/macarons.js'
-
+import 'echarts/theme/macarons.js';
 
 export function useECharts(
   elRef: Ref<HTMLDivElement>,
-  theme: 'light' | 'dark' | 'default' | 'macarons' = 'default',
+  theme: 'light' | 'dark' | 'default' | 'macarons' = 'default'
 ) {
-
   let chartInstance: echarts.ECharts | null = null;
   let resizeFn: Fn = resize;
   const cacheOptions = ref({}) as Ref<EChartsOption>;
   let removeResizeFn: Fn = () => {};
+  let removeSideBarResizeFn: Fn = () => {};
 
   resizeFn = useDebounceFn(resize, 200);
 
@@ -43,14 +42,25 @@ export function useECharts(
     const { removeEvent } = useEventListener({
       el: window,
       eventType: 'resize',
-      listener: resizeFn,
+      listener: resizeFn
     });
+    const $_sidebarElm =
+      document.getElementsByClassName('sidebar-container')[0];
+    if ($_sidebarElm) {
+      const { removeEvent } = useEventListener({
+        el: $_sidebarElm,
+        eventType: 'transitionend',
+        listener: sidebarResize
+      });
+      removeSideBarResizeFn = removeEvent;
+    }
+
     removeResizeFn = removeEvent;
 
     // if (unref(widthRef) <= screenEnum.MD || el.offsetHeight === 0) {
-      useTimeoutFn(() => {
-        resizeFn();
-      }, 30);
+    useTimeoutFn(() => {
+      resizeFn();
+    }, 30);
     // }
   }
 
@@ -80,9 +90,17 @@ export function useECharts(
     chartInstance?.resize({
       animation: {
         duration: 300,
-        easing: 'quadraticIn',
-      },
+        easing: 'quadraticIn'
+      }
     });
+  }
+
+  function sidebarResize(e: any) {
+    if (e.propertyName === 'width') {
+      useTimeoutFn(() => {
+        resizeFn();
+      }, 30);
+    }
   }
 
   // watch(
@@ -99,6 +117,7 @@ export function useECharts(
   tryOnUnmounted(() => {
     if (!chartInstance) return;
     removeResizeFn();
+    removeSideBarResizeFn();
     chartInstance.dispose();
     chartInstance = null;
   });
@@ -114,6 +133,6 @@ export function useECharts(
     setOptions,
     resize,
     echarts,
-    getInstance,
+    getInstance
   };
 }
