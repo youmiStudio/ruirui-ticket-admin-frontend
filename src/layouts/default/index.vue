@@ -20,7 +20,7 @@
 import { useAppStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import { useResizeHandler } from './hooks/resizeHandler';
-import { useGlobSettings } from '@/hooks/settings';
+import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 
 import Sidebar from './components/Sidebar/index.vue';
 import Navbar from './components/Navbar.vue';

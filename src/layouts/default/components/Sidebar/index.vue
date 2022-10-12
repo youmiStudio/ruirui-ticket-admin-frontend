@@ -20,7 +20,7 @@
 
 <script lang="ts" setup>
 import variablesScss from '@/styles/variables.module.scss';
-import { useGlobSettings } from '@/hooks/settings';
+import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 import { useAppStore, usePermissionStore } from '@/store';
 import { storeToRefs } from 'pinia';
 

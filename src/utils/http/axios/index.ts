@@ -3,7 +3,7 @@ import { showMessage } from './status';
 import { IResponse } from './type';
 import { getToken } from '~/utils/auth';
 
-import { useGlobSettings } from '~/hooks/settings';
+import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 
 const globSetting = useGlobSettings();
 
