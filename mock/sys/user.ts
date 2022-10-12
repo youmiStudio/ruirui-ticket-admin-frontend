@@ -27,7 +27,7 @@ const users = {
 };
 
 
-module.exports = [
+export default [
   // user login
   {
     url: '/api/user/login',

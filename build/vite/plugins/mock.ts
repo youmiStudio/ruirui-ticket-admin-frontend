@@ -12,6 +12,7 @@ export function configMock(isBuild?: boolean) {
 
       setupProdMockServer();
       `,
+    supportTs: true
   });
   return mockPlugin;
 }

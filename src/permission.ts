@@ -6,6 +6,7 @@ import { ElMessage } from 'element-plus';
 import { useUserStore, usePermissionStore } from '@/store';
 import { getToken } from '@/utils/auth';
 import getPageTitle from '@/utils/get-page-title';
+import { RouteRecordName } from 'vue-router';
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 const whiteList = ['/login', '/auth-redirect']; // no redirect whitelist
@@ -51,7 +52,7 @@ router.beforeEach(async (to, from, next) => {
 
           // dynamically add accessible routes
           accessRoutes.forEach((route) => {
-            const parentName = route.name;
+            const parentName = route.name as RouteRecordName;
             // add father routes
             router.addRoute(route);
             route.children?.forEach((childRoute) => {
