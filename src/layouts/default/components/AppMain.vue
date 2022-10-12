@@ -1,15 +1,15 @@
 <template>
   <section class="app-main">
     <router-view v-slot="{ Component, route }">
-      <!-- <transition name="fade-transform" mode="out-in"> -->
-        <keep-alive :include="cachedViews">
-          <suspense>
-            <template #default>
+      <suspense>
+        <template #default>
+          <transition name="fade-transform" mode="out-in">
+            <keep-alive :include="cachedViews">
               <component :is="Component" :key="route.path" />
-            </template>
-          </suspense>
-        </keep-alive>
-      <!-- </transition> -->
+            </keep-alive>
+          </transition>
+        </template>
+      </suspense>
     </router-view>
   </section>
 </template>
@@ -19,7 +19,6 @@ import { useTagsViewStore } from '@/store';
 import { storeToRefs } from 'pinia';
 const tagsViewStore = useTagsViewStore();
 const { cachedViews } = storeToRefs(tagsViewStore);
-
 </script>
 
 <style lang="scss" scoped>
