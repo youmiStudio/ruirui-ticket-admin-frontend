@@ -1,7 +1,7 @@
 import type { EChartsOption } from 'echarts';
 import type { Ref } from 'vue';
 import { useTimeoutFn } from '@/hooks/core/useTimeout';
-import { tryOnUnmounted } from '@vueuse/core';
+import { tryOnUnmounted, tryOnMounted } from '@vueuse/core';
 import { unref, nextTick, watch, computed, ref } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import { useEventListener } from '@/hooks/event/useEventListener';
@@ -57,11 +57,9 @@ export function useECharts(
 
     removeResizeFn = removeEvent;
 
-    // if (unref(widthRef) <= screenEnum.MD || el.offsetHeight === 0) {
     useTimeoutFn(() => {
       resizeFn();
     }, 30);
-    // }
   }
 
   function setOptions(options: EChartsOption, clear = true) {
@@ -76,7 +74,6 @@ export function useECharts(
       useTimeoutFn(() => {
         if (!chartInstance) {
           initCharts('default');
-
           if (!chartInstance) return;
         }
         clear && chartInstance?.clear();
