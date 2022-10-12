@@ -29,7 +29,7 @@ const scrollContainer = ref<
 
 const scrollWrapper = computed(() => scrollContainer.value?.$refs.wrap$);
 
-const urrentInstance = getCurrentInstance() as any;
+const currentInstance = getCurrentInstance() as any;
 
 onMounted(() => {
   scrollWrapper.value &&
@@ -56,7 +56,7 @@ function emitScroll() {
 }
 
 function moveToTarget(currentTag: VisitedViews) {
-  const $parentCtx = urrentInstance && urrentInstance.parent;
+  const $parentCtx = currentInstance && currentInstance.parent;
   const $container = scrollWrapper.value;
   const $containerWidth = $container && $container.offsetWidth;
   const $scrollWrapper = scrollWrapper.value;
