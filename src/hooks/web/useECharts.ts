@@ -6,7 +6,7 @@ import { unref, nextTick, watch, computed, ref } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import { useEventListener } from '@/hooks/event/useEventListener';
 import echarts from '@/utils/lib/echarts';
-import 'echarts/theme/macarons.js';
+import 'echarts/theme/macarons';
 
 export function useECharts(
   elRef: Ref<HTMLDivElement>,
@@ -77,7 +77,7 @@ export function useECharts(
     nextTick(() => {
       useTimeoutFn(() => {
         if (!chartInstance) {
-          initCharts('default');
+          initCharts(theme);
           if (!chartInstance) return;
         }
         clear && chartInstance?.clear();

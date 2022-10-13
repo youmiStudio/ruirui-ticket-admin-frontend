@@ -46,7 +46,7 @@ function setChartOption() {
       }
     },
     radar: {
-      radius: '66%',
+      radius: '50%',
       center: ['50%', '42%'],
       splitNumber: 8,
       splitArea: {
