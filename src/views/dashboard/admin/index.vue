@@ -23,6 +23,15 @@
         </div>
       </el-col>
     </el-row>
+
+    <el-row :gutter="8">
+      <el-col :xs="{span: 24}" :sm="{span: 24}" :md="{span: 24}" :lg="{span: 16}" :xl="{span: 16}" style="padding-right:8px;margin-bottom:30px;">
+        <transaction-table />
+      </el-col>
+      <el-col :xs="{span: 24}" :sm="{span: 12}" :md="{span: 12}" :lg="{span: 8}" :xl="{span: 8}" style="margin-bottom:30px;">
+        <box-card />
+      </el-col>
+    </el-row>
   </div>
 </template>
 
@@ -32,7 +41,8 @@ import LineChart from './components/LineChart.vue'
 import RaddarChart from './components/RaddarChart.vue'
 import PieChart from './components/PieChart.vue'
 import BarChart from './components/BarChart.vue'
-
+import TransactionTable from './components/TransactionTable.vue'
+import BoxCard from './components/BoxCard.vue'
 
 const data: any = {
   newVisitis: {

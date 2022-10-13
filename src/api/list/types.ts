@@ -4,7 +4,7 @@ type SearchUserResponseItemsType = {
   name: string;
 };
 
-type transactionListResponseItemsType = {
+export type transactionListResponseItemsType = {
   order_no: string;
   timestamp: Date;
   username: string;
