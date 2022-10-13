@@ -26,9 +26,17 @@ const { setOptions, echarts } = useECharts(
   'macarons'
 );
 
-onMounted(()=>{
+onMounted(() => {
   setChartOptions(props.chartData);
-})
+});
+
+watch(
+  () => props.chartData,
+  (data) => {
+    setChartOptions(data);
+  },
+  { deep: true }
+);
 
 function setChartOptions(options: any) {
   const { expectedData, actualData } = options;
