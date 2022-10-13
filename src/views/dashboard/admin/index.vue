@@ -5,12 +5,34 @@
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
       <line-chart :chart-data="lineChartData" />
     </el-row>
+
+    <el-row :gutter="32">
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <raddar-chart />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <pie-chart />
+        </div>
+      </el-col>
+      <el-col :xs="24" :sm="24" :lg="8">
+        <div class="chart-wrapper">
+          <bar-chart />
+        </div>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script lang="ts" setup name="DashboardAdmin">
 import PanelGroup from './components/PanelGroup.vue';
 import LineChart from './components/LineChart.vue'
+import RaddarChart from './components/RaddarChart.vue'
+import PieChart from './components/PieChart.vue'
+import BarChart from './components/BarChart.vue'
+
 
 const data: any = {
   newVisitis: {

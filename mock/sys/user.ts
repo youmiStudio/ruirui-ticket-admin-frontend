@@ -1,4 +1,4 @@
-import { MockMethod } from 'vite-plugin-mock';
+import type { MockMethod } from 'vite-plugin-mock';
 
 const tokens = {
   admin: {
@@ -45,7 +45,7 @@ export default [
       }
 
       return {
-        code: 20000,
+        code: 0,
         data: token
       };
     }
@@ -68,7 +68,7 @@ export default [
       }
 
       return {
-        code: 20000,
+        code: 0,
         data: info
       };
     }
@@ -78,7 +78,7 @@ export default [
     method: 'post',
     response: (_) => {
       return {
-        code: 20000,
+        code: 0,
         data: 'success'
       };
     }

@@ -21,7 +21,7 @@ const props = defineProps({
 });
 
 const chartRef = ref<HTMLDivElement | null>(null);
-const { setOptions, echarts } = useECharts(
+const { setOptions } = useECharts(
   chartRef as Ref<HTMLDivElement>,
   'macarons'
 );
