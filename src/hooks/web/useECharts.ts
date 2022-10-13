@@ -44,16 +44,20 @@ export function useECharts(
       eventType: 'resize',
       listener: resizeFn
     });
-    const $_sidebarElm =
-      document.getElementsByClassName('sidebar-container')[0];
-    if ($_sidebarElm) {
-      const { removeEvent } = useEventListener({
-        el: $_sidebarElm,
-        eventType: 'transitionend',
-        listener: sidebarResize
-      });
-      removeSideBarResizeFn = removeEvent;
-    }
+
+    tryOnMounted(() => {
+      const $_sidebarElm =
+        document.getElementsByClassName('sidebar-container')[0];
+
+      if ($_sidebarElm) {
+        const { removeEvent } = useEventListener({
+          el: $_sidebarElm,
+          eventType: 'transitionend',
+          listener: sidebarResize
+        });
+        removeSideBarResizeFn = removeEvent;
+      }
+    });
 
     removeResizeFn = removeEvent;
 
