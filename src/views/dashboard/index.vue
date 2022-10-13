@@ -6,7 +6,7 @@
 
 <script lang="ts" setup name="Dashboard">
 import AdminDashboard from './admin/index.vue';
-import EditorDashboard from './admin/index.vue';
+import EditorDashboard from './editor/index.vue';
 import { useUserStore } from '@/store';
 import { storeToRefs } from 'pinia';
 import { DefineComponent } from 'vue';
@@ -17,7 +17,7 @@ const userStoreRefs = storeToRefs(userStore);
 const roles = unref<string[] | undefined>(userStoreRefs.roles);
 const currentRole = shallowRef<DefineComponent<{}, {}, any>>(AdminDashboard);
 
-onBeforeMount(() => {
+onMounted(() => {
   if (roles && !roles.includes('admin')) {
     currentRole.value = EditorDashboard;
   }

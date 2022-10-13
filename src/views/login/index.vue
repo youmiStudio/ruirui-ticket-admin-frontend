@@ -92,7 +92,7 @@
       <br />
       <br />
       <br />
-      <social-sign />
+      <!-- <social-sign /> -->
     </el-dialog>
   </div>
 </template>
