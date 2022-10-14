@@ -133,8 +133,8 @@ function initTags() {
 }
 
 function addTags() {
-  const { name } = $route;
-  if (name) {
+  const { name, path } = $route;
+  if (name && !path.includes('/redirect')) {
     tagsViewStore.addView($route as any);
   }
   return false;

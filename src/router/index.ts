@@ -48,6 +48,7 @@ export const constantRoutes: RouteItem[] = [
     hidden: true,
     children: [
       {
+        name:"redirectCmp",
         path: '/redirect/:path(.*)',
         component: () => import('@/views/redirect/index.vue')
       }
