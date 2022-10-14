@@ -6,7 +6,7 @@ export type UserRequestParams = {
   password: string;
 };
 
-type UserInfoData = {
+export type UserInfoData = {
   avatar?: string;
   introduction?: string;
   name?: string;

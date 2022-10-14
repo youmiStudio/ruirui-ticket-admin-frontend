@@ -1,4 +1,4 @@
-import router from './router';
+import router, { addRoutes } from './router';
 import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css'; // progress bar style
 import { ElMessage } from 'element-plus';
@@ -6,7 +6,6 @@ import { ElMessage } from 'element-plus';
 import { useUserStore, usePermissionStore } from '@/store';
 import { getToken } from '@/utils/auth';
 import getPageTitle from '@/utils/get-page-title';
-import { RouteRecordName } from 'vue-router';
 
 NProgress.configure({ showSpinner: false }); // NProgress Configuration
 const whiteList = ['/login', '/auth-redirect']; // no redirect whitelist
@@ -37,8 +36,7 @@ router.beforeEach(async (to, from, next) => {
       const userStore = useUserStore();
       const permissionStore = usePermissionStore();
 
-      const hasRoles =
-        userStore.getRoles?.length && userStore.getRoles?.length > 0;
+      const hasRoles = userStore.roles?.length && userStore.roles?.length > 0;
       if (hasRoles) {
         next();
       } else {
@@ -51,15 +49,7 @@ router.beforeEach(async (to, from, next) => {
           const accessRoutes = await permissionStore.generateRoutes(roles);
 
           // dynamically add accessible routes
-          accessRoutes.forEach((route) => {
-            const parentName = route.name as RouteRecordName;
-            // add father routes
-            router.addRoute(route);
-            route.children?.forEach((childRoute) => {
-              // add children routes
-              router.addRoute(parentName, childRoute);
-            });
-          });
+          addRoutes(accessRoutes);
 
           // dynamically add errorPageRoutes
           addErrorRoutes();
@@ -70,7 +60,7 @@ router.beforeEach(async (to, from, next) => {
         } catch (error) {
           // remove token and go to login page to re-login
           const userStore = useUserStore();
-          await userStore.resetToken()
+          await userStore.resetToken();
           ElMessage({
             message: "error || 'Has Error'",
             type: 'error'

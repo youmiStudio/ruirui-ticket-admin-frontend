@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia';
 import { getToken, setToken, removeToken } from '~/utils/auth';
 import { login, getInfo, logout } from '@/api/user';
-import { useTagsViewStore } from '@/store';
+import { useTagsViewStore, usePermissionStore } from '@/store';
+import type * as API from '@/api/user/types';
+import { addRoutes } from '@/router';
 
 export const useUserStore = defineStore({
   id: 'user',
@@ -12,12 +14,9 @@ export const useUserStore = defineStore({
     introduction: '',
     roles: []
   }),
-  getters: {
-    getToken: (state) => state.token,
-    getRoles: (state) => state.roles
-  },
+  getters: {},
   actions: {
-    login(loginForm: UserRequestParams) {
+    login(loginForm: API.UserRequestParams) {
       const { username, password } = loginForm;
       return new Promise(async (resolve, reject) => {
         login({ username: username.trim(), password })
@@ -38,7 +37,7 @@ export const useUserStore = defineStore({
           });
       });
     },
-    getInfo(): Promise<UserInfoData> {
+    getInfo(): Promise<API.UserInfoData> {
       return new Promise(async (resolve, reject) => {
         getInfo(this.token)
           .then((response) => {
@@ -55,12 +54,11 @@ export const useUserStore = defineStore({
               reject('getInfo: roles must be a non-null array!');
             }
 
-            this.$patch({
-              name,
-              avatar,
-              introduction,
-              roles
-            });
+            this.name = name;
+            this.avatar = avatar;
+            this.introduction = introduction;
+            this.roles = roles;
+
             resolve(data);
           })
           .catch((error) => {
@@ -96,6 +94,28 @@ export const useUserStore = defineStore({
         this.roles = [];
         removeToken();
         setTimeout(() => {}, 500);
+      });
+    },
+    // dynamically modify permissions
+    changeRoles(role: string):Promise<boolean> {
+      return new Promise(async (resolve) => {
+        const token = role + '-token';
+
+        this.token = token;
+        setToken(token);
+
+        const { roles } = await this.getInfo();
+
+        // generate accessible routes map based on roles
+        const permissionStroe = usePermissionStore();
+        const accessRoutes = await permissionStroe.generateRoutes(roles);
+        addRoutes(accessRoutes);
+
+        // reset visited views and cached views
+        const tagesViewStore = useTagsViewStore();
+        tagesViewStore.delAllViews();
+
+        resolve(true)
       });
     }
   }

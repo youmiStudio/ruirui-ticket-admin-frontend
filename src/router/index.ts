@@ -63,4 +63,31 @@ const router = createRouter({
   scrollBehavior: () => ({ left: 0, top: 0 })
 });
 
+/**
+ * recursion add route children and route
+ * @param {object} route
+ * @param {string} parentName
+ */
+export const addRoutesHelper = (
+  route: RouteItem,
+  parentName?: string
+): void => {
+  parentName ? router.addRoute(parentName, route) : router.addRoute(route);
+  if (route.children) {
+    route.children.forEach((childRoute) => {
+      addRoutesHelper(childRoute, route.name);
+    });
+  }
+};
+
+/**
+ * dynamically add accessible routes
+ * @param {Array} routes 
+ */
+export const addRoutes = (routes: RouteItem[]) => {
+  routes.forEach((route) => {
+    addRoutesHelper(route);
+  });
+};
+
 export default router;

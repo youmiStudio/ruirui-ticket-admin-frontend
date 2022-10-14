@@ -2,23 +2,33 @@ import { RoleEnum } from '~/enums/roleEnum';
 const Layout = () => import('~/layouts/default/index.vue');
 
 const permissionRouter: RouteItem = {
-  name: 'Permission',
   path: '/permission',
-  redirect: '/permission/role',
-  alwaysShow: false, // will always show the root menu
   component: Layout,
-  meta:{
+  redirect: '/permission/page',
+  alwaysShow: true, // will always show the root menu
+  name: 'Permission',
+  meta: {
     title: 'Permission',
-    icon: 'documentation'
+    icon: 'lock',
+    roles: [RoleEnum.ADMIN, RoleEnum.EDITOR] // you can set roles in root nav
   },
   children: [
     {
-      path: 'role',
-      component: () => import('@/views/permission/role/index.vue'),
-      name: 'RolePermission',
+      path: 'page',
+      component: () => import('@/views/permission/page.vue'),
+      name: 'PagePermission',
       meta: {
-        title: 'Role Permission',
-        roles: [RoleEnum.ADMIN]
+        title: 'Page Permission',
+        roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
+      }
+    },
+    {
+      path: 'directive',
+      component: () => import('@/views/permission/directive.vue'),
+      name: 'DirectivePermission',
+      meta: {
+        title: 'Directive Permission'
+        // if do not set roles, means: this page does not require permission
       }
     }
   ]

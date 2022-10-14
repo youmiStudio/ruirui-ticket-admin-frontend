@@ -104,6 +104,7 @@ import type { InternalRuleItem } from 'async-validator/dist-types/interface';
 import { LoginTypeEnum } from '~/enums/userEnum';
 import { LocationQuery, LocationQueryValue } from 'vue-router';
 import { useUserStore } from '~/store';
+import type * as API from '@/api/user/types';
 
 const validateUsername = (
   rule: InternalRuleItem,
@@ -133,7 +134,7 @@ const usreStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 
-const loginForm = reactive<UserRequestParams>({
+const loginForm = reactive<API.UserRequestParams>({
   username: 'admin',
   password: '123456'
 });
@@ -182,7 +183,7 @@ function handleLogin(formEl: FormInstance | undefined): boolean {
     if (valid) {
       loading.value = true;
       const token = await usreStore.login(loginForm);
-      if(token) {
+      if (token) {
         router.push({ path: (redirect as string) || '/', query: otherQuery });
       }
       loading.value = false;
