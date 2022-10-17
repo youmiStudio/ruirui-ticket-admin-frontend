@@ -41,8 +41,6 @@ onUnmounted(() => {
     scrollWrapper.value.removeEventListener('scroll', emitScroll);
 });
 
-
-
 function handleScroll(e: any) {
   const eventDelta = e.wheelDelta || -e.deltaY * 40;
   const $scrollWrapper = scrollWrapper.value;
@@ -116,13 +114,12 @@ function moveToTarget(currentTag: VisitedViews) {
   position: relative;
   overflow: hidden;
   width: 100%;
-  ::v-deep {
-    .el-scrollbar__bar {
-      bottom: 0px;
-    }
-    .el-scrollbar__wrap {
-      height: 49px;
-    }
+
+  ::v-deep(.el-scrollbar__bar) {
+    bottom: 0px;
+  }
+  ::v-deep(.el-scrollbar__wrap) {
+    height: 49px;
   }
 }
 </style>

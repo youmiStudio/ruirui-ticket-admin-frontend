@@ -7,6 +7,7 @@ import {
 const Layout = () => import('~/layouts/default/index.vue');
 
 import permissionRouter from './modules/permission';
+import tableRouter from './modules/table';
 
 export const constantRoutes: RouteItem[] = [
   {
@@ -48,7 +49,7 @@ export const constantRoutes: RouteItem[] = [
     hidden: true,
     children: [
       {
-        name:"redirectCmp",
+        name: 'redirectCmp',
         path: '/redirect/:path(.*)',
         component: () => import('@/views/redirect/index.vue')
       }
@@ -56,7 +57,7 @@ export const constantRoutes: RouteItem[] = [
   }
 ];
 
-export const asyncRoutes: RouteItem[] = [permissionRouter];
+export const asyncRoutes: RouteItem[] = [permissionRouter, tableRouter];
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -83,7 +84,7 @@ export const addRoutesHelper = (
 
 /**
  * dynamically add accessible routes
- * @param {Array} routes 
+ * @param {Array} routes
  */
 export const addRoutes = (routes: RouteItem[]) => {
   routes.forEach((route) => {
