@@ -1,4 +1,4 @@
-# vue-element-plus-admin-template
+# ruirui-ticket-admin-frontend
 
 > A starter kit for Element Plus with Vite
 
@@ -23,8 +23,8 @@ npm run build
 ## Usage
 
 ```bash
-git clone https://github.com/LeeYuze/vue-element-plus-admin-template
-cd vue-element-plus-admin-template
+git clone https://github.com/LeeYuze/ruirui-ticket-admin-frontend
+cd ruirui-ticket-admin-frontend
 npm i
 npm run dev
 ```
