@@ -19,6 +19,9 @@
 </template>
 
 <script lang="ts" setup>
+import { useGlobSettings} from '@/hooks/settings/useGlobSettings'
+const globSettings = useGlobSettings();
+
 defineProps({
   collapse:{
     type: Boolean,
@@ -26,10 +29,8 @@ defineProps({
   }
 })
 
-const logo = ref(
-  'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
-);
-const title = ref('Vue Element Admin');
+const logo = ref();
+const title = ref(globSettings.title);
 
 </script>
 
@@ -45,16 +46,19 @@ const title = ref('Vue Element Admin');
 
 .sidebar-logo-container {
   position: relative;
+  padding: 0 20px;
   width: 100%;
-  height: 50px;
-  line-height: 50px;
-  background: #2b2f3a;
+  height: 60px;
+  line-height: 60px;
+  background: #ffffff;
   text-align: center;
   overflow: hidden;
 
   & .sidebar-logo-link {
     height: 100%;
     width: 100%;
+    border-bottom: 1px solid #F0F2F5;
+
 
     & .sidebar-logo {
       width: 32px;
@@ -66,10 +70,10 @@ const title = ref('Vue Element Admin');
     & .sidebar-title {
       display: inline-block;
       margin: 0;
-      color: #fff;
+      color: #1975ff;
       font-weight: 600;
-      line-height: 50px;
-      font-size: 14px;
+      line-height: 24px;
+      font-size: 24px;
       font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
       vertical-align: middle;
     }
