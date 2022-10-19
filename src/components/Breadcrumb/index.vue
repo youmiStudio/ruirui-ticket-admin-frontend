@@ -88,7 +88,7 @@ function handleLink(item: BreadcrumbMatched) {
 .app-breadcrumb.el-breadcrumb {
   display: inline-block;
   font-size: 14px;
-  line-height: 50px;
+  line-height: 60px;
   margin-left: 8px;
 
   .no-redirect {

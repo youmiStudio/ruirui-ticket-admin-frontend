@@ -87,14 +87,16 @@ async function logout() {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  z-index: 1;
+  height: 60px;
   overflow: hidden;
   position: relative;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+  box-shadow: 0px -3px 10px 3px rgba(0, 0, 0, 0.3);
+  border-left: 1px solid #E9F2FF;
 
   .hamburger-container {
-    line-height: 46px;
+    line-height: 56px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -118,7 +120,7 @@ async function logout() {
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 50px;
+    line-height: 60px;
 
     &:focus {
       outline: none;
@@ -146,7 +148,7 @@ async function logout() {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
+        margin-top: 10px;
         position: relative;
 
         .user-avatar {
@@ -160,7 +162,7 @@ async function logout() {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          top: 25px;
+          top: 30px;
           font-size: 12px;
         }
       }

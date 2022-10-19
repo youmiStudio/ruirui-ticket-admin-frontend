@@ -101,6 +101,15 @@
       margin-left: 54px;
     }
 
+    .sidebar-logo-container {
+      display: none;
+    }
+    
+    .el-menu--vertical .el-menu-item, .el-menu--vertical .el-sub-menu__title {
+      margin: 10px 0px;
+      background: transparent !important;
+    }
+
     .submenu-title-noDropdown {
       padding: 0 !important;
       position: relative;
