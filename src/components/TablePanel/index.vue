@@ -1,43 +1,3 @@
-<!--
-    表格
-    @params: url  数据请求路径， 返回promise的方法
-    @params: tree Boolean 是否是表格树结构
-             lazy 异步加载 表格树数据
-             @load 方法 lazy 一起使用
-    @params: response 配置返回参数字段
-              {                             res: {
-                data: 获取数据字段              data: {
-                list: 获取列表字段                   list: [],
-                pageObj: 返回的分页信息是否是对象      pageObj: {
-                resultCode: 返回的结果码                pageSize: 10,
-                pageSize: 每页字段                     pageNum: 1,
-                pageNum: 当前页字段                    totalRow: 100
-                                                    }
-                totalRow: 数据总数字段            },
-
-              }                                 resultCode: 0
-                                              }
-    @params: page 分页配置
-            pageSize: 查询请求的pageSize字段                  query: {            query: {
-            pageNum: 查询请求的pageNum字段                      pageSize: 10,        pageObj: {
-            pageObj: 查询请求的page是否是对象                    pageNum: 1             pageSize: 10,
-            layout: 分页的布局, 参考element-ui的page的layout   }                        pageNum: 1
-                                                                                   }
-                                                                                }
-    @params: successCode 成功码 0
-    @params: pageSize 页数量
-    @params: selectType  select／多选  radio／多选  false
-    @params: showIndex 显示index列
-    @params autoLoad 是否自动加载
-    @params selectedIds 已经选择列表
-    @params checkSelectable type=selection 的列有效，类型为 Function，Function 的返回值用来决定这一行的 CheckBox 是否可以勾选（同el-table）
-    @params formatter 格式化table的data
-    @slot="head-right" 头部右边
-    @slot="search-tool"  搜索
-    @slot="opr-tool"   表头的操作栏
-    @slot="table-col"   表格的列
--->
-
 <template>
   <div class="table-panel" :class="{ 'table-panel-tree': tree }">
     <div v-if="title" class="t-title">
@@ -85,6 +45,8 @@
     </el-table>
     <el-pagination
       v-if="page"
+      small
+      background
       @current-change="handleCurrentChange"
       :page-size="pageSize"
       :current-page="currentPage"
@@ -130,7 +92,7 @@ const props = defineProps({
         pageSize: 'pageSize',
         pageNum: 'pageNum',
         pageObj: 'pageVo',
-        layout: 'total, prev, pager, next, jumper'
+        layout: 'prev, pager, next, jumper'
       };
     }
   },
@@ -457,4 +419,9 @@ function clearRecord() {
   setSelection();
 }
 </script>
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.el-pagination {
+  margin-top: 10px;
+  justify-content: right;
+}
+</style>
