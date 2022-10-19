@@ -78,7 +78,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       //   },
       // },
       // Turning off brotliSize display can slightly reduce packaging time
-      brotliSize: false,
+      // brotliSize: false,
       chunkSizeWarningLimit: 2000
     },
     plugins: createVitePlugins(viteEnv, isBuild)

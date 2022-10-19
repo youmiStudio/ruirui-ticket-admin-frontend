@@ -6,10 +6,10 @@
         class="table-operation-item"
         @click="item.event"
       >
-        {{ item.name }}
+        {{ item.title }}
       </li>
       <el-dropdown v-else class="table-operation-item">
-        <div> {{ item.name }} </div>
+        <div> {{ item.title }} </div>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item
@@ -17,7 +17,7 @@
               :disabled="dropdownColumn.disabled"
               :divided="dropdownColumn.divided"
               @click="dropdownColumn.event">
-              {{ dropdownColumn.name }}
+              {{ dropdownColumn.title }}
             </el-dropdown-item>
           </el-dropdown-menu>
         </template>

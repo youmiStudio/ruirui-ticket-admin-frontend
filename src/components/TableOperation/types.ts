@@ -24,7 +24,7 @@ export type TableOperationColumnsType = {
   /**
    * 操作名称
    */
-  name: string;
+  title: string;
   /**
    * 操作类型
    */

@@ -7,6 +7,10 @@
 @import './variables.module.scss';
 @import './sidebar.scss';
 @import './transition.scss';
+@import "./element/card.scss";
+@import "./element/table.scss";
+@import "./element/form.scss";
+
 
 
 body {
@@ -66,3 +70,4 @@ div:focus {
   height: 100%;
   padding: 20px;
 }
+

@@ -4,6 +4,11 @@ $--menu: (
   'item-height': 36px,
 );
 
+$--table: (
+  'header-bg-color': #FAFAFA,
+  'row-hover-bg-color': rgba(#1677FF, 0.1)
+);
+
 // we can add this to custom namespace, default is 'el'
 @forward "element-plus/theme-chalk/src/mixins/config.scss" with (
   $namespace: "el"
@@ -12,7 +17,8 @@ $--menu: (
 // You should use them in scss, because we calculate it by sass.
 // comment next lines to use default color
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
-  $menu: $--menu
+  $menu: $--menu,
+  $table: $--table
 );
 
 // if you want to import all
