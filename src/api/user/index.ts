@@ -1,11 +1,12 @@
 // 权限问题后期增加
 import { get, post } from '~/utils/http/axios';
-import type * as Type from './types'
+import type * as Type from './types';
 
 enum URL {
   login = '/user/login',
   logout = '/user/logout',
-  getInfo = '/user/info'
+  getInfo = '/user/info',
+  getCaptchaImage = '/captchaImage'
 }
 
 // const getUserProfile = async () => get<UserState>({ url: URL.profile });
@@ -17,3 +18,5 @@ export const logout = async (token: string | undefined | null) =>
 
 export const getInfo = async (token: string | undefined | null) =>
   get<Type.UserInfoRes>({ url: URL.getInfo, params: { token } });
+
+export const getCaptchaImage = async () => get({ url: URL.getCaptchaImage });

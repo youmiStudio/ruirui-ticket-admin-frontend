@@ -75,6 +75,7 @@ const { avatar } = storeToRefs(userStore);
 const route = useRoute();
 const router = useRouter();
 
+
 function toggleSideBar() {
   appStore.toggleSideBar();
 }

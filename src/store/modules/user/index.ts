@@ -16,10 +16,10 @@ export const useUserStore = defineStore({
   }),
   getters: {},
   actions: {
-    login(loginForm: API.UserRequestParams) {
-      const { username, password } = loginForm;
+    login(loginForm: API.UserRequestParams): Promise<API.UserLoginRes> {
+      const { username, password, code, uuid } = loginForm;
       return new Promise(async (resolve, reject) => {
-        login({ username: username.trim(), password })
+        login({ username: username.trim(), password, code, uuid })
           .then((response) => {
             const { data } = response;
             if (data) {
@@ -29,7 +29,7 @@ export const useUserStore = defineStore({
                 setToken(token);
               }
             }
-
+            
             resolve(response);
           })
           .catch((error) => {
@@ -45,6 +45,7 @@ export const useUserStore = defineStore({
 
             if (!data) {
               reject('Verification failed, please Login again.');
+              return;
             }
 
             const { roles, name, avatar, introduction } = data;
@@ -97,7 +98,7 @@ export const useUserStore = defineStore({
       });
     },
     // dynamically modify permissions
-    changeRoles(role: string):Promise<boolean> {
+    changeRoles(role: string): Promise<boolean> {
       return new Promise(async (resolve) => {
         const token = role + '-token';
 
@@ -115,7 +116,7 @@ export const useUserStore = defineStore({
         const tagesViewStore = useTagsViewStore();
         tagesViewStore.delAllViews();
 
-        resolve(true)
+        resolve(true);
       });
     }
   }

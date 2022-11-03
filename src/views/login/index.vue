@@ -58,6 +58,20 @@
         </el-form-item>
       </el-tooltip>
 
+      <el-form-item v-if="codeForm.captchaEnabled" prop="code">
+        <span class="svg-container" style="padding: 10px 5px 6px 12px">
+          <el-icon :size="18">
+            <i-ep-message />
+          </el-icon>
+        </span>
+        <el-input class="flex-1" v-model="loginForm.code"> </el-input>
+        <img
+          class="h35px pr10px"
+          :src="codeForm.img"
+          @click="getCaptchaImageHandle"
+        />
+      </el-form-item>
+
       <el-button
         :loading="loading"
         type="primary"
@@ -104,7 +118,9 @@ import type { InternalRuleItem } from 'async-validator/dist-types/interface';
 import { LoginTypeEnum } from '~/enums/userEnum';
 import { LocationQuery, LocationQueryValue } from 'vue-router';
 import { useUserStore } from '~/store';
+import { getCaptchaImage } from '~/api/user/index';
 import type * as API from '@/api/user/types';
+import { useDebounceFn } from '@vueuse/shared';
 
 const validateUsername = (
   rule: InternalRuleItem,
@@ -128,7 +144,6 @@ const validatePassword = (
     callback();
   }
 };
-
 const usreStore = useUserStore();
 
 const route = useRoute();
@@ -136,12 +151,21 @@ const router = useRouter();
 
 const loginForm = reactive<API.UserRequestParams>({
   username: 'admin',
-  password: '123456'
+  password: '123456',
+  code: '',
+  uuid: ''
+});
+
+const codeForm = reactive({
+  captchaEnabled: true,
+  img: '',
+  uuid: ''
 });
 
 const loginRules = reactive<FormRules>({
   // username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-  password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+  password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+  code: [{ required: true, trigger: 'blur', message: '请输入验证码' }]
 });
 
 const ruleFormRef = ref<FormInstance>();
@@ -164,6 +188,23 @@ watch(
   { immediate: true }
 );
 
+onMounted(() => {
+  getCaptchaImageHandle();
+});
+
+/**
+ * 获取验证码
+ */
+const getCaptchaImageHandle = useDebounceFn(() => {
+  getCaptchaImage().then((res) => {
+    const { captchaEnabled, uuid, img } = res.data;
+    codeForm.captchaEnabled = captchaEnabled;
+    codeForm.uuid = uuid;
+    loginForm.uuid = uuid;
+    codeForm.img = `data:image/gif;base64,${img}`;
+  });
+}, 300);
+
 function checkCapslock(e: any): void {
   const { key } = e;
   capsTooltip.value = key && key.length === 1 && key >= 'A' && key <= 'Z';
@@ -179,11 +220,21 @@ function showPwd(): void {
 
 function handleLogin(formEl: FormInstance | undefined): boolean {
   if (!formEl) return false;
+  if (!codeForm.uuid) return false;
   formEl.validate(async (valid) => {
     if (valid) {
       loading.value = true;
-      const token = await usreStore.login(loginForm);
-      if (token) {
+      const res = await usreStore.login(loginForm);
+      const { code } = res;
+      if (code === 500) {
+        loginForm.code = '';
+        getCaptchaImageHandle();
+        loading.value = false;
+        return;
+      }
+      const { data } = res;
+
+      if (data && data.token) {
         router.push({ path: (redirect as string) || '/', query: otherQuery });
       }
       loading.value = false;

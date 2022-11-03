@@ -25,9 +25,9 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.status === 200) {
       const res = response.data
-      if (res.code !== 0) {
+      if (res.code !== 200) {
         ElMessage({
-          message: res.message || "Error",
+          message: res.msg || "Error",
           type: 'error',
           duration: 5 * 1000
         });

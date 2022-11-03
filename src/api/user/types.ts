@@ -1,9 +1,11 @@
 import { RoleEnum } from '@/enums/roleEnum';
-import type * as API from '@/api/types'
+import type * as API from '@/api/types';
 
 export type UserRequestParams = {
   username: string;
   password: string;
+  code: string;
+  uuid: string;
 };
 
 export type UserInfoData = {
@@ -13,6 +15,10 @@ export type UserInfoData = {
   roles: RoleEnum[];
 };
 
-export type UserLoginRes = API.BaseResponse<Record<string, string>>;
+export type UserLoginVo = {
+  token: string;
+};
+
+export type UserLoginRes = API.BaseResponse<UserLoginVo>;
 
 export type UserInfoRes = API.BaseResponse<UserInfoData>;

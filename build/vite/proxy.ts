@@ -30,6 +30,7 @@
        ...(isHttps ? { secure: false } : {}),
      };
    }
+
    return ret;
  }
  

@@ -1,4 +1,5 @@
 export type BaseResponse<T> = {
   code: number;
-  data: T;
-}
+  data?: T;
+  msg?: string;
+};
