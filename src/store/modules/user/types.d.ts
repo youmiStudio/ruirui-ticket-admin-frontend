@@ -1,4 +1,3 @@
-type RoleType = string;
 
 declare global {
   declare interface UserStoreState {
@@ -6,7 +5,8 @@ declare global {
     name?: string;
     avatar?: string;
     introduction?: string;
-    roles?: RoleType[];
+    roles?: string[];
+    authorities?: string[];
   }
 }
 

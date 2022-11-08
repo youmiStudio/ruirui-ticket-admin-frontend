@@ -13,6 +13,7 @@ export type UserInfoData = {
   introduction?: string;
   name?: string;
   roles: RoleEnum[];
+  authorities: string[];
 };
 
 export type UserLoginVo = {
