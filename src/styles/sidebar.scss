@@ -197,6 +197,13 @@
 
 // when menu collapsed
 .el-menu--vertical {
+  .el-sub-menu {
+    .el-menu-item {
+      span {
+        margin-left: 11px;
+      }
+    }
+  }
   &>.el-menu {
     .svg-icon {
       margin-right: 16px;
