@@ -2,9 +2,15 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { showMessage } from './status';
 import { IResponse } from './type';
 import { getToken } from '~/utils/auth';
-import { ElMessage } from 'element-plus';
+import { ElMessage,ElMessageBox } from 'element-plus';
+import type { Action } from 'element-plus'
+
+// If you want to use ElMessage, import it.
+import 'element-plus/theme-chalk/src/message.scss'
+import 'element-plus/theme-chalk/src/message-box.scss'
 
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
+import { useUserStore } from '~/store';
 
 const globSetting = useGlobSettings();
 
@@ -25,6 +31,18 @@ axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.status === 200) {
       const res = response.data
+      if (res.code === 401) {
+        ElMessageBox.alert('身份验证已经过期，请重新登录', '提示', {
+          type:"warning",
+          confirmButtonText: 'OK',
+          callback: (action: Action) => {
+            const userStroe = useUserStore();
+            userStroe.resetToken();
+            location.reload();
+          },
+        })
+        return;
+      }
       if (res.code !== 200) {
         ElMessage({
           message: res.msg || "Error",

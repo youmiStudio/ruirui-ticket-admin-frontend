@@ -121,6 +121,7 @@ import { useUserStore } from '~/store';
 import { getCaptchaImage } from '~/api/user/index';
 import type * as API from '@/api/user/types';
 import { useDebounceFn } from '@vueuse/shared';
+import { ElMessage } from 'element-plus';
 
 const validateUsername = (
   rule: InternalRuleItem,
@@ -225,18 +226,19 @@ function handleLogin(formEl: FormInstance | undefined): boolean {
     if (valid) {
       loading.value = true;
       const res = await usreStore.login(loginForm);
-      const { code } = res;
-      if (code === 500) {
-        loginForm.code = '';
-        getCaptchaImageHandle();
-        loading.value = false;
-        return;
-      }
       const { data } = res;
 
       if (data && data.token) {
+        ElMessage({
+          type: 'success',
+          message: '登录成功'
+        });
         router.push({ path: (redirect as string) || '/', query: otherQuery });
       }
+
+      loginForm.code = '';
+      getCaptchaImageHandle();
+
       loading.value = false;
     } else {
       console.log('error submit!!');
