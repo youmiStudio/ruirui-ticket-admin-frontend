@@ -6,7 +6,6 @@
 
 <script lang="ts" setup>
 import SwitchRoles from './components/SwitchRoles.vue';
-import { vAuthority } from '@/directive/authority';
 
 const $router = useRouter();
 function handleRolesChange() {

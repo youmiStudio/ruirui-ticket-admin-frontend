@@ -45,13 +45,15 @@
     </el-table>
     <el-pagination
       v-if="page"
+      v-model:current-page="currentPage"
+      v-model:page-size="pageSize"
       small
       background
-      @current-change="handleCurrentChange"
-      :page-size="pageSize"
-      :current-page="currentPage"
+      :page-sizes="pageSizes"
       :layout="page.layout"
       :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
     ></el-pagination>
     <slot name="bottom"></slot>
   </div>
@@ -81,7 +83,7 @@ const props = defineProps({
         list: 'items',
         resultCode: 'code',
         pageObj: false,
-        totalRow: 'totalRow'
+        totalRow: 'total'
       };
     }
   },
@@ -91,14 +93,18 @@ const props = defineProps({
       return {
         pageSize: 'pageSize',
         pageNum: 'pageNum',
-        pageObj: 'pageVo',
-        layout: 'prev, pager, next, jumper'
+        pageObj: '',
+        layout: 'total, sizes, prev, pager, next, jumper'
       };
     }
   },
   successCode: {
     type: [Number, String],
-    default: 0
+    default: 200
+  },
+  pageSizes: {
+    type: Array,
+    default: () => [10, 20, 30, 50]
   },
   pageSize: {
     type: Number,
@@ -143,7 +149,7 @@ const props = defineProps({
 defineExpose({
   refresh,
   search
-})
+});
 
 const $emit = defineEmits([
   'on-success',
@@ -152,7 +158,8 @@ const $emit = defineEmits([
   'row-click',
   'select-change',
   'select',
-  'select-all'
+  'select-all',
+  'changeSize'
 ]);
 
 const tableloading = ref<boolean>(false);
@@ -161,6 +168,7 @@ const tableData = ref<any[]>([]);
 const query = ref<any>();
 const selectRow = ref<any[]>([]);
 const recordRows = ref<any[]>([]);
+const pageSize = ref(props.pageSize);
 
 const tableRef = ref<InstanceType<typeof ElTable>>();
 
@@ -215,6 +223,7 @@ watch(
 function loadData(params: any) {
   const { data, resultCode, list, pageObj, totalRow } = props.response;
   tableloading.value = true;
+
   typeof props.url === 'function' &&
     props
       .url(params)
@@ -262,8 +271,8 @@ function initStaticData(dataList: any[], pageNum: number) {
   const list = deepClone(dataList);
   total.value = list.length;
   tableData.value = list.slice(
-    props.pageSize * (pageNum - 1),
-    props.pageSize * pageNum
+    pageSize.value * (pageNum - 1),
+    pageSize.value * pageNum
   );
   nextTick(() => {
     setSelection();
@@ -328,6 +337,15 @@ function setQueryPage(curpage: any) {
     unref(query)[pageNum] = curpage;
   }
 }
+function setQueryPageSize(size: number) {
+  const { pageSize, pageObj } = props.page;
+  if (pageObj) {
+    unref(query)[pageObj][pageSize] = size;
+  } else {
+    unref(query)[pageSize] = size;
+  }
+}
+
 function initPageObj() {
   const { pageSize, pageNum, pageObj } = props.page;
   const obj = {} as any;
@@ -417,6 +435,16 @@ function clearRecordSingleList() {
 function clearRecord() {
   recordRows.value = [];
   setSelection();
+}
+
+function handleSizeChange(size: number) {
+  $emit('changeSize', size);
+  setQueryPageSize(size)
+  if (props.url && typeof props.url === 'function') {
+    loadData(unref(query));
+  } else {
+    initStaticData(props.dataValue, currentPage.value);
+  }
 }
 </script>
 <style scoped lang="scss">

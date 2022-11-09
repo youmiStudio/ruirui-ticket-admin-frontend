@@ -1,0 +1,47 @@
+<template>
+  <div>
+    <template v-for="(item, index) in options">
+      <template v-if="values.includes(item.value)">
+        <span
+          v-if="item.raw.listClass == 'default' || item.raw.listClass == ''"
+          :key="item.value"
+          :index="index"
+          :class="item.raw.cssClass"
+          >{{ item.label }}</span
+        >
+        <el-tag
+          v-else
+          :disable-transitions="true"
+          :key="index"
+          :type="item.raw.listClass == 'success' ? '' : item.raw.listClass"
+          :class="item.raw.cssClass"
+        >
+          {{ item.label }}
+        </el-tag>
+      </template>
+    </template>
+  </div>
+</template>
+
+<script lang="ts" setup name="DictTag">
+const props = defineProps({
+  options: {
+    type: Array as any,
+    default: () => []
+  },
+  value: [Number, String, Array]
+});
+
+const values = computed(() => {
+  if (props.value !== null && typeof props.value !== 'undefined') {
+    return Array.isArray(props.value) ? props.value : [String(props.value)];
+  } else {
+    return [];
+  }
+});
+</script>
+<style scoped>
+.el-tag + .el-tag {
+  margin-left: 10px;
+}
+</style>

@@ -1,5 +1,5 @@
 export interface PropsPageTypeObject {
-  pageSize: stirng;
+  pageSize: string;
   pageNum: string;
   pageObj: string;
   layout: string;

@@ -2,4 +2,9 @@
   .cell {
     line-height: 37px !important;
   }
+  .fixed-width {
+    .el-button--small {
+      padding: 0;
+    }
+  }
 }
