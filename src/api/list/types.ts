@@ -21,7 +21,7 @@ type transactionListResponseType = {
   items: transactionListResponseItemsType[];
 };
 
-export type SearchUserResponse = API.BaseResponse<SearchUserResponseType>;
+export type SearchUserResponse = API.R<SearchUserResponseType>;
 
-export type transactionListResponse = API.BaseResponse<transactionListResponseType>;
+export type transactionListResponse = API.R<transactionListResponseType>;
 

@@ -20,6 +20,6 @@ export type UserLoginVo = {
   token: string;
 };
 
-export type UserLoginRes = API.BaseResponse<UserLoginVo>;
+export type UserLoginRes = API.R<UserLoginVo>;
 
-export type UserInfoRes = API.BaseResponse<UserInfoData>;
+export type UserInfoRes = API.R<UserInfoData>;

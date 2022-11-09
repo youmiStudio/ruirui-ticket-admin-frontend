@@ -34,4 +34,4 @@ export type ListData = {
   items: ListItemsType[];
 };
 
-export type ListBaseResponse = API.BaseResponse<ListData>
+export type ListBaseResponse = API.R<ListData>

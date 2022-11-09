@@ -3,8 +3,8 @@ import { get, post, put, del } from '~/utils/http/axios';
 import * as API from './type';
 
 enum URL {
-  list = '/site/list',
-  baseUrl = '/site/'
+  list = '/admin/site/list',
+  baseUrl = '/admin/site/'
 }
 
 export const siteList = async (siteBody: API.SiteBody) =>

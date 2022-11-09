@@ -1,4 +1,4 @@
-export type BaseResponse<T> = {
+export type R<T> = {
   code: number;
   data?: T;
   msg?: string;

@@ -3,10 +3,10 @@ import { get, post } from '~/utils/http/axios';
 import type * as Type from './types';
 
 enum URL {
-  login = '/user/login',
-  logout = '/user/logout',
-  getInfo = '/user/info',
-  getCaptchaImage = '/captchaImage'
+  login = '/admin/user/login',
+  logout = '/admin/user/logout',
+  getInfo = '/admin/user/info',
+  getCaptchaImage = '/admin/captchaImage'
 }
 
 // const getUserProfile = async () => get<UserState>({ url: URL.profile });
