@@ -5,10 +5,6 @@ import { getToken } from '~/utils/auth';
 import { ElMessage,ElMessageBox } from 'element-plus';
 import type { Action } from 'element-plus'
 
-// If you want to use ElMessage, import it.
-import 'element-plus/theme-chalk/src/message.scss'
-import 'element-plus/theme-chalk/src/message-box.scss'
-
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 import { useUserStore } from '~/store';
 
@@ -103,6 +99,14 @@ export function get<T = any>(config: AxiosRequestConfig): Promise<T> {
 
 export function post<T = any>(config: AxiosRequestConfig): Promise<T> {
   return request({ ...config, method: 'POST' });
+}
+
+export function put<T = any>(config: AxiosRequestConfig): Promise<T> {
+  return request({ ...config, method: 'put' });
+}
+
+export function del<T = any>(config: AxiosRequestConfig): Promise<T> {
+  return request({ ...config, method: 'delete' });
 }
 
 export default request;

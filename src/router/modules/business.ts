@@ -1,0 +1,28 @@
+import { RoleEnum } from '~/enums/roleEnum';
+const Layout = () => import('~/layouts/default/index.vue');
+
+const businessRouter: RouteItem = {
+  path: '/business',
+  component: Layout,
+  redirect: '/business/site',
+  alwaysShow: true, // will always show the root menu
+  name: 'businessManager',
+  meta: {
+    title: '业务管理',
+    icon: 'business',
+    roles: [RoleEnum.ADMIN] // you can set roles in root nav
+  },
+  children: [
+    {
+      path: 'site',
+      component: () => import('@/views/business/site/index.vue'),
+      name: 'siteManager',
+      meta: {
+        title: '站点管理',
+        roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
+      }
+    }
+  ]
+};
+
+export default businessRouter;

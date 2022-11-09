@@ -12,8 +12,8 @@ import '~/styles/index.scss';
 import 'uno.css';
 
 // If you want to use ElMessage, import it.
-import 'element-plus/theme-chalk/src/message.scss'
-import 'element-plus/theme-chalk/src/message-box.scss'
+import 'element-plus/es/components/message-box/style/index'
+import 'element-plus/es/components/message/style/index'
 
 const app = createApp(App);
 app.use(router);
