@@ -64,6 +64,7 @@ import type { ElTable } from 'element-plus';
 import type { PropsPageType } from './types';
 import { deepClone } from '@/utils';
 import type { PropType } from 'vue';
+import { nanoid } from 'nanoid';
 const props = defineProps({
   title: String,
   tree: Boolean,
@@ -146,11 +147,6 @@ const props = defineProps({
   }
 });
 
-defineExpose({
-  refresh,
-  search
-});
-
 const $emit = defineEmits([
   'on-success',
   'onError',
@@ -171,6 +167,12 @@ const recordRows = ref<any[]>([]);
 const pageSize = ref(props.pageSize);
 
 const tableRef = ref<InstanceType<typeof ElTable>>();
+
+defineExpose({
+  refresh,
+  search,
+  clearRecord
+});
 
 onBeforeMount(() => {
   initPageObj();
@@ -235,7 +237,7 @@ function loadData(params: any) {
           if (typeof props.formatter === 'function') {
             tableData.value = props.formatter(res);
           } else {
-            tableData.value = resultData[list];
+            tableData.value = generateId(resultData[list]);
           }
           nextTick(() => {
             setSelection();
@@ -253,6 +255,18 @@ function loadData(params: any) {
         $emit('onError', err);
         tableloading.value = false;
       });
+}
+
+/**
+ * 生成唯一id，如果id选项不存在
+ */
+function generateId(list: any[]): any[] {
+  list.forEach((item) => {
+    if (!item.id) {
+      item.id = nanoid();
+    }
+  });
+  return list;
 }
 
 /**
@@ -313,13 +327,13 @@ function handleRowClick(row: any) {
   $emit('row-click', row);
   triggerRecords(row);
   if (props.selectType === 'radio') {
-    console.log('radio');
     $emit('select-change', [row]);
     if (unref(selectRow).length > 0) {
       tableRef.value && tableRef.value.clearSelection();
     }
   }
-  //   tableRef.value && tableRef.value.toggleRowSelection(row);
+
+  tableRef.value && tableRef.value.toggleRowSelection(row, recordRows.value.some(item=>item.id === row.id));
 }
 
 function handleSelectionChange(val: any) {
@@ -439,7 +453,7 @@ function clearRecord() {
 
 function handleSizeChange(size: number) {
   $emit('changeSize', size);
-  setQueryPageSize(size)
+  setQueryPageSize(size);
   if (props.url && typeof props.url === 'function') {
     loadData(unref(query));
   } else {
