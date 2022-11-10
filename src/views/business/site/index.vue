@@ -313,7 +313,7 @@ function handleTableSelectChange(recordRows: any[]) {
 function fetchList(obj: any) {
   return pageConfig.api.list({
     ...obj,
-    orderByColumn: pageConfig.id,
+    orderByColumn: "createTime",
     isAsc: pageConfig.isAsc
   });
 }
