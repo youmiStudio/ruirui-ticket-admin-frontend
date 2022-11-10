@@ -328,7 +328,9 @@ function handleRowClick(row: any) {
   tableRef.value &&
     tableRef.value.toggleRowSelection(
       row,
-      recordRows.value.some((item) => item[props.primaryKey] === row[props.primaryKey])
+      recordRows.value.some(
+        (item) => item[props.primaryKey] === row[props.primaryKey]
+      )
     );
 }
 
@@ -390,12 +392,23 @@ function selectAll(rows: any) {
 
 function setSelection() {
   tableRef.value && tableRef.value.clearSelection();
+
+  recordRows.value = recordRows.value.filter((row) =>
+    tableData.value.some(
+      (tRow) => tRow[props.primaryKey] === row[props.primaryKey]
+    )
+  );
+
   unref(recordRows).forEach((row: any) => {
-    const itemObj = unref(tableData).find((item) => item[props.primaryKey] === row[props.primaryKey]);
+    const itemObj = unref(tableData).find(
+      (item) => item[props.primaryKey] === row[props.primaryKey]
+    );
     if (itemObj) {
       tableRef.value && tableRef.value.toggleRowSelection(itemObj, true);
     }
   });
+
+  $emit('select-change', unref(recordRows));
 }
 
 function handleCheckSelectable(row: any) {
@@ -403,7 +416,9 @@ function handleCheckSelectable(row: any) {
 }
 
 function triggerRecords(row: any) {
-  const recordIndex = unref(recordRows).findIndex((item) => item[props.primaryKey] === row[props.primaryKey]);
+  const recordIndex = unref(recordRows).findIndex(
+    (item) => item[props.primaryKey] === row[props.primaryKey]
+  );
   if (recordIndex > -1) {
     if (props.selectType === 'select') {
       unref(recordRows).splice(recordIndex, 1);
