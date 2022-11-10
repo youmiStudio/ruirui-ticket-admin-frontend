@@ -42,12 +42,14 @@ axiosInstance.interceptors.response.use(
         return;
       }
       if (res.code !== 200) {
-        if(res instanceof Blob) {
-          res.text().then(resText => {
-            const rspObj = JSON.parse(resText);
-            const errMsg = rspObj.msg
-            ElMessage.error(errMsg);
-          })          
+        if (res instanceof Blob) {
+          res.text().then((resText) => {
+            try {
+              const rspObj = JSON.parse(resText);
+              const errMsg = rspObj.msg;
+              ElMessage.error(errMsg);
+            } catch (error) {}
+          });
         } else {
           ElMessage({
             message: res.msg || 'Error',
@@ -55,7 +57,6 @@ axiosInstance.interceptors.response.use(
             duration: 5 * 1000
           });
         }
-        
       }
       return response;
     }
@@ -153,8 +154,8 @@ export function download(
       downloadLoadingInstance.close();
     })
     .catch((r) => {
-      console.error(r)
-      ElMessage.error('下载文件出现错误，请联系管理员！')
+      console.error(r);
+      ElMessage.error('下载文件出现错误，请联系管理员！');
       downloadLoadingInstance.close();
     });
 }
