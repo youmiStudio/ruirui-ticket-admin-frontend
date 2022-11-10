@@ -6,8 +6,6 @@ import {
 
 const Layout = () => import('~/layouts/default/index.vue');
 
-import permissionRouter from './modules/permission';
-import tableRouter from './modules/table';
 import businessRouter from './modules/business';
 
 export const constantRoutes: RouteItem[] = [
@@ -59,8 +57,6 @@ export const constantRoutes: RouteItem[] = [
 ];
 
 export const asyncRoutes: RouteItem[] = [
-  permissionRouter,
-  tableRouter,
   businessRouter
 ];
 

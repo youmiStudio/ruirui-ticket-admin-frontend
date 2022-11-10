@@ -96,11 +96,22 @@
         <el-table-column label="备注" prop="remark" align="center">
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="fixed-width">
-          <template #default>
-            <el-button size="small" link type="primary" :icon="Edit"
+          <template #default="{ row }">
+            <el-button
+              size="small"
+              link
+              type="primary"
+              :icon="Edit"
+              @click.stop="handleEdit(row)"
               >修改</el-button
             >
-            <el-button size="small" link type="danger" :icon="Delete"
+            <el-button
+              link
+              size="small"
+              type="danger"
+              :key="row.siteId"
+              :icon="Delete"
+              @click.stop="handleRowDelete(row)"
               >删除</el-button
             >
           </template>
@@ -175,11 +186,18 @@
 import { Search, Refresh, Plus, Edit, Delete } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
-import { siteList, addSite, removeSite } from '@/api/site/index';
+import {
+  siteList,
+  addSite,
+  removeSite,
+  getSite,
+  editSite
+} from '@/api/site/index';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
+import { da } from 'element-plus/es/locale';
 
 const dicts = useDictTypes('sys_common_status');
 const tableRef = ref<InstanceType<typeof TablePanel>>();
@@ -210,7 +228,7 @@ const rules = reactive<FormRules>({
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
 });
 
-let form = reactive({
+let form = reactive<Recordable<any>>({
   siteId: null,
   siteName: '',
   siteDescribe: '',
@@ -260,39 +278,76 @@ function handleAdd() {
   dialogState.dialogVisible = true;
 }
 
+function handleEdit(row: any) {
+  dialogState.title = '修改站点';
+  dialogState.dialogVisible = true;
+  getDetail(row.siteId).then((data) => {
+    Object.keys(form).forEach((key) => {
+      if (key in data) {
+        form[key] = data[key];
+      }
+    });
+  });
+}
+
+function getDetail(id: number): Promise<Recordable<any>> {
+  return new Promise((resolve, reject) => {
+    getSite(id).then((res) => {
+      const { data } = res;
+      resolve(data);
+    });
+  });
+}
+
+function handleRowDelete(row: any) {
+  batchDelete(row.siteId).then(() => {
+    search();
+    clearTableRecordRows();
+    ElMessage.success('删除成功');
+  });
+}
+
 function handleBatchDelete() {
   const siteIds = tableRecordRows.value.map((row) => row.siteId);
-  ElMessageBox.confirm(
-    `确定要删除站点编号[${siteIds.join(',')}]的数据项吗？`,
-    '警告',
-    {
+  batchDelete(siteIds.join(',')).then(() => {
+    search();
+    clearTableRecordRows();
+    ElMessage.success('删除成功');
+  });
+}
+
+function batchDelete(ids: string) {
+  return new Promise((resolve, reject) => {
+    ElMessageBox.confirm(`确定要删除站点编号[${ids}]的数据项吗？`, '警告', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
       type: 'warning'
-    }
-  )
-    .then(() => {
-      removeSite(siteIds.join(',')).then((res) => {
-        const { code } = res;
-        if (code === 200) {
-          search();
-          clearTableRecordRows();
-          ElMessage.success('删除成功');
-        }
-      });
     })
-    .catch(() => {
-      ElMessage.info('取消删除');
-    });
+      .then(() => {
+        removeSite(ids).then((res) => {
+          const { code } = res;
+          if (code === 200) {
+            resolve(res);
+          } else {
+            reject(res);
+          }
+        });
+      })
+      .catch(() => {});
+  });
 }
 
 function clearTableRecordRows() {
-  if(!tableRef.value) return
-  tableRef.value.clearRecord()
+  if (!tableRef.value) return;
+  tableRef.value.clearRecord();
 }
 
 function reset() {
   formRef.value?.resetFields();
+  Object.keys(form).forEach((key) => {
+    form[key] = null;
+  });
+  form.status = '0';
 }
 
 function searchReset() {
@@ -308,7 +363,9 @@ function submitForm() {
   formRef.value?.validate((valid) => {
     if (valid) {
       formLoading.value = true;
-      addSite(form).then((res) => {
+      const isAdd = form.siteId === null;
+      const api = isAdd ? addSite : editSite;
+      api(form).then((res) => {
         const { code } = res;
         if (code !== 200) {
           formLoading.value = false;
@@ -318,6 +375,7 @@ function submitForm() {
         reset();
         dialogState.dialogVisible = false;
         formLoading.value = false;
+        ElMessage.success(`站点${isAdd ? '新增' : '编辑'}成功`);
       });
     }
   });

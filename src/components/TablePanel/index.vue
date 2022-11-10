@@ -333,7 +333,11 @@ function handleRowClick(row: any) {
     }
   }
 
-  tableRef.value && tableRef.value.toggleRowSelection(row, recordRows.value.some(item=>item.id === row.id));
+  tableRef.value &&
+    tableRef.value.toggleRowSelection(
+      row,
+      recordRows.value.some((item) => item.id === row.id)
+    );
 }
 
 function handleSelectionChange(val: any) {

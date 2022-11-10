@@ -21,4 +21,4 @@ export const removeSite = async (siteIds: string) =>
   del({ url: URL.baseUrl + siteIds });
 
 export const editSite = async (siteBody: API.SiteVo) =>
-  put({ url: URL.baseUrl, params: siteBody });
+  put({ url: URL.baseUrl, data: siteBody });
