@@ -65,6 +65,7 @@
       <TablePanel
         ref="tableRef"
         :url="fetchList"
+        :primary-key="pageConfig.id"
         @select-change="handleTableSelectChange"
       >
         <el-table-column
