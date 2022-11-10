@@ -46,7 +46,12 @@
 
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
-          <el-button type="primary" plain :icon="Plus" @click="handleAdd"
+          <el-button
+            type="primary"
+            plain
+            size="small"
+            :icon="Plus"
+            @click="handleAdd"
             >新增</el-button
           >
         </el-col>
@@ -54,10 +59,21 @@
           <el-button
             type="danger"
             plain
+            size="small"
             :icon="Delete"
             :disabled="batchDeleteDisable"
             @click="handleBatchDelete"
             >删除</el-button
+          >
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            plain
+            size="small"
+            :icon="Download"
+            @click="handleExport"
+            >导出</el-button
           >
         </el-col>
       </el-row>
@@ -184,7 +200,14 @@
 </template>
 
 <script lang="ts" setup>
-import { Search, Refresh, Plus, Edit, Delete } from '@element-plus/icons-vue';
+import {
+  Search,
+  Refresh,
+  Plus,
+  Edit,
+  Delete,
+  Download
+} from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
 import {
@@ -192,7 +215,8 @@ import {
   addSite,
   removeSite,
   getSite,
-  editSite
+  editSite,
+  exportSite
 } from '@/api/site/index';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
@@ -211,7 +235,8 @@ const pageConfig = reactive({
     get: getSite,
     add: addSite,
     remove: removeSite,
-    edit: editSite
+    edit: editSite,
+    export: exportSite
   }
 });
 
@@ -308,6 +333,10 @@ function handleEdit(row: any) {
       }
     });
   });
+}
+
+function handleExport() {
+  pageConfig.api.export(searchForm);
 }
 
 function getDetail(id: number): Promise<Recordable<any>> {

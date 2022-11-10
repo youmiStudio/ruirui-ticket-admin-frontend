@@ -2,8 +2,10 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { showMessage } from './status';
 import { IResponse } from './type';
 import { getToken } from '~/utils/auth';
-import { ElMessage,ElMessageBox } from 'element-plus';
-import type { Action } from 'element-plus'
+import { ElMessage, ElMessageBox, ElLoading } from 'element-plus';
+import type { Action } from 'element-plus';
+import { tansParams, blobValidate } from '@/utils';
+import { saveAs } from 'file-saver';
 
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 import { useUserStore } from '~/store';
@@ -26,25 +28,34 @@ const axiosInstance: AxiosInstance = axios.create({
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => {
     if (response.status === 200) {
-      const res = response.data
+      const res = response.data;
       if (res.code === 401) {
         ElMessageBox.alert('身份验证已经过期，请重新登录', '提示', {
-          type:"warning",
+          type: 'warning',
           confirmButtonText: 'OK',
           callback: (action: Action) => {
             const userStroe = useUserStore();
             userStroe.resetToken();
             location.reload();
-          },
-        })
+          }
+        });
         return;
       }
       if (res.code !== 200) {
-        ElMessage({
-          message: res.msg || "Error",
-          type: 'error',
-          duration: 5 * 1000
-        });
+        if(res instanceof Blob) {
+          res.text().then(resText => {
+            const rspObj = JSON.parse(resText);
+            const errMsg = rspObj.msg
+            ElMessage.error(errMsg);
+          })          
+        } else {
+          ElMessage({
+            message: res.msg || 'Error',
+            type: 'error',
+            duration: 5 * 1000
+          });
+        }
+        
       }
       return response;
     }
@@ -107,6 +118,45 @@ export function put<T = any>(config: AxiosRequestConfig): Promise<T> {
 
 export function del<T = any>(config: AxiosRequestConfig): Promise<T> {
   return request({ ...config, method: 'delete' });
+}
+
+// 通用下载方法
+export function download(
+  url: string,
+  params: any,
+  filename: string,
+  config?: any
+) {
+  const downloadLoadingInstance = ElLoading.service({
+    text: '正在下载数据，请稍候',
+    spinner: 'el-icon-loading',
+    background: 'rgba(0, 0, 0, 0.7)'
+  });
+  return post({
+    url,
+    data: params,
+    transformRequest: [
+      (params) => {
+        return tansParams(params);
+      }
+    ],
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    responseType: 'blob',
+    ...config
+  })
+    .then(async (data) => {
+      const isBlob = await blobValidate(data);
+      if (isBlob) {
+        const blob = new Blob([data]);
+        saveAs(blob, filename);
+      }
+      downloadLoadingInstance.close();
+    })
+    .catch((r) => {
+      console.error(r)
+      ElMessage.error('下载文件出现错误，请联系管理员！')
+      downloadLoadingInstance.close();
+    });
 }
 
 export default request;

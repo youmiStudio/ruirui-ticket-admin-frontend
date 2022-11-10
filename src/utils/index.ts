@@ -242,7 +242,7 @@ export function toggleClass(element: HTMLElement, className: string) {
  * @param {string} type
  * @returns {Date}
  */
-export function getTime(type:string) {
+export function getTime(type: string) {
   if (type === 'start') {
     return new Date().getTime() - 3600 * 1000 * 24 * 90;
   } else {
@@ -257,11 +257,11 @@ export function getTime(type:string) {
  * @param {Object} source
  * @returns {Object}
  */
-export function deepClone(source:any) {
+export function deepClone(source: any) {
   if (!source && typeof source !== 'object') {
     throw new Error('error arguments deepClone');
   }
-  const targetObj:any = source.constructor === Array ? [] : {};
+  const targetObj: any = source.constructor === Array ? [] : {};
   Object.keys(source).forEach((keys) => {
     if (source[keys] && typeof source[keys] === 'object') {
       targetObj[keys] = deepClone(source[keys]);
@@ -276,7 +276,7 @@ export function deepClone(source:any) {
  * @param {Array} arr
  * @returns {Array}
  */
-export function uniqueArr(arr:any[]) {
+export function uniqueArr(arr: any[]) {
   return Array.from(new Set(arr));
 }
 
@@ -285,8 +285,8 @@ export function uniqueArr(arr:any[]) {
  */
 export function createUniqueString() {
   const timestamp = +new Date() + '';
-  
-  const randomNum = parseInt((1 + Math.random() * 65536) + "");
+
+  const randomNum = parseInt(1 + Math.random() * 65536 + '');
   return (+(randomNum + timestamp)).toString(32);
 }
 
@@ -296,7 +296,7 @@ export function createUniqueString() {
  * @param {string} cls
  * @returns {boolean}
  */
-export function hasClass(ele:HTMLElement, cls:string) {
+export function hasClass(ele: HTMLElement, cls: string) {
   return !!ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'));
 }
 
@@ -305,7 +305,7 @@ export function hasClass(ele:HTMLElement, cls:string) {
  * @param {HTMLElement} elm
  * @param {string} cls
  */
-export function addClass(ele:HTMLElement, cls:string) {
+export function addClass(ele: HTMLElement, cls: string) {
   if (!hasClass(ele, cls)) ele.className += ' ' + cls;
 }
 
@@ -314,9 +314,46 @@ export function addClass(ele:HTMLElement, cls:string) {
  * @param {HTMLElement} elm
  * @param {string} cls
  */
-export function removeClass(ele:HTMLElement, cls:string) {
+export function removeClass(ele: HTMLElement, cls: string) {
   if (hasClass(ele, cls)) {
     const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)');
     ele.className = ele.className.replace(reg, ' ');
+  }
+}
+
+/**
+* 参数处理
+* @param {*} params  参数
+*/
+export function tansParams(params:any) {
+  let result = ''
+  for (const propName of Object.keys(params)) {
+    const value = params[propName];
+    var part = encodeURIComponent(propName) + "=";
+    if (value !== null && value !== "" && typeof (value) !== "undefined") {
+      if (typeof value === 'object') {
+        for (const key of Object.keys(value)) {
+          if (value[key] !== null && value[key] !== "" && typeof (value[key]) !== 'undefined') {
+            let params = propName + '[' + key + ']';
+            var subPart = encodeURIComponent(params) + "=";
+            result += subPart + encodeURIComponent(value[key]) + "&";
+          }
+        }
+      } else {
+        result += part + encodeURIComponent(value) + "&";
+      }
+    }
+  }
+  return result
+}
+
+// 验证是否为blob格式
+export async function blobValidate(data: any) {
+  try {
+    const text = await data.text();
+    JSON.parse(text);
+    return false;
+  } catch (error) {
+    return true;
   }
 }
