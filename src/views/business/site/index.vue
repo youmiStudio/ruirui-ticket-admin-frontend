@@ -109,7 +109,7 @@
               link
               size="small"
               type="danger"
-              :key="row.siteId"
+              :key="row[pageConfig.id]"
               :icon="Delete"
               @click.stop="handleRowDelete(row)"
               >删除</el-button
@@ -197,7 +197,22 @@ import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
-import { da } from 'element-plus/es/locale';
+
+/**
+ * 页面配置，抽离公共部分，少搬点砖
+ */
+const pageConfig = reactive({
+  title: '站点',
+  id: 'siteId',
+  isAsc: 'desc',
+  api: {
+    list: siteList,
+    get: getSite,
+    add: addSite,
+    remove: removeSite,
+    edit: editSite
+  }
+});
 
 const dicts = useDictTypes('sys_common_status');
 const tableRef = ref<InstanceType<typeof TablePanel>>();
@@ -270,18 +285,22 @@ function handleTableSelectChange(recordRows: any[]) {
 }
 
 function fetchList(obj: any) {
-  return siteList({ ...obj, orderByColumn: 'siteId', isAsc: 'desc' });
+  return pageConfig.api.list({
+    ...obj,
+    orderByColumn: pageConfig.id,
+    isAsc: pageConfig.isAsc
+  });
 }
 
 function handleAdd() {
-  dialogState.title = '添加站点';
+  dialogState.title = `添加${pageConfig.title}`;
   dialogState.dialogVisible = true;
 }
 
 function handleEdit(row: any) {
-  dialogState.title = '修改站点';
+  dialogState.title = `修改${pageConfig.title}`;
   dialogState.dialogVisible = true;
-  getDetail(row.siteId).then((data) => {
+  getDetail(row[pageConfig.id]).then((data) => {
     Object.keys(form).forEach((key) => {
       if (key in data) {
         form[key] = data[key];
@@ -292,7 +311,7 @@ function handleEdit(row: any) {
 
 function getDetail(id: number): Promise<Recordable<any>> {
   return new Promise((resolve, reject) => {
-    getSite(id).then((res) => {
+    pageConfig.api.get(id).then((res) => {
       const { data } = res;
       resolve(data);
     });
@@ -300,7 +319,7 @@ function getDetail(id: number): Promise<Recordable<any>> {
 }
 
 function handleRowDelete(row: any) {
-  batchDelete(row.siteId).then(() => {
+  batchDelete(row[pageConfig.id]).then(() => {
     search();
     clearTableRecordRows();
     ElMessage.success('删除成功');
@@ -308,8 +327,8 @@ function handleRowDelete(row: any) {
 }
 
 function handleBatchDelete() {
-  const siteIds = tableRecordRows.value.map((row) => row.siteId);
-  batchDelete(siteIds.join(',')).then(() => {
+  const ids = tableRecordRows.value.map((row) => row[pageConfig.id]);
+  batchDelete(ids.join(',')).then(() => {
     search();
     clearTableRecordRows();
     ElMessage.success('删除成功');
@@ -318,13 +337,17 @@ function handleBatchDelete() {
 
 function batchDelete(ids: string) {
   return new Promise((resolve, reject) => {
-    ElMessageBox.confirm(`确定要删除站点编号[${ids}]的数据项吗？`, '警告', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning'
-    })
+    ElMessageBox.confirm(
+      `确定要删除${pageConfig.title}编号[${ids}]的数据项吗？`,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
       .then(() => {
-        removeSite(ids).then((res) => {
+        pageConfig.api.remove(ids).then((res) => {
           const { code } = res;
           if (code === 200) {
             resolve(res);
@@ -363,8 +386,8 @@ function submitForm() {
   formRef.value?.validate((valid) => {
     if (valid) {
       formLoading.value = true;
-      const isAdd = form.siteId === null;
-      const api = isAdd ? addSite : editSite;
+      const isAdd = form[pageConfig.id] === null;
+      const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
       api(form).then((res) => {
         const { code } = res;
         if (code !== 200) {
@@ -375,7 +398,7 @@ function submitForm() {
         reset();
         dialogState.dialogVisible = false;
         formLoading.value = false;
-        ElMessage.success(`站点${isAdd ? '新增' : '编辑'}成功`);
+        ElMessage.success(`${pageConfig.title}${isAdd ? '新增' : '编辑'}成功`);
       });
     }
   });
