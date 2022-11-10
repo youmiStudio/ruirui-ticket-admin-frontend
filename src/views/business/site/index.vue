@@ -47,6 +47,7 @@
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
+            v-authority="[pageConfig.authorites.add]"
             type="primary"
             plain
             size="small"
@@ -57,6 +58,7 @@
         </el-col>
         <el-col :span="1.5">
           <el-button
+            v-authority="[pageConfig.authorites.remove]"
             type="danger"
             plain
             size="small"
@@ -68,6 +70,7 @@
         </el-col>
         <el-col :span="1.5">
           <el-button
+            v-authority="[pageConfig.authorites.export]"
             type="warning"
             plain
             size="small"
@@ -115,6 +118,7 @@
         <el-table-column label="操作" align="center" class-name="fixed-width">
           <template #default="{ row }">
             <el-button
+              v-authority="[pageConfig.authorites.edit]"
               size="small"
               link
               type="primary"
@@ -123,6 +127,7 @@
               >修改</el-button
             >
             <el-button
+              v-authority="[pageConfig.authorites.remove]"
               link
               size="small"
               type="danger"
@@ -222,6 +227,7 @@ import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
+import { vAuthority } from '@/directive/authority';
 
 /**
  * 页面配置，抽离公共部分，少搬点砖
@@ -237,6 +243,14 @@ const pageConfig = reactive({
     remove: removeSite,
     edit: editSite,
     export: exportSite
+  },
+  authorites: {
+    list: 'ticket:site:list',
+    get: 'ticket:site:query',
+    add: 'ticket:site:add',
+    edit: 'ticket:site:edit',
+    remove: 'ticket:site:remove',
+    export: 'ticket:site:export'
   }
 });
 
@@ -313,7 +327,7 @@ function handleTableSelectChange(recordRows: any[]) {
 function fetchList(obj: any) {
   return pageConfig.api.list({
     ...obj,
-    orderByColumn: "createTime",
+    orderByColumn: 'createTime',
     isAsc: pageConfig.isAsc
   });
 }
