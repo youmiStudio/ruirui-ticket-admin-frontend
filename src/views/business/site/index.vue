@@ -322,7 +322,6 @@ function getDetail(id: number): Promise<Recordable<any>> {
 function handleRowDelete(row: any) {
   batchDelete(row[pageConfig.id]).then(() => {
     search();
-    clearTableRecordRows();
     ElMessage.success('删除成功');
   });
 }
@@ -331,7 +330,6 @@ function handleBatchDelete() {
   const ids = tableRecordRows.value.map((row) => row[pageConfig.id]);
   batchDelete(ids.join(',')).then(() => {
     search();
-    clearTableRecordRows();
     ElMessage.success('删除成功');
   });
 }
