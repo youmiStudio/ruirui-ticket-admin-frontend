@@ -64,7 +64,7 @@ import type { ElTable } from 'element-plus';
 import type { PropsPageType } from './types';
 import { deepClone } from '@/utils';
 import type { PropType } from 'vue';
-import { nanoid } from 'nanoid';
+
 const props = defineProps({
   title: String,
   tree: Boolean,
@@ -144,6 +144,10 @@ const props = defineProps({
   keyName: {
     type: String,
     default: 'name'
+  },
+  primaryKey: {
+    type: String,
+    default: 'id'
   }
 });
 
@@ -237,7 +241,7 @@ function loadData(params: any) {
           if (typeof props.formatter === 'function') {
             tableData.value = props.formatter(res);
           } else {
-            tableData.value = generateId(resultData[list]);
+            tableData.value = resultData[list];
           }
           nextTick(() => {
             setSelection();
@@ -255,18 +259,6 @@ function loadData(params: any) {
         $emit('onError', err);
         tableloading.value = false;
       });
-}
-
-/**
- * 生成唯一id，如果id选项不存在
- */
-function generateId(list: any[]): any[] {
-  list.forEach((item) => {
-    if (!item.id) {
-      item.id = nanoid();
-    }
-  });
-  return list;
 }
 
 /**
@@ -336,7 +328,7 @@ function handleRowClick(row: any) {
   tableRef.value &&
     tableRef.value.toggleRowSelection(
       row,
-      recordRows.value.some((item) => item.id === row.id)
+      recordRows.value.some((item) => item[props.primaryKey] === row[props.primaryKey])
     );
 }
 
@@ -399,7 +391,7 @@ function selectAll(rows: any) {
 function setSelection() {
   tableRef.value && tableRef.value.clearSelection();
   unref(recordRows).forEach((row: any) => {
-    const itemObj = unref(tableData).find((item) => item.id === row.id);
+    const itemObj = unref(tableData).find((item) => item[props.primaryKey] === row[props.primaryKey]);
     if (itemObj) {
       tableRef.value && tableRef.value.toggleRowSelection(itemObj, true);
     }
@@ -411,7 +403,7 @@ function handleCheckSelectable(row: any) {
 }
 
 function triggerRecords(row: any) {
-  const recordIndex = unref(recordRows).findIndex((item) => item.id === row.id);
+  const recordIndex = unref(recordRows).findIndex((item) => item[props.primaryKey] === row[props.primaryKey]);
   if (recordIndex > -1) {
     if (props.selectType === 'select') {
       unref(recordRows).splice(recordIndex, 1);
@@ -429,7 +421,7 @@ function triggerRecordsAll(rows: any) {
   if (rows.length) {
     rows.forEach((item: any) => {
       const inRecord = unref(recordRows).find(
-        (record) => record.id === item.id
+        (record) => record[props.primaryKey] === item[props.primaryKey]
       );
       if (!inRecord) {
         triggerRecords(item);
@@ -442,9 +434,9 @@ function triggerRecordsAll(rows: any) {
 
 function clearRecordSingleList() {
   if (unref(tableData) && unref(tableData).length) {
-    const ids = unref(tableData).map((item) => item.id);
+    const ids = unref(tableData).map((item) => item[props.primaryKey]);
     recordRows.value = unref(recordRows).filter(
-      (item) => !ids.includes(item.id)
+      (item) => !ids.includes(item[props.primaryKey])
     );
     $emit('select-change', unref(recordRows));
   }
