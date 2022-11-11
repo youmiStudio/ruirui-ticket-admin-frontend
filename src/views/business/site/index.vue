@@ -236,6 +236,7 @@ const pageConfig = reactive({
   title: '站点',
   id: 'siteId',
   isAsc: 'desc',
+  orderByColumn:'site_id',
   api: {
     list: siteList,
     get: getSite,
@@ -327,7 +328,7 @@ function handleTableSelectChange(recordRows: any[]) {
 function fetchList(obj: any) {
   return pageConfig.api.list({
     ...obj,
-    orderByColumn: 'createTime',
+    orderByColumn: pageConfig.orderByColumn,
     isAsc: pageConfig.isAsc
   });
 }
