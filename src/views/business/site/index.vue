@@ -333,11 +333,13 @@ function fetchList(obj: any) {
 }
 
 function handleAdd() {
+  formReset();
   dialogState.title = `添加${pageConfig.title}`;
   dialogState.dialogVisible = true;
 }
 
 function handleEdit(row: any) {
+  formReset();
   dialogState.title = `修改${pageConfig.title}`;
   dialogState.dialogVisible = true;
   getDetail(row[pageConfig.id]).then((data) => {
@@ -407,7 +409,7 @@ function clearTableRecordRows() {
   tableRef.value.clearRecord();
 }
 
-function reset() {
+function formReset() {
   formRef.value?.resetFields();
   Object.keys(form).forEach((key) => {
     form[key] = null;
@@ -437,7 +439,7 @@ function submitForm() {
           return;
         }
         search();
-        reset();
+        formReset();
         dialogState.dialogVisible = false;
         formLoading.value = false;
         ElMessage.success(`${pageConfig.title}${isAdd ? '新增' : '编辑'}成功`);
@@ -448,7 +450,7 @@ function submitForm() {
 
 function cancel() {
   dialogState.dialogVisible = false;
-  reset();
+  formReset();
 }
 </script>
 

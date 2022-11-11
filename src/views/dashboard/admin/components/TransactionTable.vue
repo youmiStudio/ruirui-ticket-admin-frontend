@@ -22,8 +22,8 @@
 
 <script lang="ts" setup>
 import { toThousandFilter } from '@/utils/filters';
-import { transactionList } from '@/api/list/remote-search';
-import type * as TransactionListAPI from '@/api/list/types';
+// import { transactionList } from '@/api/list/remote-search';
+// import type * as TransactionListAPI from '@/api/list/types';
 const statusFilter = computed(() => {
   return (status: 'success' | 'pending' | any) => {
     const statusMap = {
@@ -40,15 +40,15 @@ const orderNoFilter = computed(() => {
   };
 });
 
-const list = ref<TransactionListAPI.transactionListResponseItemsType[]>();
+const list = ref();
 
-onMounted(() => {
-  fetchData();
-});
+// onMounted(() => {
+//   fetchData();
+// });
 
-function fetchData() {
-  transactionList().then((response) => {
-    list.value = response.data.items.slice(0, 8);
-  });
-}
+// function fetchData() {
+//   transactionList().then((response) => {
+//     list.value = response.data.items.slice(0, 8);
+//   });
+// }
 </script>
