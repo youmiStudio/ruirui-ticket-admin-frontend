@@ -39,3 +39,11 @@ export type BaseVo = {
    */
   remark?: string;
 };
+
+/**
+ * 分页信息
+ */
+export type PageVo<T> = {
+  total: number,
+  items: T
+}

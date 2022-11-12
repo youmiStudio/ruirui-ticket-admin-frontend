@@ -1,5 +1,5 @@
-import type { SiteVo } from '~/api/site/type';
-import type { BaseVo } from '../types';
+import type { SiteVo } from '~/api/site/types';
+import type { BaseBody, BaseVo } from '../types';
 
 /**
  * 路线信息 - 请求对象
@@ -12,15 +12,15 @@ export type RouteSearchBody = {
   /**
    * 路线状态
    */
-  state?: String;
+  status?: String;
   /**
    * 起始站点ID
    */
-  formSiteId?: Number;
+  fromSiteId?: Number | string;
   /**
    * 目的站点ID
    */
-  toSiteId?: Number;
+  toSiteId?: Number | string;
   /**
    * 其他请求参数
    */
@@ -42,20 +42,21 @@ export type RouteSearchBody = {
      */
     endTime?: Date;
   };
-};
+} & BaseBody;
 
 /**
  * 新增路线 - 请求体
  */
-export type RouteAddBody = Pick<
+export type RouteBody = Pick<
   RouteVo,
-  'routeName' | 'routeDescribe' | 'fromSiteId' | 'toSiteId' | 'state' | 'remark'
+  | 'routeId'
+  | 'routeName'
+  | 'routeDescribe'
+  | 'fromSiteId'
+  | 'toSiteId'
+  | 'status'
+  | 'remark'
 >;
-
-/**
- * 编辑路线 - 请求体
- */
-export type RouteEditBody = Pick<RouteVo, 'routeId'> & RouteAddBody;
 
 /**
  * 站点信息 - 返回对象
@@ -64,7 +65,7 @@ export type RouteVo = {
   /**
    * 路线Id
    */
-  routeId: number;
+  routeId?: number;
   /**
    * 路线名称
    */
@@ -84,7 +85,7 @@ export type RouteVo = {
   /**
    * 状态
    */
-  state: string;
+  status: string;
   /**
    * 起始站信息
    */

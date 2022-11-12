@@ -94,9 +94,19 @@
           align="center"
         >
         </el-table-column>
-        <el-table-column label="站点名称" prop="siteName" align="center" :show-overflow-tooltip="true">
+        <el-table-column
+          label="站点名称"
+          prop="siteName"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
         </el-table-column>
-        <el-table-column label="站点描述" prop="siteDescribe" align="center">
+        <el-table-column
+          label="站点描述"
+          prop="siteDescribe"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
         </el-table-column>
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
@@ -113,7 +123,12 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="备注" prop="remark" align="center">
+        <el-table-column
+          label="备注"
+          prop="remark"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="fixed-width">
           <template #default="{ row }">
@@ -228,7 +243,7 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
-import type { SiteBody, SiteVo } from '~/api/site/type';
+import type { SiteBody, SiteVo } from '~/api/site/types';
 
 type ModelBody = SiteBody;
 type ModelVo = SiteVo;

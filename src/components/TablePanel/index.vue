@@ -226,7 +226,7 @@ watch(
  * You need configure the props.respons props.successCode and props.formatter.
  * @param {Object} params request params.
  */
-function loadData(params: any) {
+function loadData<T = any>(params: any) {
   const { data, resultCode, list, pageObj, totalRow } = props.response;
   tableloading.value = true;
 
@@ -234,7 +234,7 @@ function loadData(params: any) {
     props
       .url(params)
       .then((res: any) => {
-        const resultData = data ? res[data] : res;
+        const resultData: T = data ? res[data] : res;
         tableloading.value = false;
         if (+res[resultCode] === +props.successCode) {
           $emit('on-success', res);
@@ -290,12 +290,12 @@ function initStaticData(dataList: any[], pageNum: number) {
  * The page number will become 1 after the function is executed.
  * @param {Object} params request params
  */
-function search(params?: any) {
+function search<T = any>(params?: any) {
   setQueryPage(1);
   const p = Object.assign({}, unref(query), params);
   query.value = deepClone(p);
   if (props.url && typeof props.url === 'function') {
-    loadData(unref(query));
+    loadData<T>(unref(query));
   } else {
     initStaticData(props.dataValue, 1);
   }
