@@ -6,11 +6,15 @@ import * as API from './type';
 enum URL {
   list = '/admin/site/list',
   baseUrl = '/admin/site/',
-  export = '/admin/site/export'
+  export = '/admin/site/export',
+  wxList = 'wx/site/list'
 }
 
 export const siteList = async (siteBody: API.SiteBody) =>
   get<R<API.SiteVo[]>>({ url: URL.list, params: siteBody });
+
+export const wxSiteList = async () =>
+  get<R<API.SiteVo[]>>({ url: URL.list });
 
 export const getSite = async (siteId: number) =>
   get<R<API.SiteVo>>({ url: URL.baseUrl + siteId });

@@ -7,7 +7,7 @@ export type R<T> = {
 /**
  * 基础提交body
  */
-export type baseBody = {
+export type BaseBody = {
   orderByColumn?: string;
   isAsc?: string;
   pageNum?: string;
@@ -17,7 +17,7 @@ export type baseBody = {
 /**
  * 基础的返回对象
  */
-export type baseVo = {
+export type BaseVo = {
   /**
    * 创建者
    */

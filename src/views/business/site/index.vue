@@ -94,7 +94,7 @@
           align="center"
         >
         </el-table-column>
-        <el-table-column label="站点名称" prop="siteName" align="center">
+        <el-table-column label="站点名称" prop="siteName" align="center" :show-overflow-tooltip="true">
         </el-table-column>
         <el-table-column label="站点描述" prop="siteDescribe" align="center">
         </el-table-column>
@@ -228,6 +228,10 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
+import type { SiteBody, SiteVo } from '~/api/site/type';
+
+type ModelBody = SiteBody;
+type ModelVo = SiteVo;
 
 /**
  * 页面配置，抽离公共部分，少搬点砖
@@ -236,7 +240,7 @@ const pageConfig = reactive({
   title: '站点',
   id: 'siteId',
   isAsc: 'desc',
-  orderByColumn:'site_id',
+  orderByColumn: 'site_id',
   api: {
     list: siteList,
     get: getSite,
@@ -261,9 +265,9 @@ const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
 const formLoading = ref<boolean>(false);
 const batchDeleteDisable = ref<boolean>(true);
-const tableRecordRows = ref<any[]>([]);
+const tableRecordRows = ref<ModelVo[]>([]);
 
-const searchForm = reactive({
+const searchForm = reactive<ModelBody>({
   siteName: '',
   status: ''
 });
@@ -284,7 +288,7 @@ const rules = reactive<FormRules>({
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
 });
 
-let form = reactive<Recordable<any>>({
+let form = reactive<ModelVo>({
   siteId: null,
   siteName: '',
   siteDescribe: '',
@@ -325,7 +329,7 @@ function handleTableSelectChange(recordRows: any[]) {
   tableRecordRows.value = recordRows;
 }
 
-function fetchList(obj: any) {
+function fetchList(obj: ModelBody) {
   return pageConfig.api.list({
     ...obj,
     orderByColumn: pageConfig.orderByColumn,
@@ -356,11 +360,13 @@ function handleExport() {
   pageConfig.api.export(searchForm);
 }
 
-function getDetail(id: number): Promise<Recordable<any>> {
+function getDetail(id: number): Promise<ModelVo> {
   return new Promise((resolve, reject) => {
     pageConfig.api.get(id).then((res) => {
       const { data } = res;
-      resolve(data);
+      if (data) {
+        resolve(data);
+      }
     });
   });
 }
