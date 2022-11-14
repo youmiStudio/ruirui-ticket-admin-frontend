@@ -30,6 +30,15 @@ const businessRouter: RouteItem = {
         title: '路线管理',
         roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
       }
+    },
+    {
+      path: 'seat',
+      component: () => import('@/views/business/seat/index.vue'),
+      name: 'seatManager',
+      meta: {
+        title: '座位管理',
+        roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
+      }
     }
   ]
 };

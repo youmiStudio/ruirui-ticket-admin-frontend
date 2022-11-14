@@ -17,7 +17,7 @@ export type SeatSearchBody = {
   /**
    * 额外搜索参数
    */
-  params: {
+  params?: {
     /**
      * 价格区间 - 最少
      */
@@ -48,11 +48,11 @@ export type SeatVo = {
   /**
    * 座位价格（分）
    */
-  price: number;
+  price: number | string;
   /**
    * 原座位价格（分）
    */
-  oldPrice: number;
+  oldPrice: number | string;
   /**
    * 未选座位 - 图标url
    */
@@ -85,4 +85,5 @@ export type SeatBody = Pick<
   | 'selectedIcon'
   | 'boughtIcon'
   | 'status'
+  | 'remark'
 >;
