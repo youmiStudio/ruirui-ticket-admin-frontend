@@ -1,5 +1,5 @@
 import type { SiteVo } from '~/api/site/types';
-import type { BaseBody, BaseVo } from '../types';
+import type { BaseSearchBody, BaseVo } from '../types';
 
 /**
  * 路线信息 - 请求对象
@@ -42,7 +42,7 @@ export type RouteSearchBody = {
      */
     endTime?: Date;
   };
-} & BaseBody;
+} & BaseSearchBody;
 
 /**
  * 新增路线 - 请求体

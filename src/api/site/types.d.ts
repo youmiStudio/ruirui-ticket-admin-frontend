@@ -1,4 +1,4 @@
-import type { BaseVo, BaseBody } from '../types';
+import type { BaseVo, BaseSearchBody } from '../types';
 
 /**
  * 站点信息 - 请求对象
@@ -25,7 +25,7 @@ export type SiteBody = {
      */
     endTime?: Date;
   };
-} & BaseBody;
+} & BaseSearchBody;
 
 /**
  * 站点信息 - 返回对象

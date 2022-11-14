@@ -7,7 +7,7 @@ export type R<T> = {
 /**
  * 基础提交body
  */
-export type BaseBody = {
+export type BaseSearchBody = {
   orderByColumn?: string;
   isAsc?: string;
   pageNum?: string;
