@@ -2,91 +2,91 @@
   <div class="login-container">
     <div class="login-box">
       <div class="login-form">
-      <ul class="list-none p0 m0 mb60px">
-        <li class="tab mr20 tab-active">密码登录</li>
-      </ul>
-      <el-form
-        ref="ruleFormRef"
-        :model="loginForm"
-        :rules="loginRules"
-        autocomplete="on"
-        label-position="left"
-      >
-        <el-form-item prop="username">
-          <el-input
-            ref="username"
-            v-model="loginForm.username"
-            placeholder="请输入用户名"
-            name="username"
-            type="text"
-            tabindex="1"
-            autocomplete="on"
-          />
-        </el-form-item>
-
-        <el-tooltip
-          :visible="capsTooltip"
-          content="大写锁定打开"
-          placement="right"
-          manual
+        <ul class="list-none p0 m0 mb60px">
+          <li class="tab mr20 tab-active">密码登录</li>
+        </ul>
+        <el-form
+          ref="ruleFormRef"
+          :model="loginForm"
+          :rules="loginRules"
+          autocomplete="on"
+          label-position="left"
         >
-          <el-form-item prop="password">
+          <el-form-item prop="username">
             <el-input
-              :key="passwordType"
-              ref="password"
-              v-model="loginForm.password"
-              :type="passwordType"
-              placeholder="Password"
-              name="password"
-              tabindex="2"
+              ref="username"
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+              name="username"
+              type="text"
+              tabindex="1"
               autocomplete="on"
-              @keyup="checkCapslock"
-              @blur="capsTooltip = false"
-              @keyup.enter.native="handleLogin(ruleFormRef)"
-            >
-              <template #suffix>
-                <span class="show-pwd" @click="showPwd">
-                  <svg-icon
-                    :icon-class="
-                      passwordType === 'password' ? 'eye' : 'eye-open'
-                    "
-                  />
-                </span>
-              </template>
-            </el-input>
+            />
           </el-form-item>
-        </el-tooltip>
 
-        <el-form-item v-if="codeForm.captchaEnabled" prop="code">
-          <el-input
-            class="flex-1"
-            v-model="loginForm.code"
-            placeholder="验证码"
+          <el-tooltip
+            :visible="capsTooltip"
+            content="大写锁定打开"
+            placement="right"
+            manual
           >
-          </el-input>
-          <img
-            class="h35px ml10px"
-            :src="codeForm.img"
-            @click="getCaptchaImageHandle"
-          />
-        </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                :key="passwordType"
+                ref="password"
+                v-model="loginForm.password"
+                :type="passwordType"
+                placeholder="Password"
+                name="password"
+                tabindex="2"
+                autocomplete="on"
+                @keyup="checkCapslock"
+                @blur="capsTooltip = false"
+                @keyup.enter.native="handleLogin(ruleFormRef)"
+              >
+                <template #suffix>
+                  <span class="show-pwd" @click="showPwd">
+                    <svg-icon
+                      :icon-class="
+                        passwordType === 'password' ? 'eye' : 'eye-open'
+                      "
+                    />
+                  </span>
+                </template>
+              </el-input>
+            </el-form-item>
+          </el-tooltip>
 
-        <el-form-item>
-          <el-button
-            :loading="loading"
-            type="primary"
-            color="#155bd4"
-            style="width: 100%; height: 48px"
-            @click.native.prevent="handleLogin(ruleFormRef)"
-          >
-            登录
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div class="w320px h500px bg-white bg flex items-center">
-      <img src="@/assets/images/login_banner.jpg" class="w100%">
-    </div>
+          <el-form-item v-if="codeForm.captchaEnabled" prop="code">
+            <el-input
+              class="flex-1"
+              v-model="loginForm.code"
+              placeholder="验证码"
+            >
+            </el-input>
+            <img
+              class="h35px ml10px"
+              :src="codeForm.img"
+              @click="getCaptchaImageHandle"
+            />
+          </el-form-item>
+
+          <el-form-item>
+            <el-button
+              :loading="loading"
+              type="primary"
+              color="#155bd4"
+              style="width: 100%; height: 48px"
+              @click.native.prevent="handleLogin(ruleFormRef)"
+            >
+              登录
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+      <div class="w320px h500px bg-white bg flex items-center">
+        <img src="@/assets/images/login_banner.jpg" class="w100%" />
+      </div>
     </div>
   </div>
 </template>
