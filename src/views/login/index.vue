@@ -85,7 +85,7 @@
       </el-form>
     </div>
     <div class="w320px h500px bg-white bg flex items-center">
-      <img src="http://110.41.150.71:8000/img/logo.5d3427c6.jpeg" class="w100%">
+      <img src="@/assets/images/login_banner.jpg" class="w100%">
     </div>
     </div>
   </div>
