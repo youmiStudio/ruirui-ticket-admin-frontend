@@ -96,8 +96,9 @@ const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
       .request<any, AxiosResponse<IResponse>>(conf)
       .then((res: AxiosResponse<IResponse>) => {
         // resolve(res as unknown as Promise<T>);
-        const { data } = res;
-        resolve(data as T);
+        if (res && res.data) {
+          resolve(res.data as T);
+        }
       })
       .catch((error) => {
         reject(error);

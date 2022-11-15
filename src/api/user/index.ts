@@ -39,13 +39,13 @@ export const userList = async (body: UserSearchBody) =>
   get<R<PageVo<UserVo[]>>>({ url: BASE_URL + URL.list, params: body });
 
 export const getUser = async (id: number) =>
-  get<R<UserVo>>({ url: BASE_URL + BASE_URL + id });
+  get<R<UserVo>>({ url: BASE_URL + id });
 
 export const addUser = async (body: UserBody) =>
-  post<R<UserVo>>({ url: BASE_URL + BASE_URL, data: body });
+  post<R<UserVo>>({ url: BASE_URL, data: body });
 
 export const removeUser = async (ids: string) =>
-  del<R<String>>({ url: BASE_URL + BASE_URL + ids });
+  del<R<String>>({ url: BASE_URL + ids });
 
 export const editUser = async (body: UserBody) =>
   put<R<UserVo>>({ url: BASE_URL, data: body });

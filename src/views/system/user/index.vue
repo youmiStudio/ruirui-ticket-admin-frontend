@@ -225,10 +225,9 @@
                 <el-form-item label="性别" prop="sex">
                   <el-select
                     class="w100%"
-                    v-model="form.status"
-                    placeholder="用户状态"
+                    v-model="form.sex"
+                    placeholder="用户性别"
                   >
-                    <el-option label="" value=""></el-option>
                     <el-option
                       v-for="dict in dicts.type.sys_user_sex"
                       :label="dict.label"
