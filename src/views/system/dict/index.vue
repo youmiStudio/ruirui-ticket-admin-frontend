@@ -378,12 +378,12 @@ const pageConfig = reactive({
     export: exportDict
   },
   authorites: {
-    list: 'ticket:dict:list',
-    get: 'ticket:dict:query',
-    add: 'ticket:dict:add',
-    edit: 'ticket:dict:edit',
-    remove: 'ticket:dict:remove',
-    export: 'ticket:dict:export'
+    list: 'system:dict:list',
+    get: 'system:dict:query',
+    add: 'system:dict:add',
+    edit: 'system:dict:edit',
+    remove: 'system:dict:remove',
+    export: 'system:dict:export'
   }
 });
 
