@@ -37,7 +37,7 @@ export const getCaptchaImage = async () => get({ url: URL.getCaptchaImage });
 export const userList = async (body: UserSearchBody) =>
   get<R<PageVo<UserVo[]>>>({ url: BASE_URL + URL.list, params: body });
 
-export const getUser = async (id: number) =>
+export const getUser = async (id: number | string) =>
   get<R<UserVo>>({ url: BASE_URL + '/' + id });
 
 export const addUser = async (body: UserBody) =>

@@ -23,6 +23,17 @@ const systemRouter: RouteItem = {
       }
     },
     {
+      path: 'user-auth/role/:userId',
+      component: () => import('@/views/system/user/authRole.vue'),
+      name: 'userRoleManager',
+      hidden: true,
+      meta: {
+        title: '分配角色',
+        roles: [RoleEnum.ADMIN], // or you can only set roles in sub nav
+        activeMenu:"/system/user"
+      }
+    },
+    {
       path: 'dict',
       component: () => import('@/views/system/dict/index.vue'),
       name: 'dictManager',

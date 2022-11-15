@@ -648,7 +648,8 @@ function handleResetPwd(row: ModelVo) {
   ElMessageBox.prompt(`请输入"${row.username}"的新密码`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
-    inputErrorMessage: 'Invalid Password'
+    inputPattern: /^.{5,20}$/,
+    inputErrorMessage: '用户密码长度必须介于 5 和 20 之间'
   })
     .then(({ value }) => {
       pageConfig.api
@@ -657,9 +658,9 @@ function handleResetPwd(row: ModelVo) {
           password: value
         })
         .then((res) => {
-          const {code} = res;
-          if(code === 200) {
-            ElMessage.success(`"${row.username}"的密码修改成功`)
+          const { code } = res;
+          if (code === 200) {
+            ElMessage.success(`"${row.username}"的密码修改成功`);
           }
         });
     })
