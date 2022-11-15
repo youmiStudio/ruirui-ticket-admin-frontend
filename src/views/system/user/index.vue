@@ -112,6 +112,9 @@
         >
         </el-table-column>
 
+        <el-table-column label="手机号码" prop="phoneNumber" align="center">
+        </el-table-column>
+
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
             <DictTag
@@ -211,8 +214,7 @@
                   <el-input
                     v-model="form.phoneNumber"
                     placeholder="请输入手机号码"
-                    maxlength="13"
-                    :show-password="true"
+                    maxlength="11"
                   ></el-input>
                 </el-form-item>
               </el-col>
@@ -248,8 +250,8 @@
                     <el-option
                       v-for="role in roleOptions"
                       :label="role.roleName"
-                      :value="role.roleKey"
-                      :key="role.roleKey"
+                      :value="role.roleId"
+                      :key="role.roleId"
                     ></el-option>
                   </el-select>
                 </el-form-item>
@@ -314,12 +316,15 @@ import {
   exportUser
 } from '@/api/user/index';
 import { parseTime } from '@/utils';
-import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
+import { isPhone } from '@/utils/is';
 
+import type { InternalRuleItem } from 'async-validator/dist-types/interface';
+import type { FormInstance, FormRules } from 'element-plus';
 import type { UserSearchBody, UserBody, UserVo } from '~/api/user/types';
+
 import { RoleVo } from '~/api/role/types';
 import { roleOptionList } from '~/api/role';
 
@@ -353,6 +358,18 @@ const pageConfig = reactive({
   }
 });
 
+const validatePhoneNumber = (
+  rule: InternalRuleItem,
+  value: string,
+  callback: Function
+) => {
+  if (!isPhone(value)) {
+    callback(new Error('请输入正确的手机号码'));
+  } else {
+    callback();
+  }
+};
+
 const dicts = useDictTypes(['sys_common_status', 'sys_user_sex']);
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const formRef = ref<FormInstance>();
@@ -380,7 +397,9 @@ const rules = reactive<FormRules>({
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }],
   nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
   roleIds: [{ required: true, message: '用户角色不能为空', trigger: 'blur' }],
+  phoneNumber: [{ validator: validatePhoneNumber, trigger: 'blur' }]
 });
+
 
 let form = reactive<ModelBody>({
   userId: '',
@@ -453,6 +472,7 @@ function handleEdit(row: any) {
         form[key] = data[key];
       }
     });
+    form.roleIds = data.roles.map((role) => role.roleId);
   });
 }
 

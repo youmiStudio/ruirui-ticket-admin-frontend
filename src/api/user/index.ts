@@ -33,22 +33,20 @@ export const getInfo = async (token: string | undefined | null) =>
 
 export const getCaptchaImage = async () => get({ url: URL.getCaptchaImage });
 
-
-
 export const userList = async (body: UserSearchBody) =>
   get<R<PageVo<UserVo[]>>>({ url: BASE_URL + URL.list, params: body });
 
 export const getUser = async (id: number) =>
-  get<R<UserVo>>({ url: BASE_URL + id });
+  get<R<UserVo>>({ url: BASE_URL + '/' + id });
 
 export const addUser = async (body: UserBody) =>
   post<R<UserVo>>({ url: BASE_URL, data: body });
 
 export const removeUser = async (ids: string) =>
-  del<R<String>>({ url: BASE_URL + ids });
+  del<R<String>>({ url: BASE_URL + '/' + ids });
 
 export const editUser = async (body: UserBody) =>
   put<R<UserVo>>({ url: BASE_URL, data: body });
 
 export const exportUser = async (body: UserSearchBody) =>
-  download(URL.export, body, `user_${new Date().getTime()}.xlsx`);
+  download(BASE_URL + URL.export, body, `user_${new Date().getTime()}.xlsx`);

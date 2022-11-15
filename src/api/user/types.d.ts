@@ -1,5 +1,6 @@
 import { RoleEnum } from '@/enums/roleEnum';
 import type { BaseSearchBody, BaseVo } from '@/api/types';
+import { RoleVo } from '../role/types';
 
 export type UserRequestParams = {
   username: string;
@@ -79,6 +80,11 @@ export type UserVo = {
 
   /**
    * 角色组
+   */
+  roles:RoleVo[];
+
+  /**
+   * 角色组Id
    */
   roleIds?: number[];
 } & BaseVo;
