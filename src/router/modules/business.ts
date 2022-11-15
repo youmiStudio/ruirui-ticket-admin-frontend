@@ -39,15 +39,6 @@ const businessRouter: RouteItem = {
         title: '座位管理',
         roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
       }
-    },
-    {
-      path: 'dict',
-      component: () => import('@/views/business/dict/index.vue'),
-      name: 'dictManager',
-      meta: {
-        title: '字典管理',
-        roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
-      }
     }
   ]
 };

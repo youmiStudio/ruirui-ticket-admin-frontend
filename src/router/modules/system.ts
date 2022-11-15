@@ -21,6 +21,15 @@ const systemRouter: RouteItem = {
         title: '用户管理',
         roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
       }
+    },
+    {
+      path: 'dict',
+      component: () => import('@/views/system/dict/index.vue'),
+      name: 'dictManager',
+      meta: {
+        title: '字典管理',
+        roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
+      }
     }
   ]
 };

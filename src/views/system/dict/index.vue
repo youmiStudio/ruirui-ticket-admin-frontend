@@ -17,7 +17,7 @@
           </el-col>
 
           <el-col :span="8">
-            <el-form-item label="字典类型" prop="dictName">
+            <el-form-item label="字典类型" prop="dictType">
               <el-input
                 v-model="searchForm.dictType"
                 placeholder="请输入字典类型"
@@ -49,11 +49,11 @@
           </el-col>
 
           <el-col :span="8">
-            <el-form-item label="创建时间" prop="toSiteId">
+            <el-form-item label="创建时间" prop="createTime">
               <el-select
                 class="w100%"
-                v-model="searchForm.toSiteId"
-                placeholder="目的站"
+                v-model="searchForm.createTime"
+                placeholder="起始日期-结束日期"
                 @change="search"
               >
                 <el-option label="全部" value=""></el-option>
@@ -353,13 +353,13 @@ import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
 import type { SiteVo } from '~/api/site/types';
-import type { DictSearchBody, DictBody, DictVo } from '~/api/dict/types';
+import type { DictTypeSearchBody, DictTypeBody, DictTypeVo } from '~/api/dict/types';
 
 import { wxSiteList } from '@/api/site/index';
 
-type ModelSearchBody = DictSearchBody;
-type ModelBody = DictBody;
-type ModelVo = DictVo;
+type ModelSearchBody = DictTypeSearchBody;
+type ModelBody = DictTypeBody;
+type ModelVo = DictTypeVo;
 
 /**
  * 页面配置，抽离公共部分，少搬点砖
