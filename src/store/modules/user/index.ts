@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { getToken, setToken, removeToken } from '~/utils/auth';
 import { login, getInfo, logout } from '@/api/user';
 import { useTagsViewStore, usePermissionStore } from '@/store';
-import type * as API from '@/api/user/types';
+import type * as API from '~/api/user/types';
 import { addRoutes } from '@/router';
 
 export const useUserStore = defineStore({

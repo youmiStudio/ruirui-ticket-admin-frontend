@@ -6,7 +6,9 @@ import {
 
 const Layout = () => import('~/layouts/default/index.vue');
 
+import systemRouter from './modules/system';
 import businessRouter from './modules/business';
+
 
 export const constantRoutes: RouteItem[] = [
   {
@@ -57,6 +59,7 @@ export const constantRoutes: RouteItem[] = [
 ];
 
 export const asyncRoutes: RouteItem[] = [
+  systemRouter,
   businessRouter
 ];
 

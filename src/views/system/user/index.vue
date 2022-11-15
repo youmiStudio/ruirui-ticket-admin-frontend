@@ -4,10 +4,10 @@
       <el-form ref="searchFormRef" label-width="75px" :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="座位名称" prop="seatName">
+            <el-form-item label="用户名称" prop="userName">
               <el-input
-                v-model="searchForm.seatName"
-                placeholder="请输入座位名称"
+                v-model="searchForm.nickname"
+                placeholder="请输入用户名称"
                 clearable
                 maxlength="20"
                 @clear="search"
@@ -21,7 +21,7 @@
               <el-select
                 class="w100%"
                 v-model="searchForm.status"
-                placeholder="座位状态"
+                placeholder="用户状态"
                 @change="search"
               >
                 <el-option label="全部" value=""></el-option>
@@ -34,35 +34,8 @@
               </el-select>
             </el-form-item>
           </el-col>
-
-          <el-col :span="8">
-            <el-form-item label="价格区间" prop="seatName">
-              <el-row :gutter="20">
-                <el-col :span="11">
-                  <el-input
-                    v-model="searchForm.minPrice"
-                    placeholder="最少价格"
-                    clearable
-                    maxlength="20"
-                    @clear="search"
-                  ></el-input>
-                </el-col>
-                <el-col :span="1"> - </el-col>
-                <el-col :span="11">
-                  <el-input
-                    v-model="searchForm.maxPrice"
-                    placeholder="最多价格"
-                    clearable
-                    maxlength="20"
-                    @clear="search"
-                  ></el-input>
-                </el-col>
-              </el-row>
-            </el-form-item>
-          </el-col>
-
           <el-col :span="6">
-            <el-form-item label-width="0">
+            <el-form-item>
               <el-button type="primary" :icon="Search" @click="search"
                 >查询</el-button
               >
@@ -116,51 +89,28 @@
         @select-change="handleTableSelectChange"
       >
         <el-table-column
-          width="105px"
-          label="座位编号"
-          prop="seatId"
+          label="用户编号"
+          prop="userId"
           sortable="custom"
           align="center"
         >
         </el-table-column>
+
         <el-table-column
-          label="座位名称"
-          prop="seatName"
-          align="center"
-          :show-overflow-tooltip="true"
-        >
-        </el-table-column>
-        <el-table-column
-          label="座位描述"
-          prop="seatDescribe"
+          label="用户名称"
+          prop="username"
           align="center"
           :show-overflow-tooltip="true"
         >
         </el-table-column>
 
-        <el-table-column width="105px" label="座位价格(元)" align="center">
-          <template #default="{ row }">
-            {{ row.price && fenToYuan(row.price) }}
-          </template>
+        <el-table-column
+          label="用户昵称"
+          prop="nickname"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
         </el-table-column>
-
-        <el-table-column width="125px" label="原座位价格(元)" align="center">
-          <template #default="{ row }">
-            {{ row.oldPrice && fenToYuan(row.oldPrice) }}
-          </template>
-        </el-table-column>
-
-        <template v-for="item in formSeatIconItems" :key="item.prop">
-          <el-table-column
-            class-name="seat-icon"
-            :label="item.label"
-            align="center"
-          >
-            <template #default="{ row }">
-              <img :src="apiUrl + row[item.prop]" class="avatar" />
-            </template>
-          </el-table-column>
-        </template>
 
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
@@ -170,6 +120,7 @@
             ></DictTag>
           </template>
         </el-table-column>
+
         <el-table-column label="创建时间" width="150px" align="center">
           <template #default="{ row }">
             <span>{{
@@ -177,6 +128,7 @@
             }}</span>
           </template>
         </el-table-column>
+
         <el-table-column
           label="备注"
           prop="remark"
@@ -184,7 +136,7 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column width="175px" label="操作" align="center" class-name="fixed-width">
+        <el-table-column label="操作" align="center" class-name="fixed-width">
           <template #default="{ row }">
             <el-button
               v-authority="[pageConfig.authorites.edit]"
@@ -213,73 +165,85 @@
     <el-dialog
       v-model="dialogState.dialogVisible"
       :title="dialogState.title"
-      width="450px"
+      width="550px"
       append-to-body
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="座位名称" prop="seatName">
-              <el-input
-                v-model="form.seatName"
-                placeholder="请输入座位名称"
-                maxlength="20"
-              ></el-input>
-            </el-form-item>
+            <el-row :gutter="10">
+              <el-col :span="12">
+                <el-form-item label="用户名称" prop="username">
+                  <el-input
+                    v-model="form.username"
+                    placeholder="请输入用户名称"
+                    maxlength="30"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="用户密码" prop="password">
+                  <el-input
+                    v-model="form.password"
+                    type="password"
+                    placeholder="请输入用户密码"
+                    maxlength="50"
+                    :show-password="true"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-col>
 
           <el-col :span="24">
-            <el-form-item label="座位价格" prop="price">
-              <el-input
-                maxLength="10"
-                v-model="form.price"
-                placeholder="请输入座位价格"
-              ></el-input>
-            </el-form-item>
+            <el-row :gutter="10">
+              <el-col :span="12">
+                <el-form-item label="用户昵称" prop="nickname">
+                  <el-input
+                    v-model="form.nickname"
+                    placeholder="请输入用户昵称"
+                    maxlength="30"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="手机号码" prop="phoneNumber">
+                  <el-input
+                    v-model="form.phoneNumber"
+                    placeholder="请输入手机号码"
+                    maxlength="13"
+                    :show-password="true"
+                  ></el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-col>
 
           <el-col :span="24">
-            <el-form-item label="原座位价格" prop="oldPrice">
-              <el-input
-                maxLength="10"
-                v-model="form.oldPrice"
-                placeholder="请输入原座位价格"
-              ></el-input>
-            </el-form-item>
-          </el-col>
+            <el-row :gutter="10">
+              <el-col :span="12">
+                <el-form-item label="性别" prop="sex">
+                  <el-select
+                    class="w100%"
+                    v-model="searchForm.status"
+                    placeholder="用户状态"
+                    @change="search"
+                  >
+                    <el-option
+                      v-for="dict in dicts.type.sys_user_sex"
+                      :label="dict.label"
+                      :value="dict.value"
+                      :key="dict.value"
+                    ></el-option>
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="角色" prop="postIds"> 
 
-          <template v-for="item in formSeatIconItems" :key="item.prop">
-            <el-col :span="24">
-              <el-form-item :label="item.label" :prop="item.prop">
-                <el-upload
-                  class="avatar-uploader"
-                  :show-file-list="false"
-                  :before-upload="beforeAvatarUpload"
-                  :http-request="uploadHttpRequest"
-                  :on-success="handleSeatIconUploadOnSuccess(item.prop)"
-                >
-                  <img
-                    v-if="form[item.prop]"
-                    :src="apiUrl + form[item.prop]"
-                    class="avatar"
-                  />
-                  <el-icon v-else class="avatar-uploader-icon"
-                    ><Plus
-                  /></el-icon>
-                </el-upload>
-              </el-form-item>
-            </el-col>
-          </template>
-
-          <el-col :span="24">
-            <el-form-item label="座位描述" prop="seatDescribe">
-              <el-input
-                v-model="form.seatDescribe"
-                placeholder="请输入座位描述"
-                type="textarea"
-                :row="3"
-              ></el-input>
-            </el-form-item>
+                </el-form-item>
+              </el-col>
+            </el-row>
           </el-col>
 
           <el-col :span="24">
@@ -294,6 +258,7 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
+
           <el-col :span="24">
             <el-form-item label="备注" prop="remark">
               <el-input
@@ -330,58 +295,52 @@ import {
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
 import {
-  seatList,
-  getSeat,
-  addSeat,
-  removeSeat,
-  editSeat,
-  exportSeat
-} from '@/api/seat/index';
-import { uploadFile } from '@/api/common/index';
-import { isAmount, isImage } from '@/utils/is';
-import { yuanToFen, fenToYuan } from '@/utils/price';
+  userList,
+  getUser,
+  addUser,
+  removeUser,
+  editUser,
+  exportUser
+} from '@/api/user/index';
 import { parseTime } from '@/utils';
+import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
-import type { UploadProps } from 'element-plus';
-import type { FormInstance, FormRules } from 'element-plus';
-import type { InternalRuleItem } from 'async-validator/dist-types/interface';
-import type { SeatBody, SeatSearchBody, SeatVo } from '~/api/seat/types';
-import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
+import type { UserSearchBody, UserBody, UserVo } from '~/api/user/types';
 
-type ModelSearchBody = SeatSearchBody;
-type ModelBody = SeatBody;
-type ModelVo = SeatVo;
+type ModelSearchBody = UserSearchBody;
+type ModelBody = UserBody;
+type ModelVo = UserVo;
 
 /**
  * 页面配置，抽离公共部分，少搬点砖
  */
 const pageConfig = reactive({
-  title: '座位',
-  id: 'seatId',
+  title: '用户',
+  id: 'userId',
   isAsc: 'desc',
-  orderByColumn: 'seat_id',
+  orderByColumn: 'user_id',
   api: {
-    list: seatList,
-    get: getSeat,
-    add: addSeat,
-    remove: removeSeat,
-    edit: editSeat,
-    export: exportSeat
+    list: userList,
+    get: getUser,
+    add: addUser,
+    remove: removeUser,
+    edit: editUser,
+    export: exportUser
   },
   authorites: {
-    list: 'ticket:seat:list',
-    get: 'ticket:seat:query',
-    add: 'ticket:seat:add',
-    edit: 'ticket:seat:edit',
-    remove: 'ticket:seat:remove',
-    export: 'ticket:seat:export'
+    list: 'system:user:list',
+    get: 'system:user:query',
+    add: 'system:user:add',
+    edit: 'system:user:edit',
+    remove: 'system:user:remove',
+    export: 'system:user:export'
   }
 });
 
-const dicts = useDictTypes('sys_common_status');
+const dicts = useDictTypes(['sys_common_status', 'sys_user_sex']);
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
@@ -390,63 +349,39 @@ const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
 const searchForm = reactive<ModelSearchBody>({
-  seatName: '',
-  status: '',
-  minPrice: '',
-  maxPrice: ''
+  nickname: '',
+  status: ''
 });
 
-const validatePrice = (
-  rule: InternalRuleItem,
-  value: string,
-  callback: Function
-) => {
-  if (rule.required && !value) {
-    return callback(new Error('请输入金额'));
-  }
-  if (value && !isAmount(value)) {
-    return callback(new Error('请输入正确的金额, 最多保留2位小数'));
-  }
-  callback();
-};
-
 const rules = reactive<FormRules>({
-  seatName: [
-    { required: true, message: '座位名称不能为空', trigger: 'blur' },
+  username: [
+    { required: true, message: '用户名称不能为空', trigger: 'blur' },
     {
       min: 2,
-      max: 20,
-      message: '座位名称长度必须介于 2 和 20 之间',
+      max: 30,
+      message: '用户名称长度必须介于 2 和 30 之间',
       trigger: 'blur'
     }
   ],
-  price: [{ required: true, validator: validatePrice }],
-  oldPrice: [{ required: false, validator: validatePrice }],
-  unSelectedIcon: [{ required: true, message: '未选座时图标不能为空' }],
-  selectedIcon: [{ required: true, message: '已选座时图标不能为空' }],
-  boughtIcon: [{ required: true, message: '已购座时图标不能为空' }],
-  seatDescribe: [
-    { required: true, message: '座位描述不能为空', trigger: 'blur' }
-  ],
-  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
+  password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
+  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }],
+  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }]
 });
 
 let form = reactive<ModelBody>({
-  seatId: undefined,
-  seatName: '',
-  seatDescribe: '',
-  price: '',
-  oldPrice: '0',
-  unSelectedIcon: '',
-  selectedIcon: '',
-  boughtIcon: '',
+  userId: '',
+  username: '',
+  password: '',
   status: '0',
-  remark: ''
+  remark: '',
+  phoneNumber: '',
+  nickname: '',
+  sex: ''
 });
 
 const dialogState = reactive({
   title: '',
-  dialogVisible: false
+  dialogVisible: true
 });
 
 onMounted(() => {
@@ -462,30 +397,7 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  const { minPrice, maxPrice } = searchForm;
-
-  if (minPrice && !isAmount(minPrice)) {
-    return ElMessage.error('请输入正确的金额, 最多保留2位小数');
-  }
-
-  if (maxPrice && !isAmount(maxPrice)) {
-    return ElMessage.error('请输入正确的金额, 最多保留2位小数');
-  }
-
-  if (minPrice && maxPrice) {
-    if (Number(minPrice) > Number(maxPrice)) {
-      searchForm.minPrice = maxPrice;
-    } else {
-      searchForm.maxPrice = minPrice;
-    }
-  }
-
-  tableRef.value &&
-    tableRef.value.search<ModelVo>({
-      ...searchForm,
-      minPrice: minPrice && yuanToFen(minPrice),
-      maxPrice: maxPrice && yuanToFen(maxPrice)
-    });
+  tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
 }, 200);
 
 function switchBatchDelete(selectRowsLength: number) {
@@ -524,8 +436,6 @@ function handleEdit(row: any) {
         form[key] = data[key];
       }
     });
-    form.price = fenToYuan(form.price);
-    form.oldPrice = fenToYuan(form.oldPrice);
   });
 }
 
@@ -599,9 +509,6 @@ function formReset() {
 
 function searchReset() {
   searchFormRef.value?.resetFields();
-  Object.keys(searchForm).forEach((key) => {
-    searchForm[key] = '';
-  });
 }
 
 function searchRefresh() {
@@ -615,10 +522,6 @@ function submitForm() {
       formLoading.value = true;
       const isAdd = form[pageConfig.id] === null;
       const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
-
-      form.price = yuanToFen(form.price);
-      form.oldPrice = yuanToFen(form.oldPrice);
-
       api(form).then((res) => {
         const { code } = res;
         if (code !== 200) {
@@ -641,98 +544,8 @@ function cancel() {
 }
 
 /* --------------------Extra Features Start-------------------- */
-type SeatIconItems = {
-  label: string;
-  prop: keyof Pick<ModelBody, 'unSelectedIcon' | 'selectedIcon' | 'boughtIcon'>;
-};
 
-const globSettings = useGlobSettings();
-const apiUrl = globSettings.apiUrl;
-const formSeatIconItems = ref<SeatIconItems[]>([
-  {
-    label: '未选座位',
-    prop: 'unSelectedIcon'
-  },
-  {
-    label: '已选座位',
-    prop: 'selectedIcon'
-  },
-  {
-    label: '已购座位',
-    prop: 'boughtIcon'
-  }
-]);
-
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-  if (!isImage(rawFile.type)) {
-    ElMessage.error('请上传图片!');
-    return false;
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('图片不能大于2MB!');
-    return false;
-  }
-  return true;
-};
-
-const uploadHttpRequest: UploadProps['httpRequest'] = (options) => {
-  const { file } = options;
-  let form = new FormData();
-  form.append('file', file);
-  return uploadFile(form);
-};
-
-const handleSeatIconUploadOnSuccess = (
-  prop: string
-): UploadProps['onSuccess'] => {
-  return (res) => {
-    const { data } = res;
-    if (data) {
-      form[prop] = data.fileName;
-    }
-  };
-};
 /* --------------------Extra Features End-------------------- */
 </script>
 
-<style lang="scss" scoped>
-$--el-border-color: #dcdfe6;
-$--el-transition-duration-fast: 0.2s;
-$--el-color-primary: #409eff;
-::v-deep {
-  .seat-icon {
-    .cell {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  }
-  .el-form-item__label {
-    font-weight: 700;
-  }
-
-  .avatar-uploader .el-upload {
-    border: 1px dashed $--el-border-color;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: $--el-transition-duration-fast;
-  }
-
-  .avatar-uploader .el-upload:hover {
-    border-color: $--el-color-primary;
-  }
-
-  .el-icon.avatar-uploader-icon {
-    font-size: 14px;
-    color: #8c939d;
-    width: 50px;
-    height: 50px;
-    text-align: center;
-  }
-  .avatar {
-    width: 50px;
-    height: 50px;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

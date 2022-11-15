@@ -40,19 +40,11 @@
                 name="password"
                 tabindex="2"
                 autocomplete="on"
+                :show-password="true"
                 @keyup="checkCapslock"
                 @blur="capsTooltip = false"
                 @keyup.enter.native="handleLogin(ruleFormRef)"
               >
-                <template #suffix>
-                  <span class="show-pwd" @click="showPwd">
-                    <svg-icon
-                      :icon-class="
-                        passwordType === 'password' ? 'eye' : 'eye-open'
-                      "
-                    />
-                  </span>
-                </template>
               </el-input>
             </el-form-item>
           </el-tooltip>
@@ -99,7 +91,7 @@ import { LoginTypeEnum } from '~/enums/userEnum';
 import { LocationQuery, LocationQueryValue } from 'vue-router';
 import { useUserStore } from '~/store';
 import { getCaptchaImage } from '~/api/user/index';
-import type * as API from '@/api/user/types';
+import type * as API from '~/api/user/types';
 import { useDebounceFn } from '@vueuse/shared';
 import { ElMessage } from 'element-plus';
 
@@ -108,7 +100,7 @@ const validateUsername = (
   value: string,
   callback: Function
 ) => {
-  if (!validUsername(value)) {
+  if (!value) {
     callback(new Error('请输入用户名'));
   } else {
     callback();
