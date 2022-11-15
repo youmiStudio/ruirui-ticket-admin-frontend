@@ -8,6 +8,11 @@ type RoleVo = {
    * 角色Id
    */
   roleId: stinrg | number;
+
+  /**
+   * 角色名称
+   */
+  roleName:string;
   /**
    * 角色权限标识
    */

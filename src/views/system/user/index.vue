@@ -225,10 +225,10 @@
                 <el-form-item label="性别" prop="sex">
                   <el-select
                     class="w100%"
-                    v-model="searchForm.status"
+                    v-model="form.status"
                     placeholder="用户状态"
-                    @change="search"
                   >
+                    <el-option label="" value=""></el-option>
                     <el-option
                       v-for="dict in dicts.type.sys_user_sex"
                       :label="dict.label"
@@ -239,8 +239,20 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="角色" prop="postIds"> 
-
+                <el-form-item label="角色" prop="roleIds">
+                  <el-select
+                    class="w100%"
+                    v-model="form.roleIds"
+                    multiple
+                    placeholder="用户角色"
+                  >
+                    <el-option
+                      v-for="role in roleOptions"
+                      :label="role.roleName"
+                      :value="role.roleKey"
+                      :key="role.roleKey"
+                    ></el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -309,6 +321,8 @@ import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
 import type { UserSearchBody, UserBody, UserVo } from '~/api/user/types';
+import { RoleVo } from '~/api/role/types';
+import { roleOptionList } from '~/api/role';
 
 type ModelSearchBody = UserSearchBody;
 type ModelBody = UserBody;
@@ -365,7 +379,8 @@ const rules = reactive<FormRules>({
   ],
   password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }],
-  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }]
+  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
+  roleIds: [{ required: true, message: '用户角色不能为空', trigger: 'blur' }],
 });
 
 let form = reactive<ModelBody>({
@@ -376,12 +391,13 @@ let form = reactive<ModelBody>({
   remark: '',
   phoneNumber: '',
   nickname: '',
-  sex: ''
+  sex: '',
+  roleIds: []
 });
 
 const dialogState = reactive({
   title: '',
-  dialogVisible: true
+  dialogVisible: false
 });
 
 onMounted(() => {
@@ -421,12 +437,14 @@ function fetchList(obj: ModelSearchBody) {
 }
 
 function handleAdd() {
+  getRoleOptions();
   formReset();
   dialogState.title = `添加${pageConfig.title}`;
   dialogState.dialogVisible = true;
 }
 
 function handleEdit(row: any) {
+  getRoleOptions();
   formReset();
   dialogState.title = `修改${pageConfig.title}`;
   dialogState.dialogVisible = true;
@@ -544,7 +562,15 @@ function cancel() {
 }
 
 /* --------------------Extra Features Start-------------------- */
-
+const roleOptions = ref<RoleVo[]>();
+const getRoleOptions = () => {
+  roleOptionList().then((res) => {
+    const { data } = res;
+    if (data) {
+      roleOptions.value = data;
+    }
+  });
+};
 /* --------------------Extra Features End-------------------- */
 </script>
 
