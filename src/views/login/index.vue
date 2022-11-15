@@ -108,7 +108,7 @@ const validateUsername = (
   value: string,
   callback: Function
 ) => {
-  if (!validUsername(value)) {
+  if (!value) {
     callback(new Error('请输入用户名'));
   } else {
     callback();

@@ -7,26 +7,21 @@ export type SeatSearchBody = {
   /**
    * 座位名称
    */
-  seatName?: string;
+  seatName: string;
 
   /**
    * 座位状态
    */
-  status?: string;
+  status: string;
 
   /**
-   * 额外搜索参数
+   * 价格区间 - 最少
    */
-  params?: {
-    /**
-     * 价格区间 - 最少
-     */
-    minPrice?: string;
-    /**
-     * 价格区间 - 最多
-     */
-    maxPrice?: string;
-  };
+  minPrice: string;
+  /**
+   * 价格区间 - 最多
+   */
+  maxPrice: string;
 } & BaseSearchBody;
 
 /**

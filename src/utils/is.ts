@@ -53,7 +53,12 @@ export function isNumber(val: unknown): val is number {
 }
 
 export function isPromise<T = any>(val: unknown): val is Promise<T> {
-  return is(val, 'Promise') && isObject(val) && isFunction(val.then) && isFunction(val.catch);
+  return (
+    is(val, 'Promise') &&
+    isObject(val) &&
+    isFunction(val.then) &&
+    isFunction(val.catch)
+  );
 }
 
 export function isString(val: unknown): val is string {
@@ -97,3 +102,11 @@ export function isUrl(path: string): boolean {
     /^(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?(\/#\/)?(?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
   return reg.test(path);
 }
+
+export const isAmount = (amount: string): boolean => {
+  return /^[0-9]+(.[0-9]{1,2})?$/.test(amount);
+};
+
+export const isImage = (fileType: string): boolean => {
+  return /^image\/(jpeg|png|jpg|gif)$/.test(fileType);
+};

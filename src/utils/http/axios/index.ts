@@ -9,10 +9,11 @@ import { saveAs } from 'file-saver';
 
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 import { useUserStore } from '~/store';
+import { cloneFnJSON } from '@vueuse/core';
 
 const globSetting = useGlobSettings();
 
-// 如果请求话费了超过 `timeout` 的时间，请求将被中断
+// 如果请求花费了超过 `timeout` 的时间，请求将被中断
 axios.defaults.timeout = 5000;
 // 表示跨域请求时是否需要使用凭证
 axios.defaults.withCredentials = false;
@@ -20,8 +21,7 @@ axios.defaults.withCredentials = false;
 // 允许跨域
 axios.defaults.headers.post['Access-Control-Allow-Origin-Type'] = '*';
 const axiosInstance: AxiosInstance = axios.create({
-  baseURL: globSetting.apiUrl + '',
-  timeout: 5000
+  baseURL: globSetting.apiUrl + ''
 });
 
 // axios实例拦截响应
@@ -66,11 +66,11 @@ axiosInstance.interceptors.response.use(
   (error: any) => {
     const { response } = error;
     if (response) {
-      // 请求已发出，但是不在2xx的范围
-      showMessage(response.status);
+      if (response.status === 500) {
+        ElMessage.error('网络连接异常,请稍后再试!');
+      }
       return Promise.reject(response.data);
     }
-    showMessage('网络连接异常,请稍后再试!');
   }
 );
 
@@ -111,6 +111,16 @@ export function get<T = any>(config: AxiosRequestConfig): Promise<T> {
 
 export function post<T = any>(config: AxiosRequestConfig): Promise<T> {
   return request({ ...config, method: 'POST' });
+}
+
+export function upload<T = any>(config: AxiosRequestConfig): Promise<T> {
+  return request({
+    ...config,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  });
 }
 
 export function put<T = any>(config: AxiosRequestConfig): Promise<T> {
