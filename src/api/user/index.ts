@@ -18,7 +18,8 @@ enum URL {
   getInfo = '/info',
   getCaptchaImage = '/admin/captchaImage',
   list = '/list',
-  export = '/export'
+  export = '/export',
+  resetPwd = '/resetPwd'
 }
 
 // const getUserProfile = async () => get<UserState>({ url: URL.profile });
@@ -43,10 +44,14 @@ export const addUser = async (body: UserBody) =>
   post<R<UserVo>>({ url: BASE_URL, data: body });
 
 export const removeUser = async (ids: string) =>
-  del<R<String>>({ url: BASE_URL + '/' + ids });
+  del<R<string>>({ url: BASE_URL + '/' + ids });
 
 export const editUser = async (body: UserBody) =>
   put<R<UserVo>>({ url: BASE_URL, data: body });
 
 export const exportUser = async (body: UserSearchBody) =>
   download(BASE_URL + URL.export, body, `user_${new Date().getTime()}.xlsx`);
+
+export const resetPwdUser = async (
+  body: Pick<UserBody, 'password' | 'userId'>
+) => put<R<string>>({ url: BASE_URL + URL.resetPwd, data: body });

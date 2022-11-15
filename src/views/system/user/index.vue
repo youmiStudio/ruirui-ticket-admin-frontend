@@ -112,7 +112,12 @@
         >
         </el-table-column>
 
-        <el-table-column label="手机号码" prop="phoneNumber" align="center">
+        <el-table-column
+          width="120"
+          label="手机号码"
+          prop="phoneNumber"
+          align="center"
+        >
         </el-table-column>
 
         <el-table-column label="状态" align="center">
@@ -139,27 +144,60 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="fixed-width">
+        <el-table-column
+          width="200px"
+          label="操作"
+          align="center"
+          class-name="align-center"
+        >
           <template #default="{ row }">
-            <el-button
-              v-authority="[pageConfig.authorites.edit]"
-              size="small"
-              link
-              type="primary"
-              :icon="Edit"
-              @click.stop="handleEdit(row)"
-              >修改</el-button
-            >
-            <el-button
-              v-authority="[pageConfig.authorites.remove]"
-              link
-              size="small"
-              type="danger"
-              :key="row[pageConfig.id]"
-              :icon="Delete"
-              @click.stop="handleRowDelete(row)"
-              >删除</el-button
-            >
+            <div class="flex align-center">
+              <el-button
+                v-authority="[pageConfig.authorites.edit]"
+                size="small"
+                link
+                type="primary"
+                :icon="Edit"
+                @click.stop="handleEdit(row)"
+                >修改</el-button
+              >
+
+              <el-button
+                v-authority="[pageConfig.authorites.remove]"
+                link
+                size="small"
+                type="danger"
+                :key="row[pageConfig.id]"
+                :icon="Delete"
+                @click.stop="handleRowDelete(row)"
+                >删除</el-button
+              >
+
+              <el-dropdown
+                class="ml12px"
+                @command="(command: string)=>handleCommand(command,row)"
+              >
+                <el-button link size="small" type="primary" :icon="DArrowRight"
+                  >更多</el-button
+                >
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <div v-authority="[pageConfig.authorites.resetPwd]">
+                      <el-dropdown-item command="handleResetPwd" :icon="Key"
+                        >重置密码</el-dropdown-item
+                      >
+                    </div>
+                    <div v-authority="[pageConfig.authorites.edit]">
+                      <el-dropdown-item
+                        command="handleAuthRole"
+                        :icon="CircleCheck"
+                        >分配角色</el-dropdown-item
+                      >
+                    </div>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
         </el-table-column>
       </TablePanel>
@@ -303,7 +341,10 @@ import {
   Plus,
   Edit,
   Delete,
-  Download
+  Download,
+  DArrowRight,
+  Key,
+  CircleCheck
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
@@ -313,7 +354,8 @@ import {
   addUser,
   removeUser,
   editUser,
-  exportUser
+  exportUser,
+  resetPwdUser
 } from '@/api/user/index';
 import { parseTime } from '@/utils';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -346,7 +388,8 @@ const pageConfig = reactive({
     add: addUser,
     remove: removeUser,
     edit: editUser,
-    export: exportUser
+    export: exportUser,
+    resetPwd: resetPwdUser
   },
   authorites: {
     list: 'system:user:list',
@@ -354,7 +397,8 @@ const pageConfig = reactive({
     add: 'system:user:add',
     edit: 'system:user:edit',
     remove: 'system:user:remove',
-    export: 'system:user:export'
+    export: 'system:user:export',
+    resetPwd: 'system:user:resetPwd'
   }
 });
 
@@ -399,7 +443,6 @@ const rules = reactive<FormRules>({
   roleIds: [{ required: true, message: '用户角色不能为空', trigger: 'blur' }],
   phoneNumber: [{ validator: validatePhoneNumber, trigger: 'blur' }]
 });
-
 
 let form = reactive<ModelBody>({
   userId: '',
@@ -581,15 +624,52 @@ function cancel() {
 }
 
 /* --------------------Extra Features Start-------------------- */
+defineExpose({ handleAuthRole, handleResetPwd });
+
+const instance = getCurrentInstance();
+
+const $router = useRouter();
 const roleOptions = ref<RoleVo[]>();
-const getRoleOptions = () => {
+function getRoleOptions() {
   roleOptionList().then((res) => {
     const { data } = res;
     if (data) {
       roleOptions.value = data;
     }
   });
-};
+}
+/** 分配角色操作 */
+function handleAuthRole(row: ModelVo) {
+  const userId = row.userId;
+  $router.push('/system/user-auth/role/' + userId);
+}
+
+function handleResetPwd(row: ModelVo) {
+  ElMessageBox.prompt(`请输入"${row.username}"的新密码`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputErrorMessage: 'Invalid Password'
+  })
+    .then(({ value }) => {
+      pageConfig.api
+        .resetPwd({
+          userId: row.userId,
+          password: value
+        })
+        .then((res) => {
+          const {code} = res;
+          if(code === 200) {
+            ElMessage.success(`"${row.username}"的密码修改成功`)
+          }
+        });
+    })
+    .catch(() => {});
+}
+
+function handleCommand(command: string, row: ModelVo) {
+  const { exposed } = instance as any;
+  exposed[command](row);
+}
 /* --------------------Extra Features End-------------------- */
 </script>
 
