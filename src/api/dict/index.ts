@@ -13,7 +13,6 @@ enum URL {
 export const getDictType = async (dictType:string) =>
   get({ url: URL.getType + dictType, params: {} });
 
-
 export const dictList = async (dictTypeBody: DictTypeSearchBody) =>
   get<R<PageVo<DictTypeVo[]>>>({ url: URL.list, params: dictTypeBody });
 
