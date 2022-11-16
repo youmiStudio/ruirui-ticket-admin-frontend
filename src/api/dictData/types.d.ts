@@ -3,7 +3,7 @@ import type { BaseSearchBody, BaseVo } from '../types';
 /**
  * 字典数据 - 请求对象
  */
-export type DictSearchBody = {
+export type DictDataSearchBody = {
   /**
    * 字典编码
    */
@@ -45,7 +45,7 @@ export type DictSearchBody = {
 /**
  * 新增字典 - 请求体
  */
-export type DictBody = Pick<
+export type DictDataBody = Pick<
   DictVo,
   | 'dictCode'
   | 'dictSort'
@@ -65,7 +65,7 @@ export type DictBody = Pick<
 /**
  * 字典信息 - 返回对象
  */
-export type DictVo = {
+export type DictDataVo = {
   /**
    * 字典编码
    */

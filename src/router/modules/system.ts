@@ -41,6 +41,17 @@ const systemRouter: RouteItem = {
         title: '字典管理',
         roles: [RoleEnum.ADMIN] // or you can only set roles in sub nav
       }
+    },
+    {
+      path: 'dict-data',
+      component: () => import('@/views/system/dict/data.vue'),
+      name: 'ditaDataManager',
+      hidden: true,
+      meta: {
+        title: '字典数据',
+        roles: [RoleEnum.ADMIN], // or you can only set roles in sub nav
+        activeMenu:"/system/dict"
+      }
     }
   ]
 };
