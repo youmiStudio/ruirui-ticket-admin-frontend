@@ -6,7 +6,7 @@ enum URL {
   getType = '/system/dict/data/type/',
   
   list = '/system/dict/type/list',
-  baseUrl = '/system/dict/type',
+  baseUrl = '/system/dict/type/',
   export = '/system/dict/type/export'
 }
 

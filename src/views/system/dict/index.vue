@@ -209,49 +209,15 @@
           </el-col>
 
           <el-col :span="24">
-            <el-form-item label="起始站" prop="fromSiteId">
-              <el-select
-                class="w100%"
-                v-model="form.fromSiteId"
-                placeholder="请选择起始站"
-              >
-                <el-option
-                  v-for="dict in sites"
-                  :label="dict.siteName"
-                  :value="dict.siteId"
-                  :key="dict.siteId"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="目的站" prop="toSiteId">
-              <el-select
-                class="w100%"
-                v-model="form.toSiteId"
-                placeholder="请选择目的站"
-              >
-                <el-option
-                  v-for="dict in sites"
-                  :label="dict.siteName"
-                  :value="dict.siteId"
-                  :key="dict.siteId"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="字典描述" prop="dictDescribe">
+            <el-form-item label="字典类型" prop="dictType">
               <el-input
-                v-model="form.dictDescribe"
-                placeholder="请输入字典描述"
-                type="textarea"
-                :row="3"
+                v-model="form.dictType"
+                placeholder="请输入字典类型"
+                maxlength="20"
               ></el-input>
             </el-form-item>
           </el-col>
+
           <el-col :span="24">
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status">
@@ -286,44 +252,6 @@
       </template>
     </el-dialog>
 
-    <el-dialog
-      v-model="detailDialogVisible"
-      title="站点详情"
-      width="350px"
-      append-to-body
-    >
-      <el-form label-suffix=":">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="站点名称">{{
-              siteDetail?.siteName
-            }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="站点拼音名称">{{
-              siteDetail?.sitePinyin
-            }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="站点描述">{{
-              siteDetail?.siteDescribe
-            }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="站点备注">{{
-              siteDetail?.remark
-            }}</el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="detailDialogVisible = false">
-            确定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -365,7 +293,7 @@ type ModelVo = DictTypeVo;
  * 页面配置，抽离公共部分，少搬点砖
  */
 const pageConfig = reactive({
-  title: '字典',
+  title: '字典类型',
   id: 'dictId',
   isAsc: 'desc',
   orderByColumn: 'dict_id',
@@ -397,6 +325,7 @@ const tableRecordRows = ref<ModelVo[]>([]);
 
 const searchForm = reactive<ModelSearchBody>({
   dictName: '',
+  dictType: '',
   status: ''
 });
 
@@ -410,12 +339,14 @@ const rules = reactive<FormRules>({
       trigger: 'blur'
     }
   ],
-  fromSiteId: [
-    { required: true, message: '起始站点不能为空', trigger: 'blur' }
-  ],
-  toSiteId: [{ required: true, message: '目的站点不能为空', trigger: 'blur' }],
-  dictDescribe: [
-    { required: true, message: '字典描述不能为空', trigger: 'blur' }
+  dictType: [
+    { required: true, message: '字典类型不能为空', trigger: 'blur' },
+    {
+      min: 2,
+      max: 20,
+      message: '字典名称长度必须介于 2 和 20 之间',
+      trigger: 'blur'
+    }
   ],
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
 });

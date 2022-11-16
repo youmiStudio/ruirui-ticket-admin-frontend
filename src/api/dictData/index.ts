@@ -4,7 +4,7 @@ import type { DictBody, DictSearchBody, DictVo } from './types';
 
 enum URL {
   list = '/system/dict/data/list',
-  baseUrl = '/system/dict/data',
+  baseUrl = '/system/dict/data/',
   export = '/system/dict/data/export'
 }
 
