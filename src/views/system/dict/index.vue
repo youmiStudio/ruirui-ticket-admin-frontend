@@ -135,12 +135,15 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column
-          label="字典类型"
-          prop="dictType"
-          align="center"
-          :show-overflow-tooltip="true"
-        >
+        <el-table-column label="字典类型" align="center">
+          <template #default="{ row }">
+            <el-button
+              link
+              type="primary"
+              @click.stop="goDictData(row.dictType)"
+              >{{ row.dictType }}</el-button
+            >
+          </template>
         </el-table-column>
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
@@ -521,6 +524,14 @@ function submitForm() {
 function cancel() {
   dialogState.dialogVisible = false;
   formReset();
+}
+
+
+/**
+ * 点击字典类型调转字典数据，有待完善
+ */
+function goDictData(dictType:String){
+  alert("跳转功能未完善，具体页面http://192.168.0.227:3000/#/system/dict-data")
 }
 
 /* --------------------Extra Features Start-------------------- */
