@@ -43,7 +43,7 @@ const systemRouter: RouteItem = {
       }
     },
     {
-      path: 'dict-data',
+      path: 'dict-data/:dictType',
       component: () => import('@/views/system/dict/data.vue'),
       name: 'ditaDataManager',
       hidden: true,

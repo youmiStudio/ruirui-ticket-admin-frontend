@@ -527,14 +527,17 @@ function cancel() {
 }
 
 
-/**
- * 点击字典类型调转字典数据，有待完善
- */
-function goDictData(dictType:String){
-  alert("跳转功能未完善，具体页面http://192.168.0.227:3000/#/system/dict-data")
-}
 
 /* --------------------Extra Features Start-------------------- */
+const instance = getCurrentInstance();
+
+const $router = useRouter();
+
+/*调转字典数据页面*/
+function goDictData(dictType:String){
+  $router.push('/system/dict-data/' + dictType);
+}
+
 const sites = ref<SiteVo[]>();
 const siteDetail = ref<SiteVo>();
 
