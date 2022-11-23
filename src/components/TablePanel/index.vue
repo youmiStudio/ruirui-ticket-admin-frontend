@@ -175,7 +175,10 @@ const tableRef = ref<InstanceType<typeof ElTable>>();
 defineExpose({
   refresh,
   search,
-  clearRecord
+  clearRecord,
+  triggerRecords,
+  triggerRecordsAll,
+  recordRows
 });
 
 onBeforeMount(() => {

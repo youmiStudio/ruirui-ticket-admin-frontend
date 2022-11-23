@@ -10,6 +10,8 @@ import {
   UserVo
 } from './types';
 
+import {RoleVo} from '../role/types'
+
 const BASE_URL = '/admin/user';
 
 enum URL {
@@ -19,7 +21,8 @@ enum URL {
   getCaptchaImage = '/admin/captchaImage',
   list = '/list',
   export = '/export',
-  resetPwd = '/resetPwd'
+  resetPwd = '/resetPwd',
+  authRole = '/authRole'
 }
 
 // const getUserProfile = async () => get<UserState>({ url: URL.profile });
@@ -39,6 +42,9 @@ export const userList = async (body: UserSearchBody) =>
 
 export const getUser = async (id: number | string) =>
   get<R<UserVo>>({ url: BASE_URL + '/' + id });
+
+export const getUserAuthRole = async (id: string) =>
+  get<R<RoleVo[]>>({ url: BASE_URL + URL.authRole + '/' + id });
 
 export const addUser = async (body: UserBody) =>
   post<R<UserVo>>({ url: BASE_URL, data: body });

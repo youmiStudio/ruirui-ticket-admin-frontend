@@ -81,7 +81,7 @@ export type UserVo = {
   /**
    * 角色组
    */
-  roles:RoleVo[];
+  roles: RoleVo[];
 
   /**
    * 角色组Id
@@ -91,17 +91,20 @@ export type UserVo = {
 
 export type UserSearchBody = Partial<
   Pick<UserVo, 'nickname' | 'phoneNumber' | 'status'>
-> & BaseSearchBody;
+> &
+  BaseSearchBody;
 
-export type UserBody = Pick<
-  UserVo,
-  'userId'
-  | 'username'
-  | 'password'
-  | 'nickname'
-  | 'phoneNumber'
-  | 'sex'
-  | 'roleIds'
-  | 'remark'
-  | 'status'
+export type UserBody = Partial<
+  Pick<
+    UserVo,
+    | 'userId'
+    | 'username'
+    | 'password'
+    | 'nickname'
+    | 'phoneNumber'
+    | 'sex'
+    | 'roleIds'
+    | 'remark'
+    | 'status'
+  >
 >;

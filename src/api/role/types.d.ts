@@ -12,7 +12,7 @@ type RoleVo = {
   /**
    * 角色名称
    */
-  roleName:string;
+  roleName: string;
   /**
    * 角色权限标识
    */
@@ -31,3 +31,4 @@ type RoleVo = {
   flag: string;
 } & BaseVo;
 
+type RoleSearchBody = Partial<Pick<RoleVo, 'roleName' | 'roleKey'>>;
