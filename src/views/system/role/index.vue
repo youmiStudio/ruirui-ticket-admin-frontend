@@ -1,13 +1,13 @@
 <template>
   <div class="app-container">
     <el-card class="mb-10px" shadow="never">
-      <el-form ref="searchFormRef" label-width="75px" :model="searchForm">
+      <el-form ref="searchFormRef" :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="用户名称" prop="userName">
+            <el-form-item label="角色名称" prop="siteName">
               <el-input
-                v-model="searchForm.nickname"
-                placeholder="请输入用户名称"
+                v-model="searchForm.roleName"
+                placeholder="请输入角色名称"
                 clearable
                 maxlength="20"
                 @clear="search"
@@ -15,13 +15,12 @@
               ></el-input>
             </el-form-item>
           </el-col>
-
-          <el-col :span="8">
+          <el-col :span="5">
             <el-form-item label="状态" prop="status">
               <el-select
                 class="w100%"
                 v-model="searchForm.status"
-                placeholder="用户状态"
+                placeholder="角色状态"
                 @change="search"
               >
                 <el-option label="全部" value=""></el-option>
@@ -34,7 +33,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item>
               <el-button type="primary" :icon="Search" @click="search"
                 >查询</el-button
@@ -89,37 +88,33 @@
         @select-change="handleTableSelectChange"
       >
         <el-table-column
-          label="用户编号"
-          prop="userId"
+          label="角色编号"
+          prop="roleId"
           sortable="custom"
           align="center"
         >
         </el-table-column>
-
         <el-table-column
-          label="用户名称"
-          prop="username"
+          label="角色名称"
+          prop="roleName"
           align="center"
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-
         <el-table-column
-          label="用户昵称"
-          prop="nickname"
+          label="权限字符"
+          prop="roleKey"
           align="center"
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-
         <el-table-column
-          width="120"
-          label="手机号码"
-          prop="phoneNumber"
+          label="显示顺序"
+          prop="roleSort"
           align="center"
+          :show-overflow-tooltip="true"
         >
         </el-table-column>
-
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
             <DictTag
@@ -128,7 +123,6 @@
             ></DictTag>
           </template>
         </el-table-column>
-
         <el-table-column label="创建时间" width="150px" align="center">
           <template #default="{ row }">
             <span>{{
@@ -136,7 +130,6 @@
             }}</span>
           </template>
         </el-table-column>
-
         <el-table-column
           label="备注"
           prop="remark"
@@ -144,60 +137,27 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column
-          width="200px"
-          label="操作"
-          align="center"
-          class-name="align-center"
-        >
+        <el-table-column label="操作" align="center" class-name="fixed-width">
           <template #default="{ row }">
-            <div class="flex align-center">
-              <el-button
-                v-authority="[pageConfig.authorites.edit]"
-                size="small"
-                link
-                type="primary"
-                :icon="Edit"
-                @click.stop="handleEdit(row)"
-                >修改</el-button
-              >
-
-              <el-button
-                v-authority="[pageConfig.authorites.remove]"
-                link
-                size="small"
-                type="danger"
-                :key="row[pageConfig.id]"
-                :icon="Delete"
-                @click.stop="handleRowDelete(row)"
-                >删除</el-button
-              >
-
-              <el-dropdown
-                class="ml12px"
-                @command="(command: string)=>handleCommand(command,row)"
-              >
-                <el-button link size="small" type="primary" :icon="DArrowRight"
-                  >更多</el-button
-                >
-                <template #dropdown>
-                  <el-dropdown-menu>
-                    <div v-authority="[pageConfig.authorites.resetPwd]">
-                      <el-dropdown-item command="handleResetPwd" :icon="Key"
-                        >重置密码</el-dropdown-item
-                      >
-                    </div>
-                    <div v-authority="[pageConfig.authorites.edit]">
-                      <el-dropdown-item
-                        command="handleAuthRole"
-                        :icon="CircleCheck"
-                        >分配角色</el-dropdown-item
-                      >
-                    </div>
-                  </el-dropdown-menu>
-                </template>
-              </el-dropdown>
-            </div>
+            <el-button
+              v-authority="[pageConfig.authorites.edit]"
+              size="small"
+              link
+              type="primary"
+              :icon="Edit"
+              @click.stop="handleEdit(row)"
+              >修改</el-button
+            >
+            <el-button
+              v-authority="[pageConfig.authorites.remove]"
+              link
+              size="small"
+              type="danger"
+              :key="row[pageConfig.id]"
+              :icon="Delete"
+              @click.stop="handleRowDelete(row)"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </TablePanel>
@@ -206,97 +166,30 @@
     <el-dialog
       v-model="dialogState.dialogVisible"
       :title="dialogState.title"
-      width="550px"
+      width="450px"
       append-to-body
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row>
           <el-col :span="24">
-            <el-row :gutter="10">
-              <el-col :span="12">
-                <el-form-item label="用户名称" prop="username">
-                  <el-input
-                    v-model="form.username"
-                    placeholder="请输入用户名称"
-                    maxlength="30"
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="用户密码" prop="password">
-                  <el-input
-                    v-model="form.password"
-                    type="password"
-                    placeholder="请输入用户密码"
-                    maxlength="50"
-                    :show-password="true"
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
+            <el-form-item label="角色名称" prop="siteName">
+              <el-input
+                v-model="form.siteName"
+                placeholder="请输入角色名称"
+                maxlength="20"
+              ></el-input>
+            </el-form-item>
           </el-col>
-
           <el-col :span="24">
-            <el-row :gutter="10">
-              <el-col :span="12">
-                <el-form-item label="用户昵称" prop="nickname">
-                  <el-input
-                    v-model="form.nickname"
-                    placeholder="请输入用户昵称"
-                    maxlength="30"
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="手机号码" prop="phoneNumber">
-                  <el-input
-                    v-model="form.phoneNumber"
-                    placeholder="请输入手机号码"
-                    maxlength="11"
-                  ></el-input>
-                </el-form-item>
-              </el-col>
-            </el-row>
+            <el-form-item label="角色描述" prop="siteDescribe">
+              <el-input
+                v-model="form.siteDescribe"
+                placeholder="请输入角色描述"
+                type="textarea"
+                :row="3"
+              ></el-input>
+            </el-form-item>
           </el-col>
-
-          <el-col :span="24">
-            <el-row :gutter="10">
-              <el-col :span="12">
-                <el-form-item label="性别" prop="sex">
-                  <el-select
-                    class="w100%"
-                    v-model="form.sex"
-                    placeholder="用户性别"
-                  >
-                    <el-option
-                      v-for="dict in dicts.type.sys_user_sex"
-                      :label="dict.label"
-                      :value="dict.value"
-                      :key="dict.value"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-              <el-col :span="12">
-                <el-form-item label="角色" prop="roleIds">
-                  <el-select
-                    class="w100%"
-                    v-model="form.roleIds"
-                    multiple
-                    placeholder="用户角色"
-                  >
-                    <el-option
-                      v-for="role in roleOptions"
-                      :label="role.roleName"
-                      :value="role.roleId"
-                      :key="role.roleId"
-                    ></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-col>
-
           <el-col :span="24">
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status">
@@ -309,7 +202,6 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-
           <el-col :span="24">
             <el-form-item label="备注" prop="remark">
               <el-input
@@ -341,80 +233,51 @@ import {
   Plus,
   Edit,
   Delete,
-  Download,
-  DArrowRight,
-  Key,
-  CircleCheck
+  Download
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
 import {
-  userList,
-  getUser,
-  addUser,
-  removeUser,
-  editUser,
-  exportUser,
-  resetPwdUser
-} from '@/api/user/index';
+  roleList
+} from '@/api/role/index';
 import { parseTime } from '@/utils';
+import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
-import { isPhone } from '@/utils/is';
+import type { RoleSearchBody, RoleVo } from '~/api/role/types';
 
-import type { InternalRuleItem } from 'async-validator/dist-types/interface';
-import type { FormInstance, FormRules } from 'element-plus';
-import type { UserSearchBody, UserBody, UserVo } from '~/api/user/types';
-
-import { RoleVo } from '~/api/role/types';
-import { roleOptionList } from '~/api/role';
-
-type ModelSearchBody = UserSearchBody;
-type ModelBody = UserBody;
-type ModelVo = UserVo;
+type ModelSearchBody = RoleSearchBody;
+type ModelBody = SiteBody;
+type ModelVo = RoleVo;
 
 /**
  * 页面配置，抽离公共部分，少搬点砖
  */
 const pageConfig = reactive({
-  title: '用户',
-  id: 'userId',
+  title: '角色',
+  id: 'roleId',
   isAsc: 'desc',
-  orderByColumn: 'user_id',
+  orderByColumn: 'role_id',
   api: {
-    list: userList,
-    get: getUser,
-    add: addUser,
-    remove: removeUser,
-    edit: editUser,
-    export: exportUser,
-    resetPwd: resetPwdUser
+    list: roleList,
+    get: undefined,
+    add: undefined,
+    remove: undefined,
+    edit: undefined,
+    export: undefined
   },
   authorites: {
-    list: 'system:user:list',
-    get: 'system:user:query',
-    add: 'system:user:add',
-    edit: 'system:user:edit',
-    remove: 'system:user:remove',
-    export: 'system:user:export',
-    resetPwd: 'system:user:resetPwd'
+    list: 'ticket:site:list',
+    get: 'ticket:site:query',
+    add: 'ticket:site:add',
+    edit: 'ticket:site:edit',
+    remove: 'ticket:site:remove',
+    export: 'ticket:site:export'
   }
 });
 
-const validatePhoneNumber = (
-  rule: InternalRuleItem,
-  value: string,
-  callback: Function
-) => {
-  if (value && !isPhone(value)) {
-    callback(new Error('请输入正确的手机号码'));
-  } else {
-    callback();
-  }
-};
-
-const dicts = useDictTypes(['sys_common_status', 'sys_user_sex']);
+const dicts = useDictTypes('sys_common_status');
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
@@ -423,37 +286,32 @@ const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
 const searchForm = reactive<ModelSearchBody>({
-  nickname: '',
+  roleName: '',
   status: ''
 });
 
 const rules = reactive<FormRules>({
-  username: [
-    { required: true, message: '用户名称不能为空', trigger: 'blur' },
+  siteName: [
+    { required: true, message: '角色名称不能为空', trigger: 'blur' },
     {
       min: 2,
-      max: 30,
-      message: '用户名称长度必须介于 2 和 30 之间',
+      max: 20,
+      message: '角色名称长度必须介于 2 和 20 之间',
       trigger: 'blur'
     }
   ],
-  password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
-  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }],
-  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
-  roleIds: [{ required: true, message: '用户角色不能为空', trigger: 'blur' }],
-  phoneNumber: [{ validator: validatePhoneNumber, trigger: 'blur' }]
+  siteDescribe: [
+    { required: true, message: '角色描述不能为空', trigger: 'blur' }
+  ],
+  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
 });
 
-let form = reactive<ModelBody>({
-  userId: '',
-  username: '',
-  password: '',
+let form = reactive<ModelVo>({
+  siteId: null,
+  siteName: '',
+  siteDescribe: '',
   status: '0',
-  remark: '',
-  phoneNumber: '',
-  nickname: '',
-  sex: '',
-  roleIds: []
+  remark: ''
 });
 
 const dialogState = reactive({
@@ -474,7 +332,7 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
+  tableRef.value && tableRef.value.search({ ...searchForm });
 }, 200);
 
 function switchBatchDelete(selectRowsLength: number) {
@@ -489,7 +347,7 @@ function handleTableSelectChange(recordRows: any[]) {
   tableRecordRows.value = recordRows;
 }
 
-function fetchList(obj: ModelSearchBody) {
+function fetchList(obj: ModelBody) {
   return pageConfig.api.list({
     ...obj,
     orderByColumn: pageConfig.orderByColumn,
@@ -498,14 +356,12 @@ function fetchList(obj: ModelSearchBody) {
 }
 
 function handleAdd() {
-  getRoleOptions();
   formReset();
   dialogState.title = `添加${pageConfig.title}`;
   dialogState.dialogVisible = true;
 }
 
 function handleEdit(row: any) {
-  getRoleOptions();
   formReset();
   dialogState.title = `修改${pageConfig.title}`;
   dialogState.dialogVisible = true;
@@ -515,7 +371,6 @@ function handleEdit(row: any) {
         form[key] = data[key];
       }
     });
-    form.roleIds = data.roles.map((role) => role.roleId);
   });
 }
 
@@ -523,16 +378,16 @@ function handleExport() {
   pageConfig.api.export(searchForm);
 }
 
-function getDetail(id: number): Promise<ModelVo> {
-  return new Promise((resolve, reject) => {
-    pageConfig.api.get(id).then((res) => {
-      const { data } = res;
-      if (data) {
-        resolve(data);
-      }
-    });
-  });
-}
+// function getDetail(id: number): Promise<ModelVo> {
+//   return new Promise((resolve, reject) => {
+//     pageConfig.api.get(id).then((res) => {
+//       const { data } = res;
+//       if (data) {
+//         resolve(data);
+//       }
+//     });
+//   });
+// }
 
 function handleRowDelete(row: any) {
   batchDelete(row[pageConfig.id]).then(() => {
@@ -622,56 +477,6 @@ function cancel() {
   dialogState.dialogVisible = false;
   formReset();
 }
-
-/* --------------------Extra Features Start-------------------- */
-defineExpose({ handleAuthRole, handleResetPwd });
-
-const instance = getCurrentInstance();
-
-const $router = useRouter();
-const roleOptions = ref<RoleVo[]>();
-function getRoleOptions() {
-  roleOptionList().then((res) => {
-    const { data } = res;
-    if (data) {
-      roleOptions.value = data;
-    }
-  });
-}
-/** 分配角色操作 */
-function handleAuthRole(row: ModelVo) {
-  const userId = row.userId;
-  $router.push('/system/user-auth/role/' + userId);
-}
-
-function handleResetPwd(row: ModelVo) {
-  ElMessageBox.prompt(`请输入"${row.username}"的新密码`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    inputPattern: /^.{5,20}$/,
-    inputErrorMessage: '用户密码长度必须介于 5 和 20 之间'
-  })
-    .then(({ value }) => {
-      pageConfig.api
-        .resetPwd({
-          userId: row.userId,
-          password: value
-        })
-        .then((res) => {
-          const { code } = res;
-          if (code === 200) {
-            ElMessage.success(`"${row.username}"的密码修改成功`);
-          }
-        });
-    })
-    .catch(() => {});
-}
-
-function handleCommand(command: string, row: ModelVo) {
-  const { exposed } = instance as any;
-  exposed[command](row);
-}
-/* --------------------Extra Features End-------------------- */
 </script>
 
 <style lang="scss" scoped></style>

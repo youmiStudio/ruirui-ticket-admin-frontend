@@ -14,3 +14,4 @@ export const roleOptionList = async () =>
 
 export const roleList = async (body?: RoleSearchBody) =>
   get<R<PageVo<RoleVo[]>>>({ url: BASE_URL + URL.list, params: body });
+

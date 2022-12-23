@@ -29,6 +29,17 @@ type RoleVo = {
    * 用户是否存在此角色标识 默认不存在
    */
   flag: string;
+  
+  /**
+   * 菜单组
+   */
+  menuIds: number[];
 } & BaseVo;
 
-type RoleSearchBody = Partial<Pick<RoleVo, 'roleName' | 'roleKey'>>;
+/**
+ * 角色管理查询请求体
+ */
+type RoleSearchBody = Partial<Pick<RoleVo, 'roleName' | 'roleKey' | 'status'>>;
+
+type RoleAddAndEditBody = Pick<RoleVo,"roleId" | "roleName" | "roleKey" | "roleSort" | "menuIds">
+
