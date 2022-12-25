@@ -166,30 +166,80 @@
     <el-dialog
       v-model="dialogState.dialogVisible"
       :title="dialogState.title"
-      width="450px"
+      width="500px"
       append-to-body
     >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="24">
-            <el-form-item label="角色名称" prop="siteName">
+            <el-form-item label="角色名称" prop="roleName">
               <el-input
-                v-model="form.siteName"
+                v-model="form.roleName"
                 placeholder="请输入角色名称"
                 maxlength="20"
               ></el-input>
             </el-form-item>
           </el-col>
+
           <el-col :span="24">
-            <el-form-item label="角色描述" prop="siteDescribe">
+            <el-form-item label="权限字符" prop="roleKey">
+              <template #label>
+                <span>
+                  <el-tooltip
+                    content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)"
+                    placement="top"
+                  >
+                    <el-icon :size="14"><QuestionFilled /></el-icon>
+                  </el-tooltip>
+                  权限字符
+                </span>
+              </template>
+
               <el-input
-                v-model="form.siteDescribe"
-                placeholder="请输入角色描述"
-                type="textarea"
-                :row="3"
+                v-model="form.roleKey"
+                placeholder="请输入权限字符"
+                maxlength="20"
               ></el-input>
             </el-form-item>
           </el-col>
+
+          <el-col :span="24">
+            <el-form-item label="角色顺序" prop="roleSort">
+              <el-input-number
+                v-model="form.roleSort"
+                controls-position="right"
+                :min="0"
+              />
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="24">
+            <el-form-item class="form-block" label="菜单权限">
+              <el-checkbox
+                v-model="menuExpand"
+                @change="handleCheckedTreeExpand"
+                >展开/折叠</el-checkbox
+              >
+              <el-checkbox
+                v-model="menuNodeAll"
+                @change="handleCheckedTreeNodeAll"
+                >全选/全不选</el-checkbox
+              >
+              <el-checkbox v-model="form.menuCheckStrictly"
+                >父子联动</el-checkbox
+              >
+              <el-tree
+                class="tree-border"
+                :data="menuOptions"
+                show-checkbox
+                ref="menu"
+                node-key="id"
+                :check-strictly="!form.menuCheckStrictly"
+                empty-text="加载中，请稍候"
+                :props="defaultProps"
+              ></el-tree> </el-form-item
+          ></el-col>
+
           <el-col :span="24">
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status">
@@ -233,22 +283,42 @@ import {
   Plus,
   Edit,
   Delete,
-  Download
+  Download,
+  QuestionFilled
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
 import {
-  roleList
+  roleList,
+  getRole,
+  addRole,
+  editRole,
+  removeRole,
+  exportRole
 } from '@/api/role/index';
+import { getRoleMenuTreeSelect, getTreeSelect } from '@/api/menu/index';
 import { parseTime } from '@/utils';
-import type { FormInstance, FormRules } from 'element-plus';
+import type {
+  FormInstance,
+  FormRules,
+  CheckboxValueType,
+  ElTree
+} from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
-import type { RoleSearchBody, RoleVo } from '~/api/role/types';
+import type {
+  RoleSearchBody,
+  RoleVo,
+  RoleAddAndEditBody
+} from '@/api/role/types';
+import type { MenuSelectVo } from '@/api/menu/types';
+import type Node from 'element-plus/es/components/tree/src/model/node';
+
+type TreeType = InstanceType<typeof ElTree>;
 
 type ModelSearchBody = RoleSearchBody;
-type ModelBody = SiteBody;
+type ModelBody = RoleAddAndEditBody;
 type ModelVo = RoleVo;
 
 /**
@@ -261,11 +331,11 @@ const pageConfig = reactive({
   orderByColumn: 'role_id',
   api: {
     list: roleList,
-    get: undefined,
-    add: undefined,
-    remove: undefined,
-    edit: undefined,
-    export: undefined
+    get: getRole,
+    add: addRole,
+    remove: removeRole,
+    edit: editRole,
+    export: exportRole
   },
   authorites: {
     list: 'ticket:site:list',
@@ -291,7 +361,7 @@ const searchForm = reactive<ModelSearchBody>({
 });
 
 const rules = reactive<FormRules>({
-  siteName: [
+  roleName: [
     { required: true, message: '角色名称不能为空', trigger: 'blur' },
     {
       min: 2,
@@ -300,18 +370,17 @@ const rules = reactive<FormRules>({
       trigger: 'blur'
     }
   ],
-  siteDescribe: [
-    { required: true, message: '角色描述不能为空', trigger: 'blur' }
-  ],
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
 });
 
-let form = reactive<ModelVo>({
-  siteId: null,
-  siteName: '',
-  siteDescribe: '',
+let form = reactive<ModelBody>({
+  roleId: null,
+  roleName: '',
+  roleKey: '',
+  roleSort: 0,
   status: '0',
-  remark: ''
+  remark: '',
+  menuCheckStrictly: false
 });
 
 const dialogState = reactive({
@@ -359,6 +428,7 @@ function handleAdd() {
   formReset();
   dialogState.title = `添加${pageConfig.title}`;
   dialogState.dialogVisible = true;
+  getMenuTreeSelect();
 }
 
 function handleEdit(row: any) {
@@ -371,6 +441,8 @@ function handleEdit(row: any) {
         form[key] = data[key];
       }
     });
+
+    getMenuTreeSelectByRole(row.roleId);
   });
 }
 
@@ -378,16 +450,16 @@ function handleExport() {
   pageConfig.api.export(searchForm);
 }
 
-// function getDetail(id: number): Promise<ModelVo> {
-//   return new Promise((resolve, reject) => {
-//     pageConfig.api.get(id).then((res) => {
-//       const { data } = res;
-//       if (data) {
-//         resolve(data);
-//       }
-//     });
-//   });
-// }
+function getDetail(id: number): Promise<ModelVo> {
+  return new Promise((resolve, reject) => {
+    pageConfig.api.get(id).then((res) => {
+      const { data } = res;
+      if (data) {
+        resolve(data);
+      }
+    });
+  });
+}
 
 function handleRowDelete(row: any) {
   batchDelete(row[pageConfig.id]).then(() => {
@@ -440,6 +512,11 @@ function formReset() {
     form[key] = null;
   });
   form.status = '0';
+  menuExpand.value = false;
+  menuNodeAll.value = false;
+  if (menu.value) {
+    menu.value.setCheckedKeys([]);
+  }
 }
 
 function searchReset() {
@@ -477,6 +554,65 @@ function cancel() {
   dialogState.dialogVisible = false;
   formReset();
 }
+
+/**
+ * ===============额外功能开始=================
+ */
+const menuExpand = ref<boolean>();
+const menuNodeAll = ref<boolean>();
+const menuOptions = ref<MenuSelectVo[]>();
+const defaultProps = ref({
+  children: 'children',
+  label: 'label'
+});
+const menu = ref<TreeType>();
+
+function getMenuTreeSelect() {
+  getTreeSelect().then((res) => {
+    menuOptions.value = res.data;
+  });
+}
+
+function getMenuTreeSelectByRole(roleId: number) {
+  getRoleMenuTreeSelect(roleId).then((res) => {
+    const { data } = res;
+    if (data) {
+      const { checkedKeys, menus } = data;
+      menuOptions.value = menus;
+      checkedKeys.forEach((v) => {
+        nextTick(() => {
+          menu.value && menu.value.setChecked(v, true, false);
+        });
+      });
+    }
+  });
+}
+
+function handleCheckedTreeExpand(flag: CheckboxValueType) {
+  let treeList = menuOptions.value;
+  if (!treeList) return;
+  for (let i = 0; i < treeList.length; i++) {
+    if (!menu.value) return;
+    menu.value.store.nodesMap[treeList[i].id].expanded = flag as boolean;
+  }
+}
+
+function handleCheckedTreeNodeAll(flag: CheckboxValueType) {
+  menu.value &&
+    menu.value.setCheckedNodes(
+      (flag as boolean) ? (menuOptions.value as Node[]) : []
+    );
+}
+
+/**
+ * ===============额外功能结束=================
+ */
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.form-block {
+  ::v-deep .el-form-item__content {
+    display: block;
+  }
+}
+</style>
