@@ -45,7 +45,9 @@ type RoleVo = {
 /**
  * 角色管理查询请求体
  */
-type RoleSearchBody = Partial<Pick<RoleVo, 'roleName' | 'roleKey' | 'status'>> &
+type RoleSearchBody = Partial<
+  Pick<RoleVo, 'roleName' | 'roleKey' | 'status' | 'roleId'>
+> &
   BaseSearchBody;
 
 type RoleAddAndEditBody = Partial<

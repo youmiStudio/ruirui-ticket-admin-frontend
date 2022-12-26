@@ -84,6 +84,11 @@ export type UserVo = {
   roles: RoleVo[];
 
   /**
+   * 角色Id
+   */
+  roleId?: number;
+
+  /**
    * 角色组Id
    */
   roleIds?: number[];
