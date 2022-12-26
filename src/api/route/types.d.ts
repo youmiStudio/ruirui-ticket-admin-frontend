@@ -8,11 +8,11 @@ export type RouteSearchBody = {
   /**
    * 路线名称
    */
-  routeName?: String;
+  routeName?: string;
   /**
    * 路线状态
    */
-  status?: String;
+  status?: string;
   /**
    * 起始站点ID
    */
@@ -28,11 +28,11 @@ export type RouteSearchBody = {
     /**
      * 起始站点名称
      */
-    fromSiteName?: String;
+    fromSiteName?: string;
     /**
      * 目的站点名称
      */
-    toSiteName?: String;
+    toSiteName?: string;
     /**
      * 创建时间 - 开始
      */

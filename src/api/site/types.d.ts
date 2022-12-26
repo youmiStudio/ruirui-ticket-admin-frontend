@@ -34,7 +34,7 @@ export type SiteVo = {
   /**
    * 站点Id
    */
-  siteId?: number | null;
+  siteId: number;
   /**
    * 站点名称
    */

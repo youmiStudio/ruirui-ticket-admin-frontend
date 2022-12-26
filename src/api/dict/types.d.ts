@@ -20,7 +20,7 @@ export type DictTypeSearchBody = {
   /**
    * 字典状态
    */
-  status?: String;
+  status?: string;
 } & BaseSearchBody;
 
 /**
@@ -56,6 +56,6 @@ export type DictTypeVo = {
   /**
    * 字典状态
    */
-  status?: String;
+  status?: string;
 } & BaseVo;
 
