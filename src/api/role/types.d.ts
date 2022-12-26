@@ -1,4 +1,5 @@
 import { BaseSearchBody, BaseVo } from '@/api/types';
+import { TreeKey } from 'element-plus/es/components/tree/src/tree.type';
 
 /**
  * 角色返回对象
@@ -33,7 +34,7 @@ type RoleVo = {
   /**
    * 菜单组
    */
-  menuIds: number[];
+  menuIds: TreeKey[];
 
   /**
    * 菜单严格检查

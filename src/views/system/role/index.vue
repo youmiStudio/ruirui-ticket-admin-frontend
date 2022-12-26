@@ -137,27 +137,54 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="fixed-width">
+        <el-table-column
+          width="200px"
+          label="操作"
+          align="center"
+          class-name="fixed-width"
+        >
           <template #default="{ row }">
-            <el-button
-              v-authority="[pageConfig.authorites.edit]"
-              size="small"
-              link
-              type="primary"
-              :icon="Edit"
-              @click.stop="handleEdit(row)"
-              >修改</el-button
-            >
-            <el-button
-              v-authority="[pageConfig.authorites.remove]"
-              link
-              size="small"
-              type="danger"
-              :key="row[pageConfig.id]"
-              :icon="Delete"
-              @click.stop="handleRowDelete(row)"
-              >删除</el-button
-            >
+            <div class="flex align-center" v-if="row.roleId !== 1">
+              <el-button
+                v-authority="[pageConfig.authorites.edit]"
+                size="small"
+                link
+                type="primary"
+                :icon="Edit"
+                @click.stop="handleEdit(row)"
+                >修改</el-button
+              >
+              <el-button
+                v-authority="[pageConfig.authorites.remove]"
+                link
+                size="small"
+                type="danger"
+                :key="row[pageConfig.id]"
+                :icon="Delete"
+                @click.stop="handleRowDelete(row)"
+                >删除</el-button
+              >
+
+              <el-dropdown
+                class="ml12px"
+                @command="(command: string)=>handleCommand(command,row)"
+              >
+                <el-button link size="small" type="primary" :icon="DArrowRight"
+                  >更多</el-button
+                >
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <div v-authority="[pageConfig.authorites.edit]">
+                      <el-dropdown-item
+                        command="handleAuthUser"
+                        :icon="CircleCheck"
+                        >分配用户</el-dropdown-item
+                      >
+                    </div>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
         </el-table-column>
       </TablePanel>
@@ -284,7 +311,9 @@ import {
   Edit,
   Delete,
   Download,
-  QuestionFilled
+  QuestionFilled,
+  CircleCheck,
+  DArrowRight
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
@@ -314,6 +343,7 @@ import type {
 } from '@/api/role/types';
 import type { MenuSelectVo } from '@/api/menu/types';
 import type Node from 'element-plus/es/components/tree/src/model/node';
+import { TreeKey } from 'element-plus/es/components/tree/src/tree.type';
 
 type TreeType = InstanceType<typeof ElTree>;
 
@@ -370,6 +400,8 @@ const rules = reactive<FormRules>({
       trigger: 'blur'
     }
   ],
+  roleKey: [{ required: true, message: '权限标识不能为空', trigger: 'blur' }],
+  roleSort: [{ required: true, message: '角色顺序不能为空', trigger: 'blur' }],
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
 });
 
@@ -441,7 +473,6 @@ function handleEdit(row: any) {
         form[key] = data[key];
       }
     });
-
     getMenuTreeSelectByRole(row.roleId);
   });
 }
@@ -512,6 +543,8 @@ function formReset() {
     form[key] = null;
   });
   form.status = '0';
+  form.roleSort = 0;
+  form.menuCheckStrictly = true;
   menuExpand.value = false;
   menuNodeAll.value = false;
   if (menu.value) {
@@ -532,8 +565,10 @@ function submitForm() {
   formRef.value?.validate((valid) => {
     if (valid) {
       formLoading.value = true;
+
       const isAdd = form[pageConfig.id] === null;
       const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
+      form['menuIds'] = getMenuAllCheckedKeys();
       api(form).then((res) => {
         const { code } = res;
         if (code !== 200) {
@@ -566,6 +601,13 @@ const defaultProps = ref({
   label: 'label'
 });
 const menu = ref<TreeType>();
+
+const $router = useRouter()
+
+const instance = getCurrentInstance();
+
+defineExpose({ handleAuthUser });
+
 
 function getMenuTreeSelect() {
   getTreeSelect().then((res) => {
@@ -602,6 +644,29 @@ function handleCheckedTreeNodeAll(flag: CheckboxValueType) {
     menu.value.setCheckedNodes(
       (flag as boolean) ? (menuOptions.value as Node[]) : []
     );
+}
+
+// 所有菜单节点数据
+function getMenuAllCheckedKeys(): TreeKey[] {
+  if (!menu.value) return [];
+  // 目前被选中的菜单节点
+  let checkedKeys = menu.value.getCheckedKeys();
+  // 半选中的菜单节点
+  let halfCheckedKeys = menu.value.getHalfCheckedKeys();
+  checkedKeys.unshift.apply(checkedKeys, halfCheckedKeys);
+  return checkedKeys;
+}
+
+function handleCommand(command: string, row: ModelVo) {
+  const { exposed } = instance as any;
+
+  exposed[command](row);
+}
+
+/** 分配角色操作 */
+function handleAuthUser(row: ModelVo) {
+  const userId = row.roleId;
+  $router.push('/system/role-auth/user/' + userId);
 }
 
 /**
