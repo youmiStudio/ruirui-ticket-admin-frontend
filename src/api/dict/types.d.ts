@@ -1,6 +1,5 @@
 import type { BaseSearchBody, BaseVo } from '../types';
 
-
 /**
  * 字典类型 - 请求对象
  */
@@ -12,15 +11,20 @@ export type DictTypeSearchBody = {
   /**
    * 字典名称
    */
-   dictName?: string;
+  dictName?: string;
   /**
-  * 字典类型
-  */
+   * 字典类型
+   */
   dictType?: string;
   /**
    * 字典状态
    */
   status?: string;
+
+  /**
+   * 创建时间
+   */
+  createTime?: string;
 } & BaseSearchBody;
 
 /**
@@ -28,14 +32,8 @@ export type DictTypeSearchBody = {
  */
 export type DictTypeBody = Pick<
   DictTypeVo,
-  | 'dictId'
-  | 'dictName'
-  | 'dictType'
-  | 'status'
-  | 'remark'
-
+  'dictId' | 'dictName' | 'dictType' | 'status' | 'remark'
 >;
-
 
 /**
  * 字典类型 - 返回对象
@@ -50,12 +48,11 @@ export type DictTypeVo = {
    */
   dictName?: string;
   /**
-  * 字典类型
-  */
+   * 字典类型
+   */
   dictType?: string;
   /**
    * 字典状态
    */
   status?: string;
 } & BaseVo;
-

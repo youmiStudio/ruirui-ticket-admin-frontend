@@ -64,6 +64,7 @@ import type { ElTable } from 'element-plus';
 import type { PropsPageType } from './types';
 import { deepClone } from '@/utils';
 import type { PropType } from 'vue';
+import { number } from 'echarts';
 
 const props = defineProps({
   title: String,
@@ -104,7 +105,7 @@ const props = defineProps({
     default: 200
   },
   pageSizes: {
-    type: Array,
+    type: Array<number>,
     default: () => [10, 20, 30, 50]
   },
   pageSize: {

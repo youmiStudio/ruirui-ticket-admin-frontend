@@ -63,3 +63,6 @@ type RoleAddAndEditBody = Partial<
     | 'menuCheckStrictly'
   >
 >;
+
+type RoleUserSearchBody = Pick<UserVo, 'phoneNumber' | 'username' | 'roleId'> &
+  BaseSearchBody;

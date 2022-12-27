@@ -304,7 +304,7 @@ const rules = reactive<FormRules>({
 });
 
 let form = reactive<ModelVo>({
-  siteId: null,
+  siteId: 0,
   siteName: '',
   siteDescribe: '',
   status: '0',

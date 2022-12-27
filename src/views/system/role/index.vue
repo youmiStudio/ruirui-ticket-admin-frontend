@@ -409,7 +409,7 @@ let form = reactive<ModelBody>({
   roleId: null,
   roleName: '',
   roleKey: '',
-  roleSort: 0,
+  roleSort: 1,
   status: '0',
   remark: '',
   menuCheckStrictly: false
@@ -543,7 +543,7 @@ function formReset() {
     form[key] = null;
   });
   form.status = '0';
-  form.roleSort = 0;
+  form.roleSort = 1;
   form.menuCheckStrictly = true;
   menuExpand.value = false;
   menuNodeAll.value = false;
