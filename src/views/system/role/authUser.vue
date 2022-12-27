@@ -62,6 +62,16 @@
             >批量取消授权</el-button
           >
         </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            plain
+            size="small"
+            :icon="Close"
+            @click="handleClose"
+            >返回</el-button
+          >
+        </el-col>
       </el-row>
 
       <TablePanel
@@ -117,7 +127,8 @@ import {
   Refresh,
   Plus,
   CircleClose,
-  Delete
+  Delete,
+Close
 } from '@element-plus/icons-vue';
 import { useDebounceFn } from '@vueuse/shared';
 import TablePanel from '@/components/TablePanel/index.vue';
@@ -138,6 +149,7 @@ import type { FormInstance } from 'element-plus';
 import { UserVo } from '~/api/user/types';
 
 const $route = useRoute();
+const $router = useRouter();
 const dicts = useDictTypes('sys_common_status');
 
 /**
@@ -252,6 +264,10 @@ function handleBatchDelete() {
 
 function handleAdd() {
   selectUserRef.value && selectUserRef.value.show();
+}
+
+function handleClose() {
+  $router.push("/system/role")
 }
 </script>
 
