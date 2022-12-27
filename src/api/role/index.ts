@@ -17,7 +17,8 @@ enum URL {
   allocatedList = '/authUser/allocatedList',
   unallocatedList = '/authUser/unallocatedList',
   cancelAuthUser = '/authUser/cancel',
-  cancelAuthUserAll = '/authUser/cancelAll'
+  cancelAuthUserAll = '/authUser/cancelAll',
+  selectAll = '/authUser/selectAll'
 }
 
 type UserRoleVo = {
@@ -62,6 +63,9 @@ export const cancelAuthUser = async (body: UserRoleVo) =>
 
 export const cancelAuthUserAll = async (body: UserRolesVo) =>
   put<R<RoleVo>>({ url: BASE_URL + URL.cancelAuthUserAll, params: body });
+
+export const authUserSelectAll = async (body: UserRolesVo) =>
+  put<R<RoleVo>>({ url: BASE_URL + URL.selectAll, params: body });
 
 export const exportRole = async (RoleBody: RoleSearchBody) =>
   download(

@@ -40,12 +40,19 @@
 
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
-          <el-button type="primary" plain size="small" :icon="Plus"
+          <el-button
+            v-authority="[pageConfig.authorites.edit]"
+            type="primary"
+            plain
+            size="small"
+            :icon="Plus"
+            @click="handleAdd"
             >新增用户</el-button
           >
         </el-col>
         <el-col :span="1.5">
           <el-button
+            v-authority="[pageConfig.authorites.edit]"
             type="danger"
             plain
             size="small"
@@ -88,7 +95,7 @@
           <template #default="{ row }">
             <el-button
               text
-              v-authority="['system:role:remove']"
+              v-authority="[pageConfig.authorites.edit]"
               size="small"
               type="primary"
               :icon="CircleClose"
@@ -99,6 +106,8 @@
         </el-table-column>
       </TablePanel>
     </el-card>
+
+    <select-user ref="selectUserRef" @ok="search"></select-user>
   </div>
 </template>
 
@@ -116,6 +125,8 @@ import useDictTypes from '@/hooks/web/useDictTypes';
 import { parseTime } from '@/utils';
 import { vAuthority } from '@/directive/authority';
 import { ElMessageBox, ElMessage } from 'element-plus';
+
+import SelectUser from './selectUser.vue';
 
 import {
   allocatedList,
@@ -139,9 +150,13 @@ const pageConfig = reactive({
   api: {
     list: allocatedList
   },
-  authorites: {}
+  authorites: {
+    list: 'system:role:list',
+    edit: 'system:role:edit'
+  }
 });
 
+const selectUserRef = ref<InstanceType<typeof SelectUser>>();
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const searchFormRef = ref<FormInstance>();
 const tableRecordRows = ref<UserVo[]>([]);
@@ -233,6 +248,10 @@ function handleBatchDelete() {
       });
     })
     .catch(() => {});
+}
+
+function handleAdd() {
+  selectUserRef.value && selectUserRef.value.show();
 }
 </script>
 

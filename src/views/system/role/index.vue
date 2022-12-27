@@ -368,12 +368,12 @@ const pageConfig = reactive({
     export: exportRole
   },
   authorites: {
-    list: 'ticket:site:list',
-    get: 'ticket:site:query',
-    add: 'ticket:site:add',
-    edit: 'ticket:site:edit',
-    remove: 'ticket:site:remove',
-    export: 'ticket:site:export'
+    list: 'system:role:list',
+    get: 'system:role:query',
+    add: 'system:role:add',
+    edit: 'system:role:edit',
+    remove: 'system:role:remove',
+    export: 'system:role:export'
   }
 });
 
