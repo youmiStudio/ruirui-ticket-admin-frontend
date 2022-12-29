@@ -58,7 +58,7 @@ type MenuVo = {
   /**
    * 菜单类型
    */
-  menuType: MenuType;
+  menuType: string;
   /**
    * 菜单是否隐藏（0显示 1隐藏）
    */

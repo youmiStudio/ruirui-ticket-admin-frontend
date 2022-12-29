@@ -52,6 +52,7 @@
             plain
             size="small"
             :icon="Plus"
+            @click="handleAdd"
             >新增</el-button
           >
         </el-col>
@@ -70,7 +71,7 @@
         :has-pagination="false"
         :selectType="false"
         :formatter="tableFormatter"
-        :tree-props="{children: 'children', hasChildren: 'hasChildren'}"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
         <el-table-column label="菜单名称" prop="menuName"> </el-table-column>
         <el-table-column width="70px" label="图标" align="center">
@@ -133,6 +134,91 @@
         </el-table-column>
       </TablePanel>
     </el-card>
+
+    <el-dialog
+      v-model="dialogState.dialogVisible"
+      :title="dialogState.title"
+      width="680px"
+      append-to-body
+    >
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="100px">
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="上级菜单" prop="parentId">
+              <el-tree-select
+                class="w100%"
+                v-model="form.parentId"
+                node-key="menuId"
+                check-strictly
+                :data="menuOptions"
+                :props="treeSelectProps"
+                placeholder="选择上级菜单"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
+            <el-form-item label="菜单类型" prop="menuType">
+              <el-radio-group v-model="form.menuType">
+                <el-radio label="M">目录</el-radio>
+                <el-radio label="C">菜单</el-radio>
+                <el-radio label="F">按钮</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" v-if="form.menuType != 'F'">
+            <el-form-item label="菜单图标" prop="icon">
+              <el-popover
+                v-model:visible="iconPopoverVisible"
+                placement="bottom-start"
+                trigger="click"
+                :width="460"
+              >
+                <template #default>
+                  <IconSelect ref="iconSelect" @selected="selected" />
+                </template>
+                <template #reference>
+                  <el-input
+                    v-model="form.icon"
+                    placeholder="点击选择图标"
+                    readonly
+                  >
+                    <template #prefix>
+                      <svg-icon
+                        v-if="form.icon"
+                        :icon-class="form.icon"
+                        class="el-input__icon"
+                        style="height: 32px; width: 16px"
+                      />
+                      <el-icon v-else>
+                        <Search />
+                      </el-icon>
+                    </template>
+                  </el-input>
+                </template>
+              </el-popover>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="菜单名称" prop="menuName">
+              <el-input v-model="form.menuName" placeholder="请输入菜单名称" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="显示排序" prop="orderNum">
+              <el-input-number class="w100p" v-model="form.orderNum" controls-position="right" :min="0" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="cancel">取消</el-button>
+          <el-button type="primary" @click="submitForm" :loading="formLoading">
+            确定
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -156,6 +242,7 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import SvgIcon from '@/components/SvgIcon/index.vue';
 import { parseTime } from '@/utils';
 import { handleTree } from '@/utils/menu';
+import IconSelect from '@/components/IconSelect/index.vue';
 
 import type {
   FormInstance,
@@ -176,7 +263,8 @@ import {
 import type {
   MenuVo,
   MenuSearchBody,
-  MenuAddAndEditBody
+  MenuAddAndEditBody,
+  MenuType
 } from '@/api/menu/types';
 
 type ModelSearchBody = MenuSearchBody;
@@ -207,6 +295,8 @@ const pageConfig = reactive({
   }
 });
 
+const rules = reactive<FormRules>({});
+
 const dicts = useDictTypes('sys_common_status');
 const searchForm = reactive<ModelSearchBody>({
   menuName: '',
@@ -214,6 +304,22 @@ const searchForm = reactive<ModelSearchBody>({
 });
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const searchFormRef = ref<FormInstance>();
+const formLoading = ref<boolean>(false);
+const formRef = ref<FormInstance>();
+const menuOptions = ref<any[]>([]);
+const iconPopoverVisible = ref<boolean>(false);
+const treeSelectProps = ref({
+  label: 'menuName'
+});
+const dialogState = reactive({
+  title: '',
+  dialogVisible: false
+});
+
+let form = reactive<ModelBody>({
+  parentId: 0,
+  menuType: 'M'
+});
 
 onMounted(() => {
   search();
@@ -225,8 +331,7 @@ const search = useDebounceFn(() => {
 
 function tableFormatter(res: any) {
   const { data } = res;
-  const resData = handleTree(data, 'menuId')
-  console.log(resData);
+  const resData = handleTree(data, 'menuId');
   return resData;
 }
 
@@ -243,6 +348,66 @@ function searchReset() {
 function searchRefresh() {
   searchReset();
   search();
+}
+
+function cancel() {
+  dialogState.dialogVisible = false;
+  formReset();
+}
+
+function formReset() {
+  formRef.value?.resetFields();
+  Object.keys(form).forEach((key) => {
+    form[key] = null;
+  });
+  form.parentId = 0;
+  form.menuType = 'M';
+  form.status = '0';
+}
+
+function submitForm() {
+  formRef.value?.validate((valid) => {
+    if (valid) {
+      formLoading.value = true;
+
+      const isAdd = form[pageConfig.id] === null;
+      const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
+
+      api(form).then((res) => {
+        const { code } = res;
+        if (code !== 200) {
+          formLoading.value = false;
+          return;
+        }
+        search();
+        formReset();
+        dialogState.dialogVisible = false;
+        formLoading.value = false;
+        ElMessage.success(`${pageConfig.title}${isAdd ? '新增' : '编辑'}成功`);
+      });
+    }
+  });
+}
+
+function handleAdd() {
+  formReset();
+  dialogState.title = `添加${pageConfig.title}`;
+  dialogState.dialogVisible = true;
+  getTreeselect();
+}
+
+function getTreeselect() {
+  pageConfig.api.list().then((response) => {
+    menuOptions.value = [];
+    const menu = { menuId: 0, menuName: '主类目', children: [] as any[] };
+    menu.children = handleTree(response.data, 'menuId');
+    menuOptions.value.push(menu);
+  });
+}
+
+function selected(name: string) {
+  form.icon = name;
+  iconPopoverVisible.value = false;
 }
 </script>
 

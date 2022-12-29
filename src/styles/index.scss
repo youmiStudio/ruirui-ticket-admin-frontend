@@ -4,15 +4,14 @@
 //   --ep-color-primary: red;
 // }
 
-@import './variables.module.scss';
-@import './sidebar.scss';
-@import './transition.scss';
+@import "./variables.module.scss";
+@import "./sidebar.scss";
+@import "./transition.scss";
 @import "./element/card.scss";
 @import "./element/table.scss";
 @import "./element/form.scss";
 @import "./element/input.scss";
 @import "./element/tree.scss";
-
 
 body {
   margin: 0;
@@ -72,3 +71,6 @@ div:focus {
   padding: 20px;
 }
 
+.w100p {
+  width: 100% !important;
+}
