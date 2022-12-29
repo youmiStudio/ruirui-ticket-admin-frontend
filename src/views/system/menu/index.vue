@@ -205,7 +205,12 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="显示排序" prop="orderNum">
-              <el-input-number class="w100p" v-model="form.orderNum" controls-position="right" :min="0" />
+              <el-input-number
+                class="w100p"
+                v-model="form.orderNum"
+                controls-position="right"
+                :min="0"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -406,8 +411,13 @@ function getTreeselect() {
 }
 
 function selected(name: string) {
-  form.icon = name;
+  form.icon = '';
   iconPopoverVisible.value = false;
+  
+  setTimeout(() => {
+    // fixed:点击后输入框自动选中文字
+    form.icon = name;
+  }, 200);
 }
 </script>
 
