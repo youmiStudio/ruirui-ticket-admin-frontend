@@ -44,7 +44,7 @@
       </div>
     </el-table>
     <el-pagination
-      v-if="page"
+      v-if="hasPagination"
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
       small
@@ -64,7 +64,6 @@ import type { ElTable } from 'element-plus';
 import type { PropsPageType } from './types';
 import { deepClone } from '@/utils';
 import type { PropType } from 'vue';
-import { number } from 'echarts';
 
 const props = defineProps({
   title: String,
@@ -88,6 +87,10 @@ const props = defineProps({
         totalRow: 'total'
       };
     }
+  },
+  hasPagination: {
+    type: Boolean,
+    default: true
   },
   page: {
     type: Object as PropType<PropsPageType>,
@@ -280,10 +283,15 @@ function refresh() {
 function initStaticData(dataList: any[], pageNum: number) {
   const list = deepClone(dataList);
   total.value = list.length;
-  tableData.value = list.slice(
-    pageSize.value * (pageNum - 1),
-    pageSize.value * pageNum
-  );
+
+  if (props.hasPagination) {
+    tableData.value = list.slice(
+      pageSize.value * (pageNum - 1),
+      pageSize.value * pageNum
+    );
+  } else {
+    tableData.value = list
+  }
   nextTick(() => {
     setSelection();
   });

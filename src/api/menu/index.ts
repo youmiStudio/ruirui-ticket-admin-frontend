@@ -26,7 +26,7 @@ export const getRoleMenuTreeSelect = async (roleId: number) =>
   });
 
 export const menuList = async (body?: MenuSearchBody) =>
-  get<R<PageVo<MenuVo[]>>>({ url: BASE_URL + URL.list, params: body });
+  get<R<MenuVo[]>>({ url: BASE_URL + URL.list, params: body });
 
 export const getMenu = async (id: number) =>
   get<R<MenuVo>>({ url: BASE_URL + '/' + id });
@@ -37,10 +37,10 @@ export const addMenu = async (body: MenuAddAndEditBody) =>
 export const removeMenu = async (ids: string) =>
   del<R<String>>({ url: BASE_URL + '/' + ids });
 
-export const editRole = async (body: MenuAddAndEditBody) =>
+export const editMenu = async (body: MenuAddAndEditBody) =>
   put<R<MenuVo>>({ url: BASE_URL, data: body });
 
-export const exportRole = async (RoleBody: MenuSearchBody) =>
+export const exportMenu = async (RoleBody: MenuSearchBody) =>
   download(
     BASE_URL + URL.export,
     RoleBody,

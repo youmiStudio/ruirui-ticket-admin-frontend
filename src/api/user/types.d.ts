@@ -95,7 +95,7 @@ export type UserVo = {
 } & BaseVo;
 
 export type UserSearchBody = Partial<
-  Pick<UserVo, 'nickname' | 'phoneNumber' | 'status'>
+  Pick<UserVo, 'username' | 'phoneNumber' | 'status'>
 > &
   BaseSearchBody;
 
