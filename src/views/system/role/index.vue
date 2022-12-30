@@ -144,7 +144,7 @@
           class-name="fixed-width"
         >
           <template #default="{ row }">
-            <div class="flex align-center" v-if="row.roleId !== 1">
+            <div class="flex align-center justify-center" v-if="row.roleId !== 1">
               <el-button
                 v-authority="[pageConfig.authorites.edit]"
                 size="small"
@@ -168,6 +168,7 @@
               <el-dropdown
                 class="ml12px"
                 @command="(command: string)=>handleCommand(command,row)"
+                v-authority="[pageConfig.authorites.edit]"
               >
                 <el-button link size="small" type="primary" :icon="DArrowRight"
                   >更多</el-button

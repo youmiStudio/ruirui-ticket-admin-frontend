@@ -151,7 +151,7 @@
           class-name="align-center"
         >
           <template #default="{ row }">
-            <div class="flex align-center">
+            <div class="flex align-center justify-center">
               <el-button
                 v-authority="[pageConfig.authorites.edit]"
                 size="small"
@@ -176,6 +176,10 @@
               <el-dropdown
                 class="ml12px"
                 @command="(command: string)=>handleCommand(command,row)"
+                v-authority="[
+                  pageConfig.authorites.resetPwd,
+                  pageConfig.authorites.edit
+                ]"
               >
                 <el-button link size="small" type="primary" :icon="DArrowRight"
                   >更多</el-button

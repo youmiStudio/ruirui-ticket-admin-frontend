@@ -189,7 +189,7 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="fixed-width">
+        <el-table-column min-width="120px" label="操作" align="center" class-name="fixed-width">
           <template #default="{ row }">
             <el-button
               v-authority="[pageConfig.authorites.edit]"
