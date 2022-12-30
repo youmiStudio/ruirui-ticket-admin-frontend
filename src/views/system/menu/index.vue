@@ -519,7 +519,11 @@ let form = reactive<ModelBody>({
   isFrame: '1',
   isCache: '0',
   visible: '0',
-  status: '0'
+  status: '0',
+  component:'',
+  path:'',
+  perms:'',
+  query:'',
 });
 
 onMounted(() => {
@@ -618,7 +622,7 @@ function getTreeselect(): Promise<any> {
 }
 
 function selected(name: string) {
-  form.icon = ''
+  form.icon = '';
   iconPopoverVisible.value = false;
   setTimeout(() => {
     form.icon = name;
@@ -630,12 +634,12 @@ function handleEdit(row: any) {
   getTreeselect().then(() => {
     dialogState.title = `修改${pageConfig.title}`;
     getDetail(row[pageConfig.id]).then((data) => {
-      dialogState.dialogVisible = true;
       Object.keys(form).forEach((key) => {
         if (key in data) {
           form[key] = data[key];
         }
       });
+      dialogState.dialogVisible = true;
     });
   });
 }
@@ -693,7 +697,7 @@ function handlePopverShow() {
 }
 
 function handleIconClear() {
-  form.icon = ''
+  form.icon = '';
 }
 </script>
 

@@ -134,6 +134,7 @@ export const addRoutesHelper = (
  */
 export const addRoutes = (routes: RouteItem[]) => {
   routes.forEach((route) => {
+    if(route.meta && route.meta.link) return
     addRoutesHelper(route);
   });
 };

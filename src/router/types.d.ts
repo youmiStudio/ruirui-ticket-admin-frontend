@@ -18,6 +18,7 @@ declare module 'vue-router' {
     affix?: boolean;
     roles?: RoleEnum[];
     activeMenu?: string;
+    link?: string
   }
 }
 
