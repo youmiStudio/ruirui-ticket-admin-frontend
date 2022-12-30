@@ -50,11 +50,11 @@ type MenuVo = {
   /**
    * 是否外链（0是 1不否）
    */
-  isFrame: number;
+  isFrame: string;
   /**
    * 是否缓存（0缓存 1 不缓存）
    */
-  isCache: number;
+  isCache: string;
   /**
    * 菜单类型
    */
