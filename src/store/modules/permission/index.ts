@@ -143,7 +143,6 @@ export function filterAsyncRoutes(
     }
   });
 
-  console.log(res);
   return res;
 }
 
@@ -174,8 +173,6 @@ export const usePermissionStore = defineStore({
             ...accessedRoutes,
             ...dynamicRoutes
           ];
-
-          console.log('dynamicRoutes==>',dynamicRoutes);
 
           resolve([...accessedRoutes,...dynamicRoutes]);
         });

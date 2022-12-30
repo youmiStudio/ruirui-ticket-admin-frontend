@@ -42,7 +42,7 @@ export type DictTypeVo = {
   /**
    * 字典主键
    */
-  dictId: Number | string;
+  dictId: number | string | undefined;
   /**
    * 字典名称
    */

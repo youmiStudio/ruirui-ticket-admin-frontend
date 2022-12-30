@@ -58,7 +58,7 @@ export type DictDataVo = {
   /**
    * 字典排序
    */
-  dictSort?: number | string;
+  dictSort?: number;
   /**
    * 字典标签
    */

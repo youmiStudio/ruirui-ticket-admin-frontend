@@ -99,6 +99,16 @@
             >导出</el-button
           >
         </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            plain
+            size="small"
+            :icon="Close"
+            @click="handleClose"
+            >返回</el-button
+          >
+        </el-col>
       </el-row>
 
       <TablePanel
@@ -193,6 +203,7 @@
                 v-model="form.dictType"
                 placeholder="请输入字典类型"
                 maxlength="20"
+                disabled
               ></el-input>
             </el-form-item>
           </el-col>
@@ -228,16 +239,21 @@
           </el-col>
 
           <el-col :span="24">
-            <el-form-item label="显示排序" prop="dictSort"> </el-form-item>
+            <el-form-item label="显示排序" prop="dictSort">
+              <el-input-number v-model="form.dictSort"></el-input-number>
+            </el-form-item>
           </el-col>
 
           <el-col :span="24">
             <el-form-item label="回显样式" prop="listClass">
-              <el-input
-                v-model="form.listClass"
-                placeholder="请输入回显样式"
-                maxlength="20"
-              ></el-input>
+              <el-select class="w100%" v-model="form.listClass">
+                <el-option
+                  v-for="item in listClassOptions"
+                  :key="item.value"
+                  :label="item.label + '(' + item.value + ')'"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
 
@@ -284,7 +300,8 @@ import {
   Plus,
   Edit,
   Delete,
-  Download
+  Download,
+  Close
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
@@ -309,7 +326,6 @@ import type {
   DictDataBody,
   DictDataVo
 } from '~/api/dictData/types';
-
 
 type ModelSearchBody = DictDataSearchBody;
 type ModelBody = DictDataBody;
@@ -353,6 +369,33 @@ const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 const dictSelectOptions = ref<DictTypeVo[]>([]);
 
+const listClassOptions = ref([
+  {
+    value: 'default',
+    label: '默认'
+  },
+  {
+    value: 'primary',
+    label: '主要'
+  },
+  {
+    value: 'success',
+    label: '成功'
+  },
+  {
+    value: 'info',
+    label: '信息'
+  },
+  {
+    value: 'warning',
+    label: '警告'
+  },
+  {
+    value: 'danger',
+    label: '危险'
+  }
+]);
+
 const searchForm = reactive<ModelSearchBody>({
   dictLabel: '',
   dictType: '',
@@ -360,33 +403,18 @@ const searchForm = reactive<ModelSearchBody>({
 });
 
 const rules = reactive<FormRules>({
-  dictName: [
-    { required: true, message: '字典名称不能为空', trigger: 'blur' },
-    {
-      min: 2,
-      max: 20,
-      message: '字典名称长度必须介于 2 和 20 之间',
-      trigger: 'blur'
-    }
-  ],
-  dictType: [
-    { required: true, message: '字典类型不能为空', trigger: 'blur' },
-    {
-      min: 2,
-      max: 20,
-      message: '字典名称长度必须介于 2 和 20 之间',
-      trigger: 'blur'
-    }
-  ],
-  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
+  dictLabel: [{ required: true, message: '数据标签不能为空', trigger: 'blur' }],
+  dictValue: [{ required: true, message: '数据键值不能为空', trigger: 'blur' }],
+  dictSort: [{ required: true, message: '数据顺序不能为空', trigger: 'blur' }]
 });
 
 let form = reactive<ModelBody>({
-  // dictCode: undefined,
-  // dictSort: 1,
-  // dictType: '',
-  // status: '0',
-  // remark: ''
+  dictCode: undefined,
+  dictSort: 0,
+  dictType: '',
+  status: '0',
+  remark: '',
+  listClass: 'default'
 });
 
 const dialogState = reactive({
@@ -397,8 +425,10 @@ const dialogState = reactive({
 onMounted(() => {
   search();
   getDictTypeSelect();
+  const dictType = $route.params.dictType as string;
 
-  searchForm.dictType = $route.params.dictType as string
+  searchForm.dictType = dictType;
+  form.dictType = dictType;
 });
 
 watch(
@@ -413,9 +443,8 @@ const search = useDebounceFn(() => {
   tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
 }, 200);
 
-
-function handleDictTypeChange(type:string) {
-  $router.replace(`/system/dict-data/${type}`)
+function handleDictTypeChange(type: string) {
+  $router.replace(`/system/dict-data/${type}`);
 }
 
 function getDictTypeSelect() {
@@ -423,7 +452,6 @@ function getDictTypeSelect() {
     if (res.data) {
       dictSelectOptions.value = res.data;
     }
-    console.log(dictSelectOptions.value);
   });
 }
 
@@ -529,9 +557,12 @@ function clearTableRecordRows() {
 function formReset() {
   formRef.value?.resetFields();
   Object.keys(form).forEach((key) => {
+    if (key === 'dictType') return;
     form[key] = null;
   });
+  form.dictSort = 0;
   form.status = '0';
+  form.listClass = 'default';
 }
 
 function searchReset() {
@@ -568,6 +599,10 @@ function submitForm() {
 function cancel() {
   dialogState.dialogVisible = false;
   formReset();
+}
+
+function handleClose() {
+  $router.push("/system/dict")
 }
 </script>
 
