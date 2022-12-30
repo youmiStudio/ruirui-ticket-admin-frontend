@@ -135,7 +135,7 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column label="字典类型" align="center">
+        <el-table-column label="字典类型" align="center" :show-overflow-tooltip="true">
           <template #default="{ row }">
             <el-button
               link
@@ -298,7 +298,7 @@ type ModelVo = DictTypeVo;
 const pageConfig = reactive({
   title: '字典类型',
   id: 'dictId',
-  isAsc: 'desc',
+  isAsc: 'asc',
   orderByColumn: 'dict_id',
   api: {
     list: dictList,

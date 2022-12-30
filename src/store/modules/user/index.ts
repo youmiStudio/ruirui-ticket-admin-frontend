@@ -107,11 +107,14 @@ export const useUserStore = defineStore({
         this.token = token;
         setToken(token);
 
-        const { roles } = await this.getInfo();
+        const { roles, authorities } = await this.getInfo();
 
         // generate accessible routes map based on roles
         const permissionStroe = usePermissionStore();
-        const accessRoutes = await permissionStroe.generateRoutes(roles);
+        const accessRoutes = await permissionStroe.generateRoutes(
+          roles,
+          authorities
+        );
         addRoutes(accessRoutes);
 
         // reset visited views and cached views

@@ -22,7 +22,8 @@ enum URL {
   list = '/list',
   export = '/export',
   resetPwd = '/resetPwd',
-  authRole = '/authRole'
+  authRole = '/authRole',
+  getRouters = '/getRouters'
 }
 
 // const getUserProfile = async () => get<UserState>({ url: URL.profile });
@@ -34,6 +35,9 @@ export const logout = async (token: string | undefined | null) =>
 
 export const getInfo = async (token: string | undefined | null) =>
   get<UserInfoRes>({ url: BASE_URL + URL.getInfo, params: { token } });
+
+export const getRouters = async () =>
+get<R<RouteItem[]>>({ url: BASE_URL + URL.getRouters });
 
 export const getCaptchaImage = async () => get({ url: URL.getCaptchaImage });
 

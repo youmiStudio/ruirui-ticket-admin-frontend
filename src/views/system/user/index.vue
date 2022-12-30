@@ -4,10 +4,10 @@
       <el-form ref="searchFormRef" label-width="75px" :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="用户名" prop="userName">
+            <el-form-item label="用户名称" prop="userName">
               <el-input
                 v-model="searchForm.username"
-                placeholder="请输入用户名"
+                placeholder="请输入用户名称"
                 clearable
                 maxlength="20"
                 @clear="search"

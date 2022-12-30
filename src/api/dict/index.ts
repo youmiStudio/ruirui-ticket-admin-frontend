@@ -1,16 +1,18 @@
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../types';
-import type {  DictTypeSearchBody, DictTypeVo, DictTypeBody } from './types';
+import type { DictTypeSearchBody, DictTypeVo, DictTypeBody } from './types';
 
 enum URL {
   getType = '/system/dict/data/type/',
-  
   list = '/system/dict/type/list',
   baseUrl = '/system/dict/type/',
-  export = '/system/dict/type/export'
+  export = '/system/dict/type/export',
+  optionSelect = '/system/dict/type/optionSelect'
 }
+export const getOptionSelect = async () =>
+  get<R<DictTypeVo[]>>({ url: URL.optionSelect, params: {} });
 
-export const getDictType = async (dictType:string) =>
+export const getDictType = async (dictType: string) =>
   get({ url: URL.getType + dictType, params: {} });
 
 export const dictList = async (dictTypeBody: DictTypeSearchBody) =>

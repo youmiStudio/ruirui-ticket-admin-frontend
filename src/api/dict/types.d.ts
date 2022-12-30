@@ -42,17 +42,17 @@ export type DictTypeVo = {
   /**
    * 字典主键
    */
-  dictId?: Number | string;
+  dictId: Number | string;
   /**
    * 字典名称
    */
-  dictName?: string;
+  dictName: string;
   /**
    * 字典类型
    */
-  dictType?: string;
+  dictType: string;
   /**
    * 字典状态
    */
-  status?: string;
+  status: string;
 } & BaseVo;

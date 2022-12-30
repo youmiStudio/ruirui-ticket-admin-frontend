@@ -9,7 +9,6 @@ import { saveAs } from 'file-saver';
 
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 import { useUserStore } from '~/store';
-import { cloneFnJSON } from '@vueuse/core';
 
 const globSetting = useGlobSettings();
 
@@ -146,14 +145,11 @@ export function download(
   });
   return post({
     url,
-    data: params,
-    transformRequest: [
-      (params) => {
-        return tansParams(params);
-      }
-    ],
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    params,
     responseType: 'blob',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
     ...config
   })
     .then(async (data) => {

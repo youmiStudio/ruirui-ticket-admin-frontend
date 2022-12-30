@@ -5,14 +5,19 @@
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="字典名称" prop="dictName">
-              <el-input
-                v-model="searchForm.dictName"
-                placeholder="请输入字典名称"
-                clearable
-                maxlength="20"
-                @clear="search"
-                @change="search"
-              ></el-input>
+              <el-select
+                class="w100%"
+                v-model="searchForm.dictType"
+                placeholder="字典名称"
+                @change="handleDictTypeChange"
+              >
+                <el-option
+                  v-for="dict in dictSelectOptions"
+                  :key="dict.dictType"
+                  :label="dict.dictName"
+                  :value="dict.dictType"
+                ></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
 
@@ -109,13 +114,7 @@
           align="center"
         >
         </el-table-column>
-        <el-table-column label="字典标签" align="center">
-          <template #default="{ row }">
-            <DictTag
-              :options="dicts.type.sys_common_status"
-              :value="row.status"
-            ></DictTag>
-          </template>
+        <el-table-column label="字典标签" prop="dictLabel" align="center">
         </el-table-column>
 
         <el-table-column
@@ -188,7 +187,6 @@
     >
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
         <el-row>
-
           <el-col :span="24">
             <el-form-item label="字典类型" prop="dictType">
               <el-input
@@ -198,7 +196,7 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          
+
           <el-col :span="24">
             <el-form-item label="数据标签" prop="dictLabel">
               <el-input
@@ -230,13 +228,7 @@
           </el-col>
 
           <el-col :span="24">
-            <el-form-item label="显示排序" prop="dictSort">
-              <el-input
-                v-model="form.dictSort"
-                placeholder="请输入显示排序"
-                maxlength="20"
-              ></el-input>
-            </el-form-item>
+            <el-form-item label="显示排序" prop="dictSort"> </el-form-item>
           </el-col>
 
           <el-col :span="24">
@@ -282,7 +274,6 @@
         </span>
       </template>
     </el-dialog>
-
   </div>
 </template>
 
@@ -305,6 +296,7 @@ import {
   editDictData,
   exportDictData
 } from '@/api/dictData/index';
+import { getOptionSelect } from '@/api/dict/index';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -312,9 +304,12 @@ import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
 import type { DictTypeVo } from '~/api/dict/types';
-import type { DictDataSearchBody, DictDataBody, DictDataVo } from '~/api/dictData/types';
+import type {
+  DictDataSearchBody,
+  DictDataBody,
+  DictDataVo
+} from '~/api/dictData/types';
 
-import { wxSiteList } from '@/api/site/index';
 
 type ModelSearchBody = DictDataSearchBody;
 type ModelBody = DictDataBody;
@@ -326,7 +321,7 @@ type ModelVo = DictDataVo;
 const pageConfig = reactive({
   title: '字典数据',
   id: 'dictCode',
-  isAsc: 'desc',
+  isAsc: 'asc',
   orderByColumn: 'dict_code',
   api: {
     list: dictDataList,
@@ -346,6 +341,9 @@ const pageConfig = reactive({
   }
 });
 
+const $route = useRoute();
+const $router = useRouter();
+
 const dicts = useDictTypes('sys_common_status');
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const formRef = ref<FormInstance>();
@@ -353,6 +351,7 @@ const searchFormRef = ref<FormInstance>();
 const formLoading = ref<boolean>(false);
 const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
+const dictSelectOptions = ref<DictTypeVo[]>([]);
 
 const searchForm = reactive<ModelSearchBody>({
   dictLabel: '',
@@ -383,11 +382,11 @@ const rules = reactive<FormRules>({
 });
 
 let form = reactive<ModelBody>({
-  dictCode: undefined,
-  dictName: '',
-  dictType:'',
-  status: '0',
-  remark: ''
+  // dictCode: undefined,
+  // dictSort: 1,
+  // dictType: '',
+  // status: '0',
+  // remark: ''
 });
 
 const dialogState = reactive({
@@ -397,6 +396,9 @@ const dialogState = reactive({
 
 onMounted(() => {
   search();
+  getDictTypeSelect();
+
+  searchForm.dictType = $route.params.dictType as string
 });
 
 watch(
@@ -410,6 +412,20 @@ watch(
 const search = useDebounceFn(() => {
   tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
 }, 200);
+
+
+function handleDictTypeChange(type:string) {
+  $router.replace(`/system/dict-data/${type}`)
+}
+
+function getDictTypeSelect() {
+  getOptionSelect().then((res) => {
+    if (res.data) {
+      dictSelectOptions.value = res.data;
+    }
+    console.log(dictSelectOptions.value);
+  });
+}
 
 function switchBatchDelete(selectRowsLength: number) {
   if (selectRowsLength > 0) {
@@ -553,33 +569,6 @@ function cancel() {
   dialogState.dialogVisible = false;
   formReset();
 }
-
-/* --------------------Extra Features Start-------------------- */
-const types = ref<DictTypeVo[]>();
-const typeDetail = ref<DictTypeVo>();
-
-const detailDialogVisible = ref<boolean>(false);
-
-onMounted(() => {
-  getSites();
-});
-/**
- * 获取所有站点
- */
-function getSites() {
-  wxSiteList().then((res) => {
-    const { data } = res;
-    if (data) {
-      types.value = data;
-    }
-  });
-}
-
-function openSiteDetailDialog(site: DictTypeVo) {
-  detailDialogVisible.value = true;
-  typeDetail.value = site;
-}
-/* --------------------Extra Features End-------------------- */
 </script>
 
 <style lang="scss" scoped></style>

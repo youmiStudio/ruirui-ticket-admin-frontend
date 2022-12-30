@@ -13,24 +13,24 @@ export type DictDataSearchBody = {
    */
   dictSort?: Number | string;
   /**
-  * 字典标签
-  */
+   * 字典标签
+   */
   dictLabel?: string;
   /**
- * 字典键值
- */
+   * 字典键值
+   */
   dictValue?: string;
   /**
-  * 字典类型
-  */
+   * 字典类型
+   */
   dictType?: string;
   /**
- * 样式属性
- */
+   * 样式属性
+   */
   cssClass?: string;
   /**
-  * 表格回显样式
-  */
+   * 表格回显样式
+   */
   listClass?: string;
   /**
    * 是否默认(Y是 N否)
@@ -45,22 +45,7 @@ export type DictDataSearchBody = {
 /**
  * 新增字典 - 请求体
  */
-export type DictDataBody = Pick<
-  DictVo,
-  | 'dictCode'
-  | 'dictSort'
-  | 'dictDescribe'
-  | 'dictLabel'
-  | 'dictValue'
-  | 'dictType'
-  | 'cssClass'
-  | 'listClass'
-  | 'isDefault'
-  | 'status'
-  | 'remark'
-
->;
-
+export type DictDataBody = Partial<DictDataVo>;
 
 /**
  * 字典信息 - 返回对象
@@ -69,30 +54,30 @@ export type DictDataVo = {
   /**
    * 字典编码
    */
-  dictCode?: Number | string;
+  dictCode?: number | string;
   /**
    * 字典排序
    */
-  dictSort?: Number | string;
+  dictSort?: number | string;
   /**
-  * 字典标签
-  */
+   * 字典标签
+   */
   dictLabel?: string;
   /**
- * 字典键值
- */
+   * 字典键值
+   */
   dictValue?: string;
   /**
-  * 字典类型
-  */
+   * 字典类型
+   */
   dictType?: string;
   /**
- * 样式属性
- */
+   * 样式属性
+   */
   cssClass?: string;
   /**
-  * 表格回显样式
-  */
+   * 表格回显样式
+   */
   listClass?: string;
   /**
    * 是否默认(Y是 N否)
@@ -102,4 +87,8 @@ export type DictDataVo = {
    * 字典状态
    */
   status?: string;
+
+  default: boolean;
+
+  isDefault: string;
 } & BaseVo;

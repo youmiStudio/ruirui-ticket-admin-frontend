@@ -9,7 +9,6 @@ const Layout = () => import('~/layouts/default/index.vue');
 import systemRouter from './modules/system';
 import businessRouter from './modules/business';
 
-
 export const constantRoutes: RouteItem[] = [
   {
     name: 'login',
@@ -59,8 +58,51 @@ export const constantRoutes: RouteItem[] = [
 ];
 
 export const asyncRoutes: RouteItem[] = [
-  systemRouter,
-  businessRouter
+  {
+    name: 'userRoleManager',
+    path: '/system/user-auth',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:user:edit'],
+    children: [
+      {
+        path: 'role/:userId',
+        component: () => import('@/views/system/user/authRole.vue'),
+        name: 'AuthRole',
+        meta: { title: '分配角色', activeMenu: '/system/user' }
+      }
+    ]
+  },
+  {
+    name:'roleUserManager',
+    path: '/system/role-auth',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:role:edit'],
+    children: [
+      {
+        path: 'user/:roleId',
+        component: () => import('@/views/system/role/authUser.vue'),
+        name: 'AuthUser',
+        meta: { title: '分配用户', activeMenu: '/system/role' }
+      }
+    ]
+  },
+  {
+    name:'ditaDataManager',
+    path: '/system/dict-data',
+    component: Layout,
+    hidden: true,
+    permissions: ['system:dict:list'],
+    children: [
+      {
+        path: ':dictType',
+        component: () => import('@/views/system/dict/data.vue'),
+        name: 'Data',
+        meta: { title: '字典数据', activeMenu: '/system/dict' }
+      }
+    ]
+  },
 ];
 
 const router = createRouter({
