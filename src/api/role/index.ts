@@ -1,4 +1,3 @@
-import { type } from 'os';
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../types';
 import type {
