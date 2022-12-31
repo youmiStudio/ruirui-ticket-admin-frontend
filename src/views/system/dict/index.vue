@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card class="mb-10px" shadow="never">
-      <el-form ref="searchFormRef" label-width="75px" :model="searchForm">
+      <el-form ref="searchFormRef" :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="字典名称" prop="dictName">
@@ -43,25 +43,6 @@
                   :label="dict.label"
                   :value="dict.value"
                   :key="dict.value"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="8">
-            <el-form-item label="创建时间" prop="createTime">
-              <el-select
-                class="w100%"
-                v-model="searchForm.createTime"
-                placeholder="起始日期-结束日期"
-                @change="search"
-              >
-                <el-option label="全部" value=""></el-option>
-                <el-option
-                  v-for="dict in sites"
-                  :label="dict.siteName"
-                  :value="dict.siteId"
-                  :key="dict.siteId"
                 ></el-option>
               </el-select>
             </el-form-item>

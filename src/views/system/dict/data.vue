@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card class="mb-10px" shadow="never">
-      <el-form ref="searchFormRef" label-width="75px" :model="searchForm">
+      <el-form ref="searchFormRef"  :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="字典名称" prop="dictName">
