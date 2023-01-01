@@ -93,6 +93,17 @@
             >导出</el-button
           >
         </el-col>
+        <el-col :span="1.5">
+          <el-button
+            v-authority="[pageConfig.authorites.remove]"
+            type="danger"
+            plain
+            size="small"
+            :icon="RefreshRight"
+            @click="handleRefreshConfig"
+            >刷新缓存</el-button
+          >
+        </el-col>
       </el-row>
 
       <TablePanel
@@ -255,7 +266,8 @@ import {
   Plus,
   Edit,
   Delete,
-  Download
+  Download,
+  RefreshRight
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
@@ -505,6 +517,12 @@ function submitForm() {
 function cancel() {
   dialogState.dialogVisible = false;
   formReset();
+}
+
+function handleRefreshConfig() {
+  pageConfig.api.refreshCache().then(res=>{
+    ElMessage.success("刷新缓存成功")
+  })
 }
 </script>
 
