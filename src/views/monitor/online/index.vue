@@ -80,12 +80,8 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column
-          label="操作"
-          align="center"
-          class-name="fixed-width"
-        >
-          <template #default="{ row }"> 
+        <el-table-column label="操作" align="center" class-name="fixed-width">
+          <template #default="{ row }">
             <div class="flex align-center justify-center">
               <el-button
                 v-authority="[pageConfig.authorites.forceLogout]"
@@ -94,7 +90,8 @@
                 type="danger"
                 :icon="Delete"
                 @click.stop="handleForceLogout(row)"
-                >强退</el-button>
+                >强退</el-button
+              >
             </div>
           </template>
         </el-table-column>
@@ -177,24 +174,25 @@ function searchRefresh() {
   search();
 }
 
-function handleForceLogout(row:ModelVo) {
+function handleForceLogout(row: ModelVo) {
   ElMessageBox.confirm(
-      `是否确认要强退名称为“${row.userName}”的用户？`,
-      '警告',
-      {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }
-    )
-      .then(() => {
-        pageConfig.api.forceLogout(row.tokenId).then(res=>{
-          if(res.code === 200) {
-            ElMessage.success("强退用户成功")
-          }
-        })
-      })
-      .catch(() => {});
+    `是否确认要强退名称为“${row.userName}”的用户？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
+    .then(() => {
+      pageConfig.api.forceLogout(row.tokenId).then((res) => {
+        if (res.code === 200) {
+          ElMessage.success('强退用户成功');
+          search();
+        }
+      });
+    })
+    .catch(() => {});
 }
 </script>
 
