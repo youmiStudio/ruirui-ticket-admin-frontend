@@ -151,7 +151,7 @@
           class-name="align-center"
         >
           <template #default="{ row }">
-            <div class="flex align-center justify-center">
+            <div class="flex align-center justify-center" v-if="row.userId !== 1">
               <el-button
                 v-authority="[pageConfig.authorites.edit]"
                 size="small"
