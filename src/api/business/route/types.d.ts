@@ -1,5 +1,5 @@
-import type { SiteVo } from '~/api/site/types';
-import type { BaseSearchBody, BaseVo } from '../types';
+import type { SiteVo } from '~/api/business/site/types';
+import type { BaseSearchBody, BaseVo } from '../../types';
 
 /**
  * 路线信息 - 请求对象

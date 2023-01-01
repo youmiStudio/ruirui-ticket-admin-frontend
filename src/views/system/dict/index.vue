@@ -257,17 +257,14 @@ import {
   removeDict,
   editDict,
   exportDict
-} from '@/api/dict/index';
+} from '@/api/system/dict/index';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
-import type { SiteVo } from '~/api/site/types';
-import type { DictTypeSearchBody, DictTypeBody, DictTypeVo } from '~/api/dict/types';
-
-import { wxSiteList } from '@/api/site/index';
+import type { DictTypeSearchBody, DictTypeBody, DictTypeVo } from '~/api/system/dict/types';
 
 type ModelSearchBody = DictTypeSearchBody;
 type ModelBody = DictTypeBody;
@@ -510,38 +507,11 @@ function cancel() {
 
 
 /* --------------------Extra Features Start-------------------- */
-const instance = getCurrentInstance();
-
 const $router = useRouter();
 
 /*调转字典数据页面*/
 function goDictData(dictType:String){
   $router.push('/system/dict-data/' + dictType);
-}
-
-const sites = ref<SiteVo[]>();
-const siteDetail = ref<SiteVo>();
-
-const detailDialogVisible = ref<boolean>(false);
-
-onMounted(() => {
-  getSites();
-});
-/**
- * 获取所有站点
- */
-function getSites() {
-  wxSiteList().then((res) => {
-    const { data } = res;
-    if (data) {
-      sites.value = data;
-    }
-  });
-}
-
-function openSiteDetailDialog(site: SiteVo) {
-  detailDialogVisible.value = true;
-  siteDetail.value = site;
 }
 /* --------------------Extra Features End-------------------- */
 </script>

@@ -67,12 +67,12 @@
 
 <script lang="ts" setup>
 import TablePanel from '@/components/TablePanel/index.vue';
-import { getUser, editUser } from '@/api/user/index';
-import { roleList } from '@/api/role/index';
+import { getUser, editUser } from '@/api/system/user/index';
+import { roleList } from '@/api/system/role/index';
 import { useDebounceFn } from '@vueuse/shared';
-import { UserVo } from '~/api/user/types';
+import { UserVo } from '@/api/system/user/types';
 import { parseTime } from '@/utils';
-import { RoleVo } from '~/api/role/types';
+import { RoleVo } from '@/api/system/role/types';
 import { ElMessage, ElMessageBox } from 'element-plus';
 
 const $route = useRoute();

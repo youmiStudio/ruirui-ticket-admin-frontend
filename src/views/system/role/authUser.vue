@@ -143,10 +143,10 @@ import {
   allocatedList,
   cancelAuthUser,
   cancelAuthUserAll
-} from '@/api/role/index';
-import type { RoleUserSearchBody } from '@/api/role/types';
+} from '@/api/system/role/index';
+import type { RoleUserSearchBody } from '@/api/system/role/types';
 import type { FormInstance } from 'element-plus';
-import { UserVo } from '~/api/user/types';
+import { UserVo } from '~/api/system/user/types';
 
 const $route = useRoute();
 const $router = useRouter();

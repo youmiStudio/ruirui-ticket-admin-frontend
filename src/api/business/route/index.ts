@@ -1,6 +1,6 @@
 // 权限问题后期增加
 import { get, post, put, del, download } from '~/utils/http/axios';
-import type { R, PageVo } from '../types';
+import type { R, PageVo } from '../../types';
 import type { RouteBody, RouteSearchBody, RouteVo } from './types';
 
 enum URL {

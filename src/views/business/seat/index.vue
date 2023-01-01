@@ -336,7 +336,7 @@ import {
   removeSeat,
   editSeat,
   exportSeat
-} from '@/api/seat/index';
+} from '@/api/business/seat/index';
 import { uploadFile } from '@/api/common/index';
 import { isAmount, isImage } from '@/utils/is';
 import { yuanToFen, fenToYuan } from '@/utils/price';
@@ -348,7 +348,7 @@ import { vAuthority } from '@/directive/authority';
 import type { UploadProps } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
 import type { InternalRuleItem } from 'async-validator/dist-types/interface';
-import type { SeatBody, SeatSearchBody, SeatVo } from '~/api/seat/types';
+import type { SeatBody, SeatSearchBody, SeatVo } from '~/api/business/seat/types';
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 
 type ModelSearchBody = SeatSearchBody;

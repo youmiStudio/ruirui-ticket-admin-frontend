@@ -440,13 +440,13 @@ import {
   removeMenu,
   editMenu,
   exportMenu
-} from '@/api/menu/index';
+} from '@/api/system/menu/index';
 import type {
   MenuVo,
   MenuSearchBody,
   MenuAddAndEditBody,
   MenuType
-} from '@/api/menu/types';
+} from '@/api/system/menu/types';
 
 type ModelSearchBody = MenuSearchBody;
 type ModelBody = MenuAddAndEditBody;

@@ -237,13 +237,13 @@ import {
   getSite,
   editSite,
   exportSite
-} from '@/api/site/index';
+} from '@/api/business/site/index';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
-import type { SiteBody, SiteVo } from '~/api/site/types';
+import type { SiteBody, SiteVo } from '~/api/business/site/types';
 
 type ModelBody = SiteBody;
 type ModelVo = SiteVo;

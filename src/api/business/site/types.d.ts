@@ -1,4 +1,4 @@
-import type { BaseVo, BaseSearchBody } from '../types';
+import type { BaseVo, BaseSearchBody } from '../../types';
 
 /**
  * 站点信息 - 请求对象

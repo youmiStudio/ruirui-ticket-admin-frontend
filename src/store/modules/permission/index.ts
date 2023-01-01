@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 import { asyncRoutes, constantRoutes } from '@/router';
 import { RoleEnum } from '~/enums/roleEnum';
-import { getRouters } from '@/api/user';
+import { getRouters } from '~/api/system/user';
 
 import Layout from '@/layouts/default/index.vue';
 

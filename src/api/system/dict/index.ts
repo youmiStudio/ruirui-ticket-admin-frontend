@@ -1,5 +1,5 @@
 import { get, post, put, del, download } from '~/utils/http/axios';
-import type { R, PageVo } from '../types';
+import type { R, PageVo } from '../../types';
 import type { DictTypeSearchBody, DictTypeVo, DictTypeBody } from './types';
 
 enum URL {

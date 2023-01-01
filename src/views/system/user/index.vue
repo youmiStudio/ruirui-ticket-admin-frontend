@@ -360,7 +360,7 @@ import {
   editUser,
   exportUser,
   resetPwdUser
-} from '@/api/user/index';
+} from '@/api/system/user/index';
 import { parseTime } from '@/utils';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
@@ -369,10 +369,10 @@ import { isPhone } from '@/utils/is';
 
 import type { InternalRuleItem } from 'async-validator/dist-types/interface';
 import type { FormInstance, FormRules } from 'element-plus';
-import type { UserSearchBody, UserBody, UserVo } from '~/api/user/types';
+import type { UserSearchBody, UserBody, UserVo } from '~/api/system/user/types';
 
-import { RoleVo } from '~/api/role/types';
-import { roleOptionList } from '~/api/role';
+import { RoleVo } from '@/api/system/role/types';
+import { roleOptionList } from '@/api/system/role';
 
 type ModelSearchBody = UserSearchBody;
 type ModelBody = UserBody;

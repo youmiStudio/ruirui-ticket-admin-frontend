@@ -102,10 +102,10 @@ import { parseTime } from '@/utils';
 import { vAuthority } from '@/directive/authority';
 import { ElMessageBox, ElMessage, dialogEmits } from 'element-plus';
 
-import { unallocatedList, authUserSelectAll } from '@/api/role/index';
-import type { RoleUserSearchBody } from '@/api/role/types';
+import { unallocatedList, authUserSelectAll } from '@/api/system/role/index';
+import type { RoleUserSearchBody } from '@/api/system/role/types';
 import type { FormInstance } from 'element-plus';
-import { UserVo } from '~/api/user/types';
+import { UserVo } from '~/api/system/user/types';
 import { emit } from 'process';
 
 defineExpose({

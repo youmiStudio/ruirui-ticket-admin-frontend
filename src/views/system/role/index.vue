@@ -325,8 +325,8 @@ import {
   editRole,
   removeRole,
   exportRole
-} from '@/api/role/index';
-import { getRoleMenuTreeSelect, getTreeSelect } from '@/api/menu/index';
+} from '@/api/system/role/index';
+import { getRoleMenuTreeSelect, getTreeSelect } from '@/api/system/menu/index';
 import { parseTime } from '@/utils';
 import type {
   FormInstance,
@@ -341,8 +341,8 @@ import type {
   RoleSearchBody,
   RoleVo,
   RoleAddAndEditBody
-} from '@/api/role/types';
-import type { MenuSelectVo } from '@/api/menu/types';
+} from '@/api/system/role/types';
+import type { MenuSelectVo } from '@/api/system/menu/types';
 import type Node from 'element-plus/es/components/tree/src/model/node';
 import { TreeKey } from 'element-plus/es/components/tree/src/tree.type';
 

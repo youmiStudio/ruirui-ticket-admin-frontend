@@ -312,20 +312,20 @@ import {
   removeDictData,
   editDictData,
   exportDictData
-} from '@/api/dictData/index';
-import { getOptionSelect } from '@/api/dict/index';
+} from '@/api/system/dictData/index';
+import { getOptionSelect } from '@/api/system/dict/index';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
-import type { DictTypeVo } from '~/api/dict/types';
+import type { DictTypeVo } from '~/api/system/dict/types';
 import type {
   DictDataSearchBody,
   DictDataBody,
   DictDataVo
-} from '~/api/dictData/types';
+} from '~/api/system/dictData/types';
 
 type ModelSearchBody = DictDataSearchBody;
 type ModelBody = DictDataBody;

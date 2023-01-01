@@ -279,7 +279,7 @@ import {
   refreshCacheConfig,
   getConfig,
   exportConfig
-} from '@/api/config/index';
+} from '@/api/system/config/index';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
@@ -290,7 +290,7 @@ import type {
   ConfigVo,
   ConfigAddAndEditBody,
   ConfigSearchBody
-} from '~/api/config/types';
+} from '~/api/system/config/types';
 
 type ModelSearchBody = ConfigSearchBody;
 type ModelBody = ConfigAddAndEditBody;
