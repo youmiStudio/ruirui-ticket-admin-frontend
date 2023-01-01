@@ -48,12 +48,11 @@ export function useECharts(
     tryOnMounted(() => {
       const $_sidebarElm =
         document.getElementsByClassName('sidebar-container')[0];
-
       if ($_sidebarElm) {
         const { removeEvent } = useEventListener({
           el: $_sidebarElm,
           eventType: 'transitionend',
-          listener: sidebarResize
+          listener: resizeFn
         });
         removeSideBarResizeFn = removeEvent;
       }

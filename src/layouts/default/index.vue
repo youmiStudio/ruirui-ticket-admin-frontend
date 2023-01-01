@@ -31,6 +31,7 @@ useResizeHandler();
 
 const appStore = useAppStore();
 const { sidebar, device } = storeToRefs(appStore);
+
 const globSettings = useGlobSettings();
 
 const showSettings = computed(()=>{
@@ -47,10 +48,10 @@ const fixedHeader = computed(()=>{
 
 const classObj = computed(() => {
   return {
-    hideSidebar: !sidebar.value.opened,
-    openSidebar: sidebar.value.opened,
-    withoutAnimation: sidebar.value.withoutAnimation,
-    mobile: device.value === 'mobile'
+    hideSidebar: !unref(sidebar).opened,
+    openSidebar: unref(sidebar).opened,
+    withoutAnimation: unref(sidebar).withoutAnimation,
+    mobile: unref(device) === 'mobile'
   };
 });
 

@@ -7,11 +7,11 @@
         class="sidebar-logo-link"
         to="/"
       >
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
+        <img v-if="logo" :src="Logo" class="sidebar-logo" />
         <h1 v-else class="sidebar-title">{{ title }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <img v-if="logo" :src="logo" class="sidebar-logo" />
+        <img v-if="logo" :src="Logo" class="sidebar-logo" />
         <h1 class="sidebar-title">{{ title }} </h1>
       </router-link>
     </transition>
@@ -19,6 +19,7 @@
 </template>
 
 <script lang="ts" setup>
+import Logo from '@/assets/logo.png'
 import { useGlobSettings} from '@/hooks/settings/useGlobSettings'
 const globSettings = useGlobSettings();
 
@@ -29,24 +30,24 @@ defineProps({
   }
 })
 
-const logo = ref();
-const title = ref(globSettings.title);
+const logo = ref<boolean>(true);
+const title = ref<string>(globSettings.title);
 
 </script>
 
 <style lang="scss" scoped>
 .sidebarLogoFade-enter-active {
-  transition: opacity 1.5s;
+  transition: opacity 1.5s ease;
 }
 
-.sidebarLogoFade-enter,
+.sidebarLogoFade-enter-from,
 .sidebarLogoFade-leave-to {
   opacity: 0;
 }
 
 .sidebar-logo-container {
   position: relative;
-  padding: 0 20px;
+  // padding: 0 20px;
   width: 100%;
   height: 60px;
   line-height: 60px;
