@@ -90,8 +90,8 @@ import type { InternalRuleItem } from 'async-validator/dist-types/interface';
 import { LoginTypeEnum } from '~/enums/userEnum';
 import { LocationQuery, LocationQueryValue } from 'vue-router';
 import { useUserStore } from '~/store';
-import { getCaptchaImage } from '~/api/user/index';
-import type * as API from '~/api/user/types';
+import { getCaptchaImage } from '@/api/system/user/index';
+import type * as API from '@/api/system/user/types';
 import { useDebounceFn } from '@vueuse/shared';
 import { ElMessage } from 'element-plus';
 
