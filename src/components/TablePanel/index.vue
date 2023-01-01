@@ -31,13 +31,11 @@
         align="center"
         :selectable="handleCheckSelectable"
       ></el-table-column>
-      <el-table-column
-        v-if="showIndex"
-        label="序号"
-        type="index"
-        width="50"
-        align="center"
-      ></el-table-column>
+      <el-table-column v-if="showIndex" label="序号" width="65" align="center">
+        <template #default="scope">
+          <span>{{(currentPage - 1) * pageSize + scope.$index + 1}}</span>
+        </template>
+      </el-table-column>
       <slot></slot>
       <div class="empty-img" slot="empty">
         <img src="@/assets/images/empty.png" />
@@ -290,7 +288,7 @@ function initStaticData(dataList: any[], pageNum: number) {
       pageSize.value * pageNum
     );
   } else {
-    tableData.value = list
+    tableData.value = list;
   }
   nextTick(() => {
     setSelection();
