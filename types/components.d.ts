@@ -50,6 +50,7 @@ declare module '@vue/runtime-core' {
     IconSelect: typeof import('./../src/components/IconSelect/index.vue')['default']
     IEpCaretBottom: typeof import('~icons/ep/caret-bottom')['default']
     IEpClose: typeof import('~icons/ep/close')['default']
+    IFrame: typeof import('./../src/components/iFrame/index.vue')['default']
     Loading: typeof import('element-plus/es')['ElLoadingDirective']
     PanThumb: typeof import('./../src/components/PanThumb/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
