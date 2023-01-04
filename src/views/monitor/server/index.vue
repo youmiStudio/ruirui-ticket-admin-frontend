@@ -354,27 +354,25 @@
 </template>
 
 <script lang="ts" setup name="Server">
-import { ElLoading } from 'element-plus';
-
+import { openLoading, closeLoading } from '@/hooks/web/useLoading';
 import { getServerInfo } from '@/api/monitor/server/index';
 import type { ServerInfoVo } from '@/api/monitor/server/types';
 
 const server = ref<ServerInfoVo>({} as ServerInfoVo);
+
+nextTick(()=>{
+  openLoading('正在加载服务监控数据，请稍候！')
+})
 
 onBeforeMount(() => {
   getInfo();
 });
 
 function getInfo() {
-  const loadingInstance = ElLoading.service({
-    text: '正在加载服务监控数据，请稍候！',
-    lock: true,
-    background: 'rgba(0, 0, 0, 0.7)'
-  });
   getServerInfo().then((res) => {
     if (res.data) {
       server.value = res.data;
-      loadingInstance.close();
+      closeLoading()
     }
   });
 }

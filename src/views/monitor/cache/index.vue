@@ -141,7 +141,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ElLoading } from 'element-plus';
+import { openLoading, closeLoading } from '@/hooks/web/useLoading';
 
 import { cacheInfo } from '@/api/monitor/cache';
 import { useECharts } from '@/hooks/web/useECharts';
@@ -162,16 +162,15 @@ const { setOptions: usedmemorySetOptions } = useECharts(
   'macarons'
 );
 
+nextTick(()=>{
+  openLoading('正在加载缓存监控数据，请稍候！')
+})
+
 onMounted(() => {
   getCacheInfo();
 });
 
 function getCacheInfo() {
-  const loadingInstance = ElLoading.service({
-    text: '正在加载缓存监控数据，请稍候！',
-    lock: true,
-    background: 'rgba(0, 0, 0, 0.7)'
-  });
   cacheInfo().then((res) => {
     if (res.data) {
       cache.value = res.data;
@@ -216,7 +215,7 @@ function getCacheInfo() {
           }
         ]
       });
-      loadingInstance.close()
+      closeLoading();
     }
   });
 }
