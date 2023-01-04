@@ -33,7 +33,7 @@
       ></el-table-column>
       <el-table-column v-if="showIndex" label="序号" width="65" align="center">
         <template #default="scope">
-          <span>{{(currentPage - 1) * pageSize + scope.$index + 1}}</span>
+          <span>{{ (currentPage - 1) * pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
       <slot></slot>
@@ -208,7 +208,7 @@ const currentSelectNames = computed(() => {
 });
 
 watch(
-  props.dataValue,
+  () => props.dataValue,
   (newVal) => {
     initStaticData(newVal, 1);
   },
@@ -216,7 +216,7 @@ watch(
 );
 
 watch(
-  props.selectedIds,
+  () => props.selectedIds,
   (newVal: any) => {
     nextTick(() => {
       recordRows.value = newVal.map((item: any) => Object.assign({}, item));
