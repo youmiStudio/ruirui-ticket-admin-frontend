@@ -361,10 +361,9 @@ import type { ServerInfoVo } from '@/api/monitor/server/types';
 
 const server = ref<ServerInfoVo>({} as ServerInfoVo);
 
-nextTick(()=>{
+onBeforeMount(() => {
   getInfo();
-
-})
+});
 
 function getInfo() {
   const loadingInstance = ElLoading.service({
@@ -381,10 +380,4 @@ function getInfo() {
 }
 </script>
 
-<style lang="scss" scoped>
-.card-box {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-bottom: 10px;
-}
-</style>
+<style lang="scss" scoped></style>

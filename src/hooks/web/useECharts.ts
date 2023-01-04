@@ -7,6 +7,8 @@ import { useDebounceFn } from '@vueuse/core';
 import { useEventListener } from '@/hooks/event/useEventListener';
 import echarts from '@/utils/lib/echarts';
 import 'echarts/theme/macarons';
+import { GaugeChart } from 'echarts/charts';
+echarts.use(GaugeChart)
 
 export function useECharts(
   elRef: Ref<HTMLDivElement>,
