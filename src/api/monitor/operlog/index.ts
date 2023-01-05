@@ -20,5 +20,5 @@ export const exportOperlog = async (body: OperlogSearchBody) =>
   download(
     BASE_URL + '/' + URL.export,
     body,
-    `route_${new Date().getTime()}.xlsx`
+    `operlog_${new Date().getTime()}.xlsx`
   );
