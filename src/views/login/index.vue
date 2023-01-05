@@ -206,12 +206,11 @@ function handleLogin(formEl: FormInstance | undefined): boolean {
           message: '登录成功'
         });
         router.push({ path: (redirect as string) || '/', query: otherQuery });
+      } else {
+        loginForm.code = '';
+        getCaptchaImageHandle();
+        loading.value = false;
       }
-
-      loginForm.code = '';
-      getCaptchaImageHandle();
-
-      loading.value = false;
     } else {
       console.log('error submit!!');
       return false;
