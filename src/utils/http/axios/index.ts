@@ -81,6 +81,13 @@ axiosInstance.interceptors.request.use(
       config.headers = {};
       config.headers.Authorization = `${token}`;
     }
+    // get请求映射params参数
+    if (config.method === 'get' && config.params) {
+      let url = config.url + '?' + tansParams(config.params);
+      url = url.slice(0, -1);
+      config.params = {};
+      config.url = url;
+    }
     return config;
   },
   (error: any) => {
