@@ -78,8 +78,9 @@ axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     const token = getToken();
     if (token) {
-      config.headers = {};
-      config.headers.Authorization = `${token}`;
+      if(config.headers) {
+        config.headers.Authorization = `${token}`;
+      }
     }
     // get请求映射params参数
     if (config.method === 'get' && config.params) {
@@ -152,11 +153,14 @@ export function download(
   });
   return post({
     url,
-    params,
+    data: params,
     responseType: 'blob',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    transformRequest: [
+      (data, headers) => {
+        return tansParams(data);
+      }
+    ],
     ...config
   })
     .then(async (data) => {

@@ -15,10 +15,10 @@ export const operlogList = async (body?: OperlogSearchBody) =>
 export const removeOperlog = async (ids: string) =>
   del<R<string>>({ url: BASE_URL + '/' + ids});
 export const cleanOperlog = async () =>
-  del<R<string>>({ url: BASE_URL + '/' + URL.clean });
+  del<R<string>>({ url: BASE_URL + URL.clean });
 export const exportOperlog = async (body: OperlogSearchBody) =>
   download(
-    BASE_URL + '/' + URL.export,
+    BASE_URL + URL.export,
     body,
     `operlog_${new Date().getTime()}.xlsx`
   );

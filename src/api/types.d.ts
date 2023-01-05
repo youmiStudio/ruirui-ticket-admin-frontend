@@ -12,6 +12,10 @@ export type BaseSearchBody = {
   isAsc?: string;
   pageNum?: string;
   pageSize?: string;
+  params?: {
+    beginTime?: string;
+    endTime?: string;
+  };
 };
 
 /**
@@ -44,6 +48,6 @@ export type BaseVo = {
  * 分页信息
  */
 export type PageVo<T> = {
-  total: number,
-  items: T
-}
+  total: number;
+  items: T;
+};

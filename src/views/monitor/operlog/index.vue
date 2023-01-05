@@ -325,6 +325,16 @@ const form = ref<ModelVo>({} as ModelVo);
 const open = ref<boolean>(false);
 const dateRange = ref<any>([]);
 
+const dateParams = computed(() => {
+  if (!dateRange.value) {
+    return {};
+  }
+  return {
+    beginTime: dateRange.value[0],
+    endTime: dateRange.value[1]
+  };
+});
+
 onMounted(() => {
   search();
 });
@@ -338,14 +348,8 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  let params = {};
-  if (dateRange.value) {
-    params = {
-      beginTime: dateRange.value[0],
-      endTime: dateRange.value[1]
-    };
-  }
-  tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm, params });
+  tableRef.value &&
+    tableRef.value.search<ModelVo>({ ...searchForm, params: dateParams.value });
 }, 200);
 
 function switchBatchDelete(selectRowsLength: number) {
@@ -369,9 +373,11 @@ function fetchList(obj: ModelSearchBody) {
 }
 
 function handleExport() {
-  pageConfig.api.export(searchForm).then(() => {
-    search();
-  });
+  pageConfig.api
+    .export({ ...searchForm, params: dateParams.value })
+    .then(() => {
+      search();
+    });
 }
 
 function handleRowDelete(row: any) {
