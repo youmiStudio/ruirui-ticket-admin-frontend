@@ -58,12 +58,17 @@ export const loadView = (view: string) => {
   let dynamicViewsModules: Record<string, () => Promise<Recordable>>;
 
   dynamicViewsModules = import.meta.glob('@/views/**/*.{vue,tsx}');
-  return dynamicImport(dynamicViewsModules, `src/views/${view}`);
+  return dynamicImport(
+    dynamicViewsModules,
+    `src/views/${view}`,
+    `/src/views/error-page/404.vue`
+  );
 };
 
 function dynamicImport(
   dynamicViewsModules: Record<string, () => Promise<Recordable>>,
-  component: string
+  component: string,
+  notFoundPage?: string
 ) {
   const keys = Object.keys(dynamicViewsModules);
   const matchKeys = keys.filter((key) => {
@@ -90,7 +95,10 @@ function dynamicImport(
         component +
         '.tsx`, 请自行创建!'
     );
-    return;
+    if(notFoundPage) {
+      return dynamicViewsModules[notFoundPage]
+    }
+    return
   }
 }
 

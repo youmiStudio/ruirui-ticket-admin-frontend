@@ -27,7 +27,7 @@ export function parseTime(time: string | object | number, cFormat: string) {
         time = time.replace(new RegExp(/-/gm), '/');
       }
     }
-
+    
     if (typeof time === 'number' && time.toString().length === 10) {
       time = time * 1000;
     }
