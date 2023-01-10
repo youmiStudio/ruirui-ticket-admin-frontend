@@ -677,7 +677,7 @@ function handleAuthUser(row: ModelVo) {
 
 <style lang="scss" scoped>
 .form-block {
-  ::v-deep .el-form-item__content {
+  :deep(.el-form-item__content) {
     display: block;
   }
 }

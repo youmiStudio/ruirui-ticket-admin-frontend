@@ -6,7 +6,7 @@
       />
     </div>
     <div style="position: relative">
-      <pan-thumb :image="avatar" class="panThumb" />
+      <pan-thumb :image="(avatar as string)" class="panThumb" />
       <div style="padding-top: 35px" class="progress-item">
         <span>Vue</span>
         <el-progress :percentage="70" />
@@ -92,7 +92,7 @@ const statisticsData = reactive({
     background-color: #fff;
     margin: auto;
     box-shadow: none !important;
-    ::v-deep(.pan-info) {
+    :deep(.pan-info) {
       box-shadow: none !important;
     }
   }

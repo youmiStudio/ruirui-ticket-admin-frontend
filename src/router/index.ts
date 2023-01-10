@@ -25,8 +25,13 @@ export const constantRoutes: RouteItem[] = [
       {
         path: 'dashboard',
         component: () => import('~/views/dashboard/index.vue'),
-        name: 'Dashboard',
-        meta: { title: 'Dashboard', icon: 'dashboard', affix: true }
+        name: 'dashboard',
+        meta: {
+          title: 'Dashboard',
+          icon: 'dashboard',
+          affix: true,
+          noCache: true
+        }
       }
     ]
   },
@@ -74,7 +79,7 @@ export const asyncRoutes: RouteItem[] = [
     ]
   },
   {
-    name:'roleUserManager',
+    name: 'roleUserManager',
     path: '/system/role-auth',
     component: Layout,
     hidden: true,
@@ -89,7 +94,7 @@ export const asyncRoutes: RouteItem[] = [
     ]
   },
   {
-    name:'ditaDataManager',
+    name: 'ditaDataManager',
     path: '/system/dict-data',
     component: Layout,
     hidden: true,
@@ -102,7 +107,7 @@ export const asyncRoutes: RouteItem[] = [
         meta: { title: '字典数据', activeMenu: '/system/dict' }
       }
     ]
-  },
+  }
 ];
 
 const router = createRouter({
@@ -134,7 +139,7 @@ export const addRoutesHelper = (
  */
 export const addRoutes = (routes: RouteItem[]) => {
   routes.forEach((route) => {
-    if(route.meta && route.meta.link) return
+    if (route.meta && route.meta.link) return;
     addRoutesHelper(route);
   });
 };
