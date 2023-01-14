@@ -54,6 +54,7 @@
               class="flex-1"
               v-model="loginForm.code"
               placeholder="验证码"
+              @keyup.enter="handleLogin(ruleFormRef)"
             >
             </el-input>
             <img
@@ -70,6 +71,7 @@
               color="#155bd4"
               style="width: 100%; height: 48px"
               @click.native.prevent="handleLogin(ruleFormRef)"
+              @keyup.enter="handleLogin(ruleFormRef)"
             >
               登录
             </el-button>
