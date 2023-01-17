@@ -107,6 +107,20 @@ export const asyncRoutes: RouteItem[] = [
         meta: { title: '字典数据', activeMenu: '/system/dict' }
       }
     ]
+  },
+  {
+    name: 'carConfigSeat',
+    path: '/ticket/car-config',
+    hidden: true,
+    permissions: ['ticket:car:edit'],
+    children: [
+      {
+        path: 'seat/:carId',
+        component: () => import('@/views/business/car/configSeat.vue'),
+        name: 'ConfigSeat',
+        meta: { title: '分配座位', activeMenu: '/ticket/car' }
+      }
+    ]
   }
 ];
 

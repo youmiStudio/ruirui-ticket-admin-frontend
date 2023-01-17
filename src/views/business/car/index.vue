@@ -157,7 +157,7 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="fixed-width">
+        <el-table-column label="操作" align="center" class-name="fixed-width" width="200px">
           <template #default="{ row }">
             <el-button
               v-authority="[pageConfig.authorites.edit]"
@@ -167,6 +167,15 @@
               :icon="Edit"
               @click.stop="handleEdit(row)"
               >修改</el-button
+            >
+            <el-button
+              v-authority="[pageConfig.authorites.edit]"
+              size="small"
+              link
+              type="primary"
+              :icon="Setting"
+              @click.stop="goToConfigSeat(row)"
+              >分配座位</el-button
             >
             <el-button
               v-authority="[pageConfig.authorites.remove]"
@@ -285,7 +294,8 @@ import {
   Edit,
   Delete,
   Download,
-  RefreshRight
+  RefreshRight,
+  Setting
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
@@ -537,6 +547,8 @@ function cancel() {
 }
 
 /* --------------------Extra Features Start-------------------- */
+const $router = useRouter();
+
 type SeatIconItems = {
   label: string;
   prop: keyof Pick<ModelBody, 'carSeatImage'>;
@@ -579,6 +591,10 @@ const handleSeatIconUploadOnSuccess = (
     }
   };
 };
+
+function goToConfigSeat(row: ModelBody) {
+  $router.push(`/ticket/car-config/seat/${row.carId}`);
+}
 /* --------------------Extra Features End-------------------- */
 </script>
 
