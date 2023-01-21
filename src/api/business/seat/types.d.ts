@@ -82,3 +82,14 @@ export type SeatBody = Pick<
   | 'status'
   | 'remark'
 >;
+
+export type SeatVoOfCarConfig = Pick<
+  SeatVo,
+  | 'seatId'
+  | 'seatName'
+  | 'boughtIcon'
+  | 'unSelectedIcon'
+  | 'selectedIcon'
+  | 'oldPrice'
+  | 'price'
+>;

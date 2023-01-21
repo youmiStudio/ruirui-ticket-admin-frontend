@@ -6,6 +6,7 @@ function openLoading(text: string) {
   loading = ElLoading.service({
     text,
     lock: true,
+    body: true,
     background: 'rgba(0, 0, 0, 0.7)'
   });
 }

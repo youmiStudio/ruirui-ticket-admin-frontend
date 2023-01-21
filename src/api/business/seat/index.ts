@@ -1,15 +1,24 @@
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../../types';
-import type { SeatBody, SeatSearchBody, SeatVo } from './types';
+import type {
+  SeatBody,
+  SeatSearchBody,
+  SeatVo,
+  SeatVoOfCarConfig
+} from './types';
 
 enum URL {
   list = '/admin/seat/list',
+  allList = '/admin/seat/allList',
   baseUrl = '/admin/seat/',
   export = '/admin/seat/export'
 }
 
 export const seatList = async (seatBody: SeatSearchBody) =>
   get<R<PageVo<SeatVo[]>>>({ url: URL.list, params: seatBody });
+
+export const seatAllList = async () =>
+  get<R<SeatVoOfCarConfig[]>>({ url: URL.allList });
 
 export const getSeat = async (seatId: number) =>
   get<R<SeatVo>>({ url: URL.baseUrl + seatId });
