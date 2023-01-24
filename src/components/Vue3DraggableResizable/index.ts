@@ -139,6 +139,10 @@ const VdrProps = {
   axis: {
     type: String,
     default: 'both'
+  },
+  conflict:{
+    type: Boolean,
+    default: false
   }
 };
 

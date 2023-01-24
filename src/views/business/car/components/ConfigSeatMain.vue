@@ -13,11 +13,12 @@
       @drop="handleDrop"
     >
       <Dragger
+        conflict
+        parent
         class="absolute"
         v-for="seat in seatList"
         :index="seat.seatId"
         :lockAspectRatio="true"
-        :parent="true"
         :init-w="seatConfig.iconSize.width"
         :init-h="seatConfig.iconSize.height"
         :parent-scale-x="offsetWidth / seatImageSize.width"
@@ -29,7 +30,11 @@
         v-model:h="seat.size.height"
         @dragging="handleDragging($event, seat)"
       >
-        <img class="w100% h100% border border-green" :src="seat.unSelectedIcon" alt="" />
+        <img
+          class="w100% h100% border border-green"
+          :src="seat.unSelectedIcon"
+          alt=""
+        />
       </Dragger>
       <img
         v-show="seatImageUrl"

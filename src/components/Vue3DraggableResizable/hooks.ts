@@ -45,7 +45,10 @@ export function initState(props: any, emit: any) {
   const [parentScaleX, setParentScaleX] = useState<number>(props.parentScaleX);
   const [parentScaleY, setParentScaleY] = useState<number>(props.parentScaleY);
   const [axis, setAxis] = useState<string>(props.axis);
+  const [conflict, setConflict] = useState<boolean>(props.conflict);
   const aspectRatio = computed(() => height.value / width.value);
+
+  console.log(props.conflict);
   watch(
     width,
     (newVal) => {
@@ -59,24 +62,6 @@ export function initState(props: any, emit: any) {
       emit('update:h', newVal);
     },
     { immediate: true }
-  );
-  watch(
-    () => props.parentScaleX,
-    () => {
-      setParentScaleX(props.parentScaleX);
-    }
-  );
-  watch(
-    () => props.parentScaleY,
-    () => {
-      setParentScaleY(props.parentScaleY);
-    }
-  );
-  watch(
-    () => props.axis,
-    () => {
-      setAxis(props.axis);
-    }
   );
   watch(top, (newVal) => {
     emit('update:y', newVal);
@@ -116,6 +101,7 @@ export function initState(props: any, emit: any) {
     parentScaleX,
     parentScaleY,
     axis,
+    conflict,
     setEnable,
     setDragging,
     setResizing,
@@ -289,7 +275,8 @@ export function initDraggableContainer(
     dragging,
     id,
     parentScaleX,
-    parentScaleY
+    parentScaleY,
+    conflict
   } = containerProps;
   let isChangeLimitProps = false;
   const { setDragging, setEnable, setResizing, setResizingHandle } =
@@ -403,7 +390,7 @@ export function initDraggableContainer(
       containerProvider!.setMatchedLine(matchedLine as MatchedLine);
     }
 
-    const conflictList = checkConflict(e);
+    const conflictList = conflict.value ? checkConflict() : [];
 
     if (conflictList && conflictList.length > 0) {
       const limitPosition = {
@@ -477,39 +464,16 @@ export function initDraggableContainer(
     }
   };
 
-  let previousX: number;
-  let previousY: number;
-  let previousT: number;
-  const checkConflict = (event: MouseEvent) => {
+  let conflictDirection = {};
+  const checkConflict = () => {
     if (!containerRef.value) return;
-
-    const calcMoveDistance = (top: number, left: number) => {
-      if (
-        previousX !== undefined &&
-        previousY !== undefined &&
-        previousT !== undefined
-      ) {
-        var deltaX = left - previousX;
-        var deltaY = top - previousY;
-        var deltaD = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
-
-        var deltaT = event.timeStamp - previousT;
-        const result = (deltaD / deltaT) * 1000;
-
-        return +result.toFixed(2);
-      }
-
-      previousX = left;
-      previousY = top;
-      previousT = event.timeStamp;
-    };
 
     const removePx = (cssText: string): number => {
       return +cssText.replace('px', '');
     };
 
-    let [top, left, width, height] = [y.value, x.value, w.value, h.value];
-
+    const [top, left, width, height] = [y.value, x.value, w.value, h.value];
+    const [halfWidth, halfHeight] = [width / 2, height / 2];
     const [right, bottom] = [left + width, top + height];
 
     // console.log(
@@ -521,8 +485,6 @@ export function initDraggableContainer(
     let isConflict = false;
     let conflictList: any[] = [];
 
-    const moveDistance = calcMoveDistance(top, left);
-
     elements &&
       elements.length > 2 &&
       Array.from(elements).forEach((element) => {
@@ -532,8 +494,8 @@ export function initDraggableContainer(
 
         const tw = ele.offsetWidth;
         const th = ele.offsetHeight;
+        const [halfTw, haltTh] = [tw / 2, th / 2];
         let [tl, tt] = [removePx(ele.style.left), removePx(ele.style.top)];
-
         let [tr, tb] = [tl + tw, tt + th];
 
         if (
@@ -546,26 +508,34 @@ export function initDraggableContainer(
         ) {
           return;
         }
+        const tId = `${tl}${tt}`;
 
         // console.log(
         //   `compNode: top: ${tt}, bottom: ${tb}, left: ${tl}, right: ${tr}, width: ${tw}, height: ${th}`
         // );
 
-        isConflict = !(top > tb || left > tr || right < tl || bottom < tt);
+        let leftPos = left + halfWidth >= tl - Math.min(halfTw, halfWidth); // dui
+        let rightPos = left - halfTw <= tl + halfTw;
+        let topPos = top + halfHeight >= tt - Math.min(haltTh, halfHeight);
+        let bottomPos = top - haltTh <= tt + haltTh; // dui
+
+        const conflictPos = { leftPos, rightPos, topPos, bottomPos };
+
+        // console.log(`leftPos:${leftPos} rightPos:${rightPos} topPos:${topPos} bottomPos:${bottomPos}`);
+        isConflict = leftPos && rightPos && topPos && bottomPos;
 
         if (isConflict) {
           // console.log(
           //   `isConflict: top: ${tt}, bottom: ${tb}, left: ${tl}, right: ${tr}, width: ${tw}, height: ${th}`
           // );
 
-          let conflictDirect = ''; //冲突方向
-          const compRatio = 1 / scaleX;
-          const directStrategy = {
-            tcb: tb - top < compRatio,
-            lcr: tr - left < compRatio,
-            bct: bottom - tt < compRatio,
-            rcl: right - tl < compRatio
+          const conflictDirect = {
+            leftPos: 'rcl',
+            rightPos: 'lcr',
+            topPos: 'bct',
+            bottomPos: 'tcb'
           };
+
           const conflictPosition: {
             tt: number;
             tb: number;
@@ -577,18 +547,18 @@ export function initDraggableContainer(
             tl,
             tr
           };
-
-          Object.keys(directStrategy).forEach((key) => {
-            if (directStrategy[key]) {
-              conflictDirect = key;
-            }
-          });
-
           conflictList.push({
             isConflict,
-            conflictDirect,
+            conflictDirect: conflictDirect[conflictDirection[tId]],
             conflictPosition
           });
+        } else {
+          const conflictDirectionList = Object.keys(conflictPos).filter(
+            (key) => !conflictPos[key]
+          );
+          if (conflictDirectionList.length === 1) {
+            conflictDirection[tId] = conflictDirectionList[0];
+          }
         }
       });
 
