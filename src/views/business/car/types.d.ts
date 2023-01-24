@@ -20,7 +20,19 @@ type SeatPosition = {
   y: number;
 };
 
+type DragConfig = {
+  axis: string;
+};
+
+type CollisionPostion = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+};
+
 export type Seat = {
   size: SeatSize;
   position: SeatPosition;
+  dragConfig: DragConfig;
 } & SeatVoOfCarConfig;

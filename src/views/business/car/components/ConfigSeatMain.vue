@@ -12,19 +12,25 @@
       @dragover.prevent
       @drop="handleDrop"
     >
-      <div
+      <Dragger
+        class="absolute"
         v-for="seat in seatList"
         :index="seat.seatId"
-        class="absolute"
-        :style="{
-          width: `${seat.size.width}px`,
-          height: `${seat.size.height}px`,
-          transform: `translate(${seat.position.x}px, ${seat.position.y}px)`
-        }"
-        @dragstart.prevent
+        :lockAspectRatio="true"
+        :parent="true"
+        :init-w="seatConfig.iconSize.width"
+        :init-h="seatConfig.iconSize.height"
+        :parent-scale-x="offsetWidth / seatImageSize.width"
+        :parent-scale-y="offsetWidth / seatImageSize.width"
+        :axis="seat.dragConfig.axis"
+        v-model:x="seat.position.x"
+        v-model:y="seat.position.y"
+        v-model:w="seat.size.width"
+        v-model:h="seat.size.height"
+        @dragging="handleDragging($event, seat)"
       >
-        <img class="w100% h100%" :src="seat.unSelectedIcon" alt="" />
-      </div>
+        <img class="w100% h100% border border-green" :src="seat.unSelectedIcon" alt="" />
+      </Dragger>
       <img
         v-show="seatImageUrl"
         class="w100% h100% pointer-events-none"
@@ -41,9 +47,10 @@ import { useGlobSettings } from '@/hooks/settings/useGlobSettings';
 import { openLoading, closeLoading } from '@/hooks/web/useLoading';
 import useSeatConfig from '../hooks/useSeatConfig';
 
-import type { Seat, SeatPosition } from '../types';
+import Dragger from '~/components/Vue3DraggableResizable';
+
+import type { Seat, SeatPosition, SeatSize, CollisionPostion } from '../types';
 import type { SeatVoOfCarConfig } from '~/api/business/seat/types';
-import { transform } from 'lodash';
 
 const globSettings = useGlobSettings();
 const seatConfig = useSeatConfig;
@@ -117,24 +124,85 @@ function handleDrop(e: DragEvent) {
     const seatData = e.dataTransfer.getData('seat');
     const seatDataJson = JSON.parse(seatData);
     addSeat(seatDataJson, {
-      x: offsetX - (seatConfig.iconSize.width / 2),
-      y: offsetY - (seatConfig.iconSize.height / 2)
+      x: offsetX - seatConfig.iconSize.width / 2,
+      y: offsetY - seatConfig.iconSize.height / 2
     });
   }
 }
 
 function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
+  const initDragConfig = {
+    axis: 'both'
+  };
+  const initSize = {
+    width: seatConfig.iconSize.width,
+    height: seatConfig.iconSize.height
+  };
   const seat: Seat = {
     ...seatData,
     position,
-    size: {
-      width: seatConfig.iconSize.width,
-      height: seatConfig.iconSize.height
-    }
+    dragConfig: initDragConfig,
+    size: initSize
   };
 
   seatList.value.push(seat);
+}
 
+function handleDragging(position: SeatPosition, seat: Seat) {
+  checkCollision(
+    {
+      x: seat.position.x,
+      y: seat.position.y,
+      width: seat.size.width,
+      height: seat.size.height
+    },
+    seatList.value
+  );
+}
+
+function checkCollision(
+  curSeatPosAndSize: SeatPosition & SeatSize,
+  inspectList: Seat[],
+  cb?: (compSeat: Seat) => void
+): boolean {
+  const { x, y, width, height } = curSeatPosAndSize;
+  const top = y;
+  const left = x;
+  const right = x + width;
+  const bottom = y + height;
+
+  let compSeat = {} as Seat;
+
+  const isCollision = inspectList.some((item) => {
+    const compTop = item.position.y;
+    const compLeft = item.position.x;
+    const compRight = item.size.width + item.position.x;
+    const compBottom = item.size.height + item.position.y;
+    if (
+      top === compTop &&
+      left === compLeft &&
+      right === compRight &&
+      bottom === compBottom
+    )
+      return false;
+
+    const isCollision = !(
+      top > compBottom ||
+      left > compRight ||
+      right < compLeft ||
+      bottom < compTop
+    );
+
+    if (isCollision) {
+      compSeat = item;
+    }
+
+    return isCollision;
+  });
+
+  isCollision && cb && typeof cb === 'function' && cb(compSeat);
+
+  return isCollision;
 }
 
 function goBack() {
