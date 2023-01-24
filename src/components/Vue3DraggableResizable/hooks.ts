@@ -403,7 +403,7 @@ export function initDraggableContainer(
       containerProvider!.setMatchedLine(matchedLine as MatchedLine);
     }
 
-    const conflictList = checkConflict();
+    const conflictList = checkConflict(e);
 
     if (conflictList && conflictList.length > 0) {
       const limitPosition = {
@@ -450,7 +450,7 @@ export function initDraggableContainer(
             maxLeft: computed(() => limitPosition.left - w.value)
           });
         }
-        console.log(conflictDirect);
+
         isChangeLimitProps = true;
         setLimitProps(newLimitProps);
       });
@@ -477,8 +477,33 @@ export function initDraggableContainer(
     }
   };
 
-  const checkConflict = () => {
+  let previousX: number;
+  let previousY: number;
+  let previousT: number;
+  const checkConflict = (event: MouseEvent) => {
     if (!containerRef.value) return;
+
+    const calcMoveDistance = (top: number, left: number) => {
+      if (
+        previousX !== undefined &&
+        previousY !== undefined &&
+        previousT !== undefined
+      ) {
+        var deltaX = left - previousX;
+        var deltaY = top - previousY;
+        var deltaD = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+
+        var deltaT = event.timeStamp - previousT;
+        const result = (deltaD / deltaT) * 1000;
+
+        return +result.toFixed(2);
+      }
+
+      previousX = left;
+      previousY = top;
+      previousT = event.timeStamp;
+    };
+
     const removePx = (cssText: string): number => {
       return +cssText.replace('px', '');
     };
@@ -495,6 +520,8 @@ export function initDraggableContainer(
 
     let isConflict = false;
     let conflictList: any[] = [];
+
+    const moveDistance = calcMoveDistance(top, left);
 
     elements &&
       elements.length > 2 &&
@@ -530,6 +557,7 @@ export function initDraggableContainer(
           // console.log(
           //   `isConflict: top: ${tt}, bottom: ${tb}, left: ${tl}, right: ${tr}, width: ${tw}, height: ${th}`
           // );
+
           let conflictDirect = ''; //冲突方向
           const compRatio = 1 / scaleX;
           const directStrategy = {
