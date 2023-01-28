@@ -31,7 +31,7 @@
         @dragging="handleDragging($event, seat)"
       >
         <img
-          class="w100% h100% border border-green"
+          class="w100% h100% border border-dashed"
           :src="seat.unSelectedIcon"
           alt=""
         />

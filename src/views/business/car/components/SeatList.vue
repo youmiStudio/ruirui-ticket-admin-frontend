@@ -5,7 +5,7 @@
         class="mb-10px"
         v-for="seat in data"
         :index="seat.seatId"
-        :span="12"
+        :span="24"
       >
         <div
           class="seat seat-button flex items-center justify-between select-none"
@@ -13,7 +13,7 @@
           @mousedown="handleMouseDown($event, seat)"
           @dragstart="handleDragStart($event)"
         >
-          <span class="text-center flex-1">{{ seat.seatName }}</span>
+          <span class="text-center flex-1">{{ seat.seatName }} | ¥{{ fenToYuan(seat.price) }}</span>
           <img
             class="w-20px h-20px pointer-events-none"
             :src="seat.unSelectedIcon"
@@ -26,12 +26,14 @@
 
 <script lang="ts" setup>
 import type { SeatVoOfCarConfig } from '@/api/business/seat/types';
+import { PropType } from 'vue';
 import useSeatConfig from '../hooks/useSeatConfig';
+import {fenToYuan} from '@/utils/price'
 
 const props = defineProps({
   data: {
     require: true,
-    type: Array as any
+    type: Array as PropType<SeatVoOfCarConfig[]>
   }
 });
 const emit = defineEmits(['mouseDown']);
