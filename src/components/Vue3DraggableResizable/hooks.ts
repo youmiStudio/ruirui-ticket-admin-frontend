@@ -48,7 +48,6 @@ export function initState(props: any, emit: any) {
   const [conflict, setConflict] = useState<boolean>(props.conflict);
   const aspectRatio = computed(() => height.value / width.value);
 
-  console.log(props.conflict);
   watch(
     width,
     (newVal) => {
@@ -110,6 +109,10 @@ export function initState(props: any, emit: any) {
     setResizingMaxWidth,
     setResizingMinWidth,
     setResizingMinHeight,
+    setAxis,
+    setConflict,
+    setParentScaleX,
+    setParentScaleY,
     setWidth: (val: number) => setWidth(Math.floor(val)),
     setHeight: (val: number) => setHeight(Math.floor(val)),
     setTop: (val: number) => setTop(Math.floor(val)),
@@ -514,10 +517,18 @@ export function initDraggableContainer(
         //   `compNode: top: ${tt}, bottom: ${tb}, left: ${tl}, right: ${tr}, width: ${tw}, height: ${th}`
         // );
 
-        let leftPos = left + halfWidth >= tl - Math.min(halfTw, halfWidth); // dui
+        let leftPos = left + halfWidth >= tl - Math.min(halfTw, halfWidth);
         let rightPos = left - halfTw <= tl + halfTw;
         let topPos = top + halfHeight >= tt - Math.min(haltTh, halfHeight);
-        let bottomPos = top - haltTh <= tt + haltTh; // dui
+        let bottomPos = top - haltTh <= tt + haltTh;
+
+        if(width > tw) {
+          leftPos = left + halfWidth >= tl - halfWidth;
+        }
+
+        if(height > th) {
+          topPos = top + halfHeight >= tt - halfHeight;
+        }
 
         const conflictPos = { leftPos, rightPos, topPos, bottomPos };
 
