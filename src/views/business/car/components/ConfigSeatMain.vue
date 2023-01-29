@@ -5,9 +5,10 @@
     </div>
 
     <div
+      ref="parentRef"
       class="car-config-area select-none relative"
       :style="{
-        transform: `translateY(-3rem) scale(calc(${offsetWidth} / ${seatImageSize.width})) rotate(0deg)`
+        transform: `translateY(-3rem) scale(${parentScale}) rotate(0deg)`
       }"
       @dragover.prevent
       @drop="onDrop"
@@ -17,12 +18,14 @@
         parent
         class="absolute"
         v-for="seat in seatList"
-        :index="seat.nanoid"
+        :index="seat.carSeatId"
         :lockAspectRatio="true"
-        :init-w="seatConfig.iconSize.width"
-        :init-h="seatConfig.iconSize.height"
-        :parent-scale-x="offsetWidth / seatImageSize.width"
-        :parent-scale-y="offsetWidth / seatImageSize.width"
+        :init-w="seat.size.width ? seat.size.width : seatConfig.iconSize.width"
+        :init-h="
+          seat.size.height ? seat.size.height : seatConfig.iconSize.height
+        "
+        :parent-scale-x="parentScale"
+        :parent-scale-y="parentScale"
         :axis="seat.dragConfig.axis"
         v-model:x="seat.position.x"
         v-model:y="seat.position.y"
@@ -58,13 +61,22 @@ import ContextMenu from '@imengyu/vue3-context-menu';
 import Dragger from '~/components/Vue3DraggableResizable';
 import { useConfigSeatStore } from '@/store';
 
-import type { Seat, SeatPosition, SeatSize, CollisionPostion } from '../types';
+import type {
+  Seat,
+  SeatPosition,
+  SeatSize,
+  CollisionPostion,
+  ParentSize
+} from '../types';
 import type { SeatVoOfCarConfig } from '~/api/business/seat/types';
 import { storeToRefs } from 'pinia';
+import { useDebounceFn } from '@vueuse/shared';
 
 const globSettings = useGlobSettings();
 const seatConfig = useSeatConfig;
 const configSeatStore = useConfigSeatStore();
+
+const parentRef = ref<HTMLElement>();
 
 type ImageSize = {
   width: number;
@@ -74,35 +86,61 @@ type ImageSize = {
 const $route = useRoute();
 const $router = useRouter();
 
+const events = [
+  {
+    el: document,
+    handle: 'addEventListener',
+    type: 'keyup',
+    func: onKeyUp
+  },
+  {
+    el: window,
+    handle: 'addEventListener',
+    type: 'resize',
+    func: useDebounceFn(onResize, 5)
+  }
+];
+
 let seatImageSize = ref<ImageSize>({
   width: -1,
   height: -1
 });
 const seatImageUrl = ref<string>('');
-const offsetWidth = ref<number>(document.body.offsetWidth - 240);
 
 const { seatList } = storeToRefs(configSeatStore);
 const currentSeat = ref<Seat>();
 
-watch(
-  seatImageSize,
-  (v) => {
-    const scaleWidth = offsetWidth.value;
-    offsetWidth.value =
-      Math.abs(scaleWidth / v.width) > 0.7 ? scaleWidth * 0.7 : scaleWidth;
-  },
-  { deep: true }
-);
+const offsetWidth = computed(() => {
+  const width = document.body.offsetWidth - 300;
+  return Math.abs(width / seatImageSize.value.width) > 0.7
+    ? width * 0.7
+    : width;
+});
+
+const parentScale = computed(() => {
+  return offsetWidth.value / seatImageSize.value.width;
+});
 
 onMounted(() => {
   nextTick(() => {
     openLoading('页面加载中');
   });
+
+  nextTick(async () => {
+    const parentSize = await getParentSize();
+    configSeatStore.setParentSize(parentSize);
+  });
+
   getCarInfo();
-  registerKeyUp();
+  registerEvents();
+
   setTimeout(() => {
     closeLoading();
   }, 200);
+});
+
+onBeforeUnmount(() => {
+  removeEvents();
 });
 
 function getCarInfo() {
@@ -110,9 +148,11 @@ function getCarInfo() {
   getCar(Number(carId)).then((res) => {
     const { data } = res;
     if (data) {
-      getImageSize(data.carSeatImage).then((imgSize) => {
+      getImageSize(data.carSeatImage).then(async (imgSize) => {
         seatImageSize.value = imgSize;
         seatImageUrl.value = data.carSeatImage;
+
+        configSeatStore.getSeat();
       });
     }
   });
@@ -160,8 +200,23 @@ function onContextMenu(e: MouseEvent, seat: Seat) {
   });
 }
 
-function registerKeyUp() {
-  document.addEventListener('keyup', onKeyUp);
+async function onResize() {
+  const parentSize = await getParentSize();
+  configSeatStore.setParentSize(parentSize);
+  configSeatStore.getSeat();
+}
+
+function registerEvents() {
+  events.forEach((event) => {
+    event.el[event.handle](event.type, event.func);
+  });
+}
+
+function removeEvents() {
+  events.forEach((event) => {
+    event.handle = 'removeEventListener';
+    event.el[event.handle](event.type, event.func);
+  });
 }
 
 function onKeyUp(e: KeyboardEvent) {
@@ -180,19 +235,44 @@ function removeSeat(seat: Seat) {
   configSeatStore.removeSeat(seat);
 }
 
-function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
-  delete seatData.seatId;
+function getParentSize(): Promise<ParentSize> {
+  return new Promise((resolve, reject) => {
+    const next = () => {
+      if (parentRef.value?.offsetWidth === 0) {
+        setTimeout(() => {
+          next();
+        }, 50);
+      } else {
+        if (!parentRef.value) return;
+        const style = window.getComputedStyle(parentRef.value);
+        resolve({
+          scale: parentScale.value,
+          width: parseFloat(style.getPropertyValue('width')),
+          height: parseFloat(style.getPropertyValue('height'))
+        });
+      }
+    };
+    next();
+  });
+}
 
+async function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
   const initDragConfig = {
     axis: 'both'
   };
+
+  const { width: parentWidth, height: parentHeight } = await getParentSize();
+
   const initSize = {
     width: seatConfig.iconSize.width,
     height: seatConfig.iconSize.height,
-    parentWidth: offsetWidth.value
+    parentScale: parentScale.value,
+    parentWidth,
+    parentHeight
   };
 
   const seat: Seat = {
+    carSeatId: seatList.value.length + 10,
     ...seatData,
     position,
     dragConfig: initDragConfig,

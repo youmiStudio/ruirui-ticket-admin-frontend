@@ -13,6 +13,15 @@ export type Config = {
 type SeatSize = {
   width: number;
   height: number;
+  parentWidth: number;
+  parentHeight: number;
+  parentScale: number;
+};
+
+type ParentSize = {
+  scale: number;
+  width: number;
+  height: number;
 };
 
 type SeatPosition = {
@@ -32,7 +41,7 @@ type CollisionPostion = {
 };
 
 export type Seat = {
-  nanoid?: string;
+  carSeatId: number;
   seatId?: number;
   size: SeatSize;
   position: SeatPosition;
