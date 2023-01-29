@@ -10,10 +10,13 @@
         <div
           class="seat seat-button flex items-center justify-between select-none"
           draggable="true"
+          @mouseenter="handleMouseEnter(seat)"
           @mousedown="handleMouseDown($event, seat)"
           @dragstart="handleDragStart($event)"
         >
-          <span class="text-center flex-1">{{ seat.seatName }} | ¥{{ fenToYuan(seat.price) }}</span>
+          <span class="text-center flex-1"
+            >{{ seat.seatName }} | ¥{{ fenToYuan(seat.price) }}</span
+          >
           <img
             class="w-20px h-20px pointer-events-none"
             :src="seat.unSelectedIcon"
@@ -28,7 +31,7 @@
 import type { SeatVoOfCarConfig } from '@/api/business/seat/types';
 import { PropType } from 'vue';
 import useSeatConfig from '../hooks/useSeatConfig';
-import {fenToYuan} from '@/utils/price'
+import { fenToYuan } from '@/utils/price';
 
 const props = defineProps({
   data: {
@@ -45,12 +48,20 @@ let previewImage = ref<HTMLImageElement>(
 );
 const currentSeat = ref<SeatVoOfCarConfig>();
 
-function handleMouseDown(ev: MouseEvent, seat: SeatVoOfCarConfig) {
-  previewImage.value.src = seat.unSelectedIcon;
-  previewImage.value.style['position'] = 'absolute';
-  previewImage.value.style['top'] = '-9999px';
-  document.body.append(previewImage.value);
+function handleMouseEnter(seat: SeatVoOfCarConfig) {
+  const previewImageDiv = document.querySelector('.preview-image');
+  if (!previewImageDiv) {
+    previewImage.value.src = seat.unSelectedIcon;
+    previewImage.value.style['position'] = 'absolute';
+    previewImage.value.style['top'] = '-9999px';
+    previewImage.value.className = 'preview-image';
+    document.body.appendChild(previewImage.value);
+  } else {
+    previewImageDiv.setAttribute('src', seat.unSelectedIcon);
+  }
+}
 
+function handleMouseDown(ev: MouseEvent, seat: SeatVoOfCarConfig) {
   const seatData = {
     ...seat,
     mousePosition: {
@@ -65,10 +76,11 @@ function handleMouseDown(ev: MouseEvent, seat: SeatVoOfCarConfig) {
 }
 
 function handleDragStart(ev: DragEvent) {
+  const previewImageDiv = document.querySelector('.preview-image');
   if (ev.dataTransfer && config) {
     ev.dataTransfer.setData('seat', JSON.stringify(currentSeat.value));
     ev.dataTransfer.setDragImage(
-      previewImage.value as Element,
+      previewImageDiv as Element,
       config.iconSize.width / 2,
       config.iconSize.height / 2
     );
