@@ -501,6 +501,9 @@ export function initDraggableContainer(
         let [tl, tt] = [removePx(ele.style.left), removePx(ele.style.top)];
         let [tr, tb] = [tl + tw, tt + th];
 
+        // fix：自适应修改大小后，因有小数点导致判断错误
+        [tl, tt] = [+tl.toFixed(0), +tt.toFixed(0)];
+
         if (
           top === tt &&
           left === tl &&
@@ -522,17 +525,19 @@ export function initDraggableContainer(
         let topPos = top + halfHeight >= tt - Math.min(haltTh, halfHeight);
         let bottomPos = top - haltTh <= tt + haltTh;
 
-        if(width > tw) {
+        if (width > tw) {
           leftPos = left + halfWidth >= tl - halfWidth;
         }
 
-        if(height > th) {
+        if (height > th) {
           topPos = top + halfHeight >= tt - halfHeight;
         }
 
         const conflictPos = { leftPos, rightPos, topPos, bottomPos };
 
-        // console.log(`leftPos:${leftPos} rightPos:${rightPos} topPos:${topPos} bottomPos:${bottomPos}`);
+        // console.log(
+        //   `leftPos:${leftPos} rightPos:${rightPos} topPos:${topPos} bottomPos:${bottomPos}`
+        // );
         isConflict = leftPos && rightPos && topPos && bottomPos;
 
         if (isConflict) {
