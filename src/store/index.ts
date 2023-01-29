@@ -5,6 +5,7 @@ import { useUserStore } from './modules/user';
 import { usePermissionStore } from './modules/permission';
 import { useTagsViewStore } from './modules/tagsView';
 import { useErrorLogsStore } from './modules/errorLogs';
+import { useConfigSeatStore } from './modules/configSeat';
 
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
@@ -16,7 +17,8 @@ export {
   useUserStore,
   usePermissionStore,
   useTagsViewStore,
-  useErrorLogsStore
+  useErrorLogsStore,
+  useConfigSeatStore
 };
 
 export default pinia;

@@ -10,14 +10,14 @@
         transform: `translateY(-3rem) scale(calc(${offsetWidth} / ${seatImageSize.width})) rotate(0deg)`
       }"
       @dragover.prevent
-      @drop="handleDrop"
+      @drop="onDrop"
     >
       <Dragger
         conflict
         parent
         class="absolute"
         v-for="seat in seatList"
-        :index="seat.seatId"
+        :index="seat.nanoid"
         :lockAspectRatio="true"
         :init-w="seatConfig.iconSize.width"
         :init-h="seatConfig.iconSize.height"
@@ -28,7 +28,8 @@
         v-model:y="seat.position.y"
         v-model:w="seat.size.width"
         v-model:h="seat.size.height"
-        @dragging="handleDragging($event, seat)"
+        @click="onClick(seat)"
+        @contextmenu="onContextMenu($event, seat)"
       >
         <img
           class="w100% h100% border border-dashed"
@@ -52,13 +53,18 @@ import { useGlobSettings } from '@/hooks/settings/useGlobSettings';
 import { openLoading, closeLoading } from '@/hooks/web/useLoading';
 import useSeatConfig from '../hooks/useSeatConfig';
 
+import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css';
+import ContextMenu from '@imengyu/vue3-context-menu';
 import Dragger from '~/components/Vue3DraggableResizable';
+import { useConfigSeatStore } from '@/store';
 
 import type { Seat, SeatPosition, SeatSize, CollisionPostion } from '../types';
 import type { SeatVoOfCarConfig } from '~/api/business/seat/types';
+import { storeToRefs } from 'pinia';
 
 const globSettings = useGlobSettings();
 const seatConfig = useSeatConfig;
+const configSeatStore = useConfigSeatStore();
 
 type ImageSize = {
   width: number;
@@ -75,7 +81,8 @@ let seatImageSize = ref<ImageSize>({
 const seatImageUrl = ref<string>('');
 const offsetWidth = ref<number>(document.body.offsetWidth - 240);
 
-const seatList = ref<Seat[]>([]);
+const { seatList } = storeToRefs(configSeatStore);
+const currentSeat = ref<Seat>();
 
 watch(
   seatImageSize,
@@ -92,6 +99,7 @@ onMounted(() => {
     openLoading('页面加载中');
   });
   getCarInfo();
+  registerKeyUp();
   setTimeout(() => {
     closeLoading();
   }, 200);
@@ -123,7 +131,7 @@ function getImageSize(url: string): Promise<ImageSize> {
   });
 }
 
-function handleDrop(e: DragEvent) {
+function onDrop(e: DragEvent) {
   const { offsetX, offsetY } = e;
   if (e.dataTransfer) {
     const seatData = e.dataTransfer.getData('seat');
@@ -135,14 +143,55 @@ function handleDrop(e: DragEvent) {
   }
 }
 
+function onContextMenu(e: MouseEvent, seat: Seat) {
+  e.preventDefault();
+  ContextMenu.showContextMenu({
+    theme: 'flat',
+    x: e.x,
+    y: e.y,
+    items: [
+      {
+        label: '删除',
+        onClick: () => {
+          removeSeat(seat);
+        }
+      }
+    ]
+  });
+}
+
+function registerKeyUp() {
+  document.addEventListener('keyup', onKeyUp);
+}
+
+function onKeyUp(e: KeyboardEvent) {
+  if (e.key === 'Backspace') {
+    if (currentSeat.value) {
+      removeSeat(currentSeat.value);
+    }
+  }
+}
+
+function onClick(seat: Seat) {
+  currentSeat.value = seat;
+}
+
+function removeSeat(seat: Seat) {
+  configSeatStore.removeSeat(seat);
+}
+
 function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
+  delete seatData.seatId;
+
   const initDragConfig = {
     axis: 'both'
   };
   const initSize = {
     width: seatConfig.iconSize.width,
-    height: seatConfig.iconSize.height
+    height: seatConfig.iconSize.height,
+    parentWidth: offsetWidth.value
   };
+
   const seat: Seat = {
     ...seatData,
     position,
@@ -150,64 +199,7 @@ function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
     size: initSize
   };
 
-  seatList.value.push(seat);
-}
-
-function handleDragging(position: SeatPosition, seat: Seat) {
-  checkCollision(
-    {
-      x: seat.position.x,
-      y: seat.position.y,
-      width: seat.size.width,
-      height: seat.size.height
-    },
-    seatList.value
-  );
-}
-
-function checkCollision(
-  curSeatPosAndSize: SeatPosition & SeatSize,
-  inspectList: Seat[],
-  cb?: (compSeat: Seat) => void
-): boolean {
-  const { x, y, width, height } = curSeatPosAndSize;
-  const top = y;
-  const left = x;
-  const right = x + width;
-  const bottom = y + height;
-
-  let compSeat = {} as Seat;
-
-  const isCollision = inspectList.some((item) => {
-    const compTop = item.position.y;
-    const compLeft = item.position.x;
-    const compRight = item.size.width + item.position.x;
-    const compBottom = item.size.height + item.position.y;
-    if (
-      top === compTop &&
-      left === compLeft &&
-      right === compRight &&
-      bottom === compBottom
-    )
-      return false;
-
-    const isCollision = !(
-      top > compBottom ||
-      left > compRight ||
-      right < compLeft ||
-      bottom < compTop
-    );
-
-    if (isCollision) {
-      compSeat = item;
-    }
-
-    return isCollision;
-  });
-
-  isCollision && cb && typeof cb === 'function' && cb(compSeat);
-
-  return isCollision;
+  configSeatStore.addSeat(seat);
 }
 
 function goBack() {

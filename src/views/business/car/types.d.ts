@@ -32,6 +32,8 @@ type CollisionPostion = {
 };
 
 export type Seat = {
+  nanoid?: string;
+  seatId?: number;
   size: SeatSize;
   position: SeatPosition;
   dragConfig: DragConfig;
