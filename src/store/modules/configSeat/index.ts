@@ -1,6 +1,14 @@
 import { defineStore } from 'pinia';
 import { ConfigSeatStoreState } from './types';
+import { useGlobSettings } from '@/hooks/settings/useGlobSettings';
 import type { Seat, ParentSize } from '@/views/business/car/types';
+import {
+  carSeatList,
+  saveCarSeat,
+  removeCarSeat
+} from '@/api/business/carSeat';
+
+const globSettings = useGlobSettings();
 
 export const useConfigSeatStore = defineStore({
   id: 'configSeat',
@@ -15,78 +23,22 @@ export const useConfigSeatStore = defineStore({
   }),
   getters: {},
   actions: {
-    getSeat() {
-      setTimeout(() => {
-        this.seatList = [
-          {
-            carSeatId: 10,
-            seatId: 106,
-            seatName: '二等座',
-            unSelectedIcon:
-              '/dev-api/profile/upload/2023/01/18/selectedSeat_20230118215532A001.png',
-            selectedIcon:
-              '/dev-api/profile/upload/2023/01/18/selectedSeat_20230118215534A002.png',
-            boughtIcon:
-              '/dev-api/profile/upload/2023/01/18/selectedSeat_20230118215536A003.png',
-            price: 7000,
-            oldPrice: 0,
-            position: { x: 297, y: 391 },
-            dragConfig: { axis: 'both' },
-            size: {
-              width: 50,
-              height: 50,
-              parentScale: 0.6908196721311475,
-              parentWidth: 1204,
-              parentHeight: 680
-            }
-          },
-          {
-            carSeatId: 11,
-            seatId: 105,
-            seatName: '一等座',
-            unSelectedIcon:
-              '/dev-api/profile/upload/2023/01/17/unSelectedSeat_20230117204337A001.png',
-            selectedIcon:
-              '/dev-api/profile/upload/2023/01/17/selectedSeat_20230117204341A002.png',
-            boughtIcon:
-              '/dev-api/profile/upload/2023/01/17/boughtSeat_20230117204343A003.png',
-            price: 9000,
-            oldPrice: 0,
-            position: { x: 443, y: 208 },
-            dragConfig: { axis: 'both' },
-            size: {
-              width: 75,
-              height: 75,
-              parentScale: 0.6908196721311475,
-              parentWidth: 1204,
-              parentHeight: 680
-            }
-          },
-          {
-            carSeatId: 12,
-            seatId: 105,
-            seatName: '一等座',
-            unSelectedIcon:
-              '/dev-api/profile/upload/2023/01/17/unSelectedSeat_20230117204337A001.png',
-            selectedIcon:
-              '/dev-api/profile/upload/2023/01/17/selectedSeat_20230117204341A002.png',
-            boughtIcon:
-              '/dev-api/profile/upload/2023/01/17/boughtSeat_20230117204343A003.png',
-            price: 9000,
-            oldPrice: 0,
-            position: { x: 743, y: 253 },
-            dragConfig: { axis: 'both' },
-            size: {
-              width: 62,
-              height: 62,
-              parentScale: 0.5932786885245901,
-              parentWidth: 1034,
-              parentHeight: 584.406
-            }
+    getSeat(id: number) {
+      return new Promise((resolve) => {
+        carSeatList(id).then((res) => {
+          const { data } = res;
+          if (data) {
+            data.forEach(item=>{
+              ['boughtIcon', 'selectedIcon', 'unSelectedIcon'].forEach((key) => {
+                item[key] = globSettings.apiUrl + item[key];
+              });
+            })
+            resolve(data);
+            this.seatList = data;
+            this.calcSeatXYByCurParentSize();
           }
-        ];
-        this.calcSeatXYByCurParentSize();
-      }, 500);
+        });
+      });
     },
     addSeat(seat: Seat) {
       this.seatList.push(seat);
@@ -96,12 +48,42 @@ export const useConfigSeatStore = defineStore({
         (item) => item.carSeatId !== seat.carSeatId
       );
 
-      if (seat.carSeatId) {
+      if (seat.carSeatId && seat.identity !== 'local') {
         this.removeSeatIds.push(seat.carSeatId);
       }
     },
     setParentSize(parentSize: ParentSize) {
       this.curParentSize = parentSize;
+    },
+    saveSeat() {
+      return new Promise((resolve) => {
+        const list = [...this.seatList];
+        list.forEach((item) => {
+          if (item.carSeatId && item.identity && item.identity === 'local') {
+            delete item.carSeatId;
+          }
+
+          item.size = Object.assign({}, item.size, {
+            parentWidth: this.curParentSize.width,
+            parentHeight: this.curParentSize.height,
+            parentScale: this.curParentSize.scale
+          });
+        });
+
+        saveCarSeat(list).then((res) => {
+          if (res.code === 200) {
+            resolve(true);
+          }
+        });
+
+        if(this.removeSeatIds.length > 0) {
+          removeCarSeat(this.removeSeatIds.join(','))
+        }
+      });
+    },
+    resetSeat() {
+      this.seatList = []
+      this.removeSeatIds = []
     },
     /**
      * 根据当前的父亲尺寸，计算出新的X，Y

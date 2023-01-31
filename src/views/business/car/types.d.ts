@@ -41,9 +41,11 @@ type CollisionPostion = {
 };
 
 export type Seat = {
-  carSeatId: number;
+  carSeatId?: number;
   seatId?: number;
+  carId: number;
   size: SeatSize;
   position: SeatPosition;
   dragConfig: DragConfig;
+  identity?: string;
 } & SeatVoOfCarConfig;

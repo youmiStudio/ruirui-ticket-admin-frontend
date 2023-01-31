@@ -26,7 +26,6 @@
         "
         :parent-scale-x="parentScale"
         :parent-scale-y="parentScale"
-        :axis="seat.dragConfig.axis"
         v-model:x="seat.position.x"
         v-model:y="seat.position.y"
         v-model:w="seat.size.width"
@@ -71,6 +70,8 @@ import type {
 import type { SeatVoOfCarConfig } from '~/api/business/seat/types';
 import { storeToRefs } from 'pinia';
 import { useDebounceFn } from '@vueuse/shared';
+import { CarVo } from '~/api/business/car/types';
+import router from '~/router';
 
 const globSettings = useGlobSettings();
 const seatConfig = useSeatConfig;
@@ -97,7 +98,7 @@ const events = [
     el: window,
     handle: 'addEventListener',
     type: 'resize',
-    func: useDebounceFn(onResize, 5)
+    func: useDebounceFn(onResize, 300)
   }
 ];
 
@@ -106,6 +107,7 @@ let seatImageSize = ref<ImageSize>({
   height: -1
 });
 const seatImageUrl = ref<string>('');
+const carInfo = ref<CarVo>();
 
 const { seatList } = storeToRefs(configSeatStore);
 const currentSeat = ref<Seat>();
@@ -122,39 +124,47 @@ const parentScale = computed(() => {
 });
 
 onMounted(() => {
-  nextTick(() => {
-    openLoading('页面加载中');
-  });
-
-  nextTick(async () => {
-    const parentSize = await getParentSize();
-    configSeatStore.setParentSize(parentSize);
-  });
-
-  getCarInfo();
-  registerEvents();
-
-  setTimeout(() => {
-    closeLoading();
-  }, 200);
+  pageInit();
 });
 
 onBeforeUnmount(() => {
   removeEvents();
 });
 
-function getCarInfo() {
-  const carId = $route.params.carId;
-  getCar(Number(carId)).then((res) => {
-    const { data } = res;
-    if (data) {
-      getImageSize(data.carSeatImage).then(async (imgSize) => {
-        seatImageSize.value = imgSize;
-        seatImageUrl.value = data.carSeatImage;
+function pageInit() {
+  configSeatStore.resetSeat()
+  nextTick(async () => {
+    openLoading('页面加载中');
+    const carInfo = await getCarInfo();
+    await getCarGbSize(carInfo.carSeatImage);
+    const parentSize = await getParentSize();
+    configSeatStore.setParentSize(parentSize);
+    await configSeatStore.getSeat(carInfo.carId);
+    registerEvents();
+    closeLoading();
+  });
+}
 
-        configSeatStore.getSeat();
-      });
-    }
+function getCarInfo(): Promise<CarVo> {
+  return new Promise((resolve) => {
+    const carId = $route.params.carId;
+    getCar(Number(carId)).then((res) => {
+      const { data } = res;
+      if (data) {
+        carInfo.value = data;
+        resolve(data);
+      }
+    });
+  });
+}
+
+function getCarGbSize(image: string) {
+  return new Promise((resolve) => {
+    getImageSize(image).then((imgSize) => {
+      seatImageSize.value = imgSize;
+      seatImageUrl.value = image;
+      resolve(true);
+    });
   });
 }
 
@@ -203,7 +213,11 @@ function onContextMenu(e: MouseEvent, seat: Seat) {
 async function onResize() {
   const parentSize = await getParentSize();
   configSeatStore.setParentSize(parentSize);
-  configSeatStore.getSeat();
+  // if (carInfo.value) {
+  //   configSeatStore.getSeat(carInfo.value.carId);
+  // }
+  openLoading("重新计算尺寸中")
+  window.location.reload()
 }
 
 function registerEvents() {
@@ -256,6 +270,15 @@ function getParentSize(): Promise<ParentSize> {
   });
 }
 
+async function changeRecordParentSize(seat: Seat) {
+  const { width, height, scale } = await getParentSize();
+  seat.size = Object.assign({}, seat.size, {
+    parentWidth: width,
+    parentHeight: height,
+    parentScale: scale
+  });
+}
+
 async function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
   const initDragConfig = {
     axis: 'both'
@@ -272,11 +295,13 @@ async function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
   };
 
   const seat: Seat = {
-    carSeatId: seatList.value.length + 10,
+    carSeatId: seatList.value.length + 1,
     ...seatData,
+    carId: carInfo.value?.carId as number,
     position,
     dragConfig: initDragConfig,
-    size: initSize
+    size: initSize,
+    identity: 'local'
   };
 
   configSeatStore.addSeat(seat);
