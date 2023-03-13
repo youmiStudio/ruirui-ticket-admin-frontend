@@ -13,6 +13,7 @@
 @import "./element/input.scss";
 @import "./element/tree.scss";
 @import "./upload.scss";
+@import "./goods.scss";
 
 body {
   margin: 0;
@@ -68,6 +69,11 @@ div:focus {
 }
 
 ul {
+  padding: 0;
+  margin: 0;
+}
+
+p {
   padding: 0;
   margin: 0;
 }

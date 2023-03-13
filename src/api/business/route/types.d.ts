@@ -14,25 +14,9 @@ export type RouteSearchBody = {
    */
   status?: string;
   /**
-   * 起始站点ID
-   */
-  fromSiteId?: Number | string;
-  /**
-   * 目的站点ID
-   */
-  toSiteId?: Number | string;
-  /**
    * 其他请求参数
    */
   parmas?: {
-    /**
-     * 起始站点名称
-     */
-    fromSiteName?: string;
-    /**
-     * 目的站点名称
-     */
-    toSiteName?: string;
     /**
      * 创建时间 - 开始
      */
@@ -49,14 +33,46 @@ export type RouteSearchBody = {
  */
 export type RouteBody = Pick<
   RouteVo,
-  | 'routeId'
-  | 'routeName'
-  | 'routeDescribe'
-  | 'fromSiteId'
-  | 'toSiteId'
-  | 'status'
-  | 'remark'
+  'routeId' | 'routeName' | 'routeDescribe' | 'status' | 'remark'
 >;
+
+export type RouteGallery = {
+  /**
+   * 路线图片ID
+   */
+  routeGalleryId: number;
+  /**
+   * 路线ID
+   */
+  routeId: number;
+  /**
+   * 图片原始地址
+   */
+  original: string;
+  /**
+   * 顺序
+   */
+  sort: number;
+};
+
+export type RouteSku = {
+  /**
+   * 路线时间段
+   */
+  routeSkuId: number;
+  /**
+   * 路线ID
+   */
+  routeId: number;
+  /**
+   * 车辆ID
+   */
+  carId: number;
+  /**
+   * 时间段名称
+   */
+  name: string;
+}
 
 /**
  * 站点信息 - 返回对象
@@ -74,24 +90,35 @@ export type RouteVo = {
    * 路线描述
    */
   routeDescribe: string;
+
   /**
-   * 起始站点Id
+   * 路线详情
    */
-  fromSiteId: number;
+  routeDetail: string;
+
   /**
-   * 目的站点Id
+   * 主图
    */
-  toSiteId: number;
+  mainImgUrl: string;
+
+  /**
+   * 开始时间
+   */
+  beginTime: Date;
+
+  /**
+   * 结束时间
+   */
+  endTime: Date;
+
+  /**
+   * 路线图片
+   */
+  gallery: RouteGallery;
+
+
   /**
    * 状态
    */
   status: string;
-  /**
-   * 起始站信息
-   */
-  fromSite: SiteVo;
-  /**
-   * 目的站信息
-   */
-  toSite: SiteVo;
 } & BaseVo;

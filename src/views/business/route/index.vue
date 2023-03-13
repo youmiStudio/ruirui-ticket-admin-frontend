@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card class="mb-10px" shadow="never">
-      <el-form ref="searchFormRef"  :model="searchForm">
+      <el-form ref="searchFormRef" :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="路线名称" prop="routeName">
@@ -17,40 +17,17 @@
           </el-col>
 
           <el-col :span="8">
-            <el-form-item label="起始站" prop="fromSiteId">
-              <el-select
+            <el-form-item label="出行时间">
+              <el-date-picker
                 class="w100%"
-                v-model="searchForm.fromSiteId"
-                placeholder="起始站"
+                v-model="dateRange"
+                value-format="YYYY-MM-DD"
+                type="daterange"
+                range-separator="-"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
                 @change="search"
-              >
-                <el-option label="全部" value=""></el-option>
-                <el-option
-                  v-for="dict in sites"
-                  :label="dict.siteName"
-                  :value="dict.siteId"
-                  :key="dict.siteId"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="8">
-            <el-form-item label="目的站" prop="toSiteId">
-              <el-select
-                class="w100%"
-                v-model="searchForm.toSiteId"
-                placeholder="目的站"
-                @change="search"
-              >
-                <el-option label="全部" value=""></el-option>
-                <el-option
-                  v-for="dict in sites"
-                  :label="dict.siteName"
-                  :value="dict.siteId"
-                  :key="dict.siteId"
-                ></el-option>
-              </el-select>
+              ></el-date-picker>
             </el-form-item>
           </el-col>
 
@@ -64,7 +41,7 @@
               >
                 <el-option label="全部" value=""></el-option>
                 <el-option
-                  v-for="dict in dicts.type.sys_common_status"
+                  v-for="dict in dicts.type.sys_route_status"
                   :label="dict.label"
                   :value="dict.value"
                   :key="dict.value"
@@ -126,51 +103,63 @@
         :primary-key="pageConfig.id"
         @select-change="handleTableSelectChange"
       >
-        <el-table-column
-          label="路线编号"
-          prop="routeId"
-          sortable="custom"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          label="路线名称"
-          prop="routeName"
-          align="center"
-          :show-overflow-tooltip="true"
-        >
+        <el-table-column label="路线名称" width="300">
+          <template #default="{ row }">
+            <div class="goods-info-wrap">
+              <div class="image-wrap" @click.stop>
+                <el-image
+                  style="width: 80px; height: 80px"
+                  :src="row.mainImgUrl"
+                  :preview-src-list="[row.mainImgUrl]"
+                  :initial-index="1"
+                  :preview-teleported="true"
+                  :hide-on-click-modal="true"
+                  fit="cover"
+                />
+                <div class="img-preview">预览</div>
+              </div>
+              <div class="detail">
+                <div class="top-info">
+                  <p class="goods-id"> ID: {{ row.routeId }} </p>
+                </div>
+                <span class="goods-name">{{ row.routeName }}</span>
+              </div>
+            </div>
+          </template>
         </el-table-column>
         <el-table-column
           label="路线描述"
           prop="routeDescribe"
           align="center"
           :show-overflow-tooltip="true"
+          width="150"
         >
         </el-table-column>
-        <el-table-column label="起始站" align="center">
-          <template #default="{ row }">
-            <el-button
-              link
-              type="primary"
-              @click.stop="openSiteDetailDialog(row.fromSite)"
-              >{{ row.fromSite.siteName }}</el-button
-            >
+        <el-table-column label="累计销量" align="center" width="100">
+          <template #default>
+            <span>0</span>
           </template>
         </el-table-column>
-        <el-table-column label="目的站" align="center">
+        <el-table-column label="30日销量" align="center" width="100">
+          <template #default>
+            <span>0</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="出行时间" align="center" width="200">
           <template #default="{ row }">
-            <el-button
-              link
-              type="primary"
-              @click.stop="openSiteDetailDialog(row.toSite)"
-              >{{ row.toSite.siteName }}</el-button
-            >
+            <span>{{
+              row.beginTime && parseTime(row.beginTime, '{y}-{m}-{d}')
+            }}</span>
+            -
+            <span>{{
+              row.endTime && parseTime(row.endTime, '{y}-{m}-{d}')
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
             <DictTag
-              :options="dicts.type.sys_common_status"
+              :options="dicts.type.sys_route_status"
               :value="row.status"
             ></DictTag>
           </template>
@@ -183,13 +172,12 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="备注"
-          prop="remark"
+          fixed="right"
+          min-width="120px"
+          label="操作"
           align="center"
-          :show-overflow-tooltip="true"
+          class-name="fixed-width"
         >
-        </el-table-column>
-        <el-table-column min-width="120px" label="操作" align="center" class-name="fixed-width">
           <template #default="{ row }">
             <el-button
               v-authority="[pageConfig.authorites.edit]"
@@ -234,40 +222,6 @@
           </el-col>
 
           <el-col :span="24">
-            <el-form-item label="起始站" prop="fromSiteId">
-              <el-select
-                class="w100%"
-                v-model="form.fromSiteId"
-                placeholder="请选择起始站"
-              >
-                <el-option
-                  v-for="dict in sites"
-                  :label="dict.siteName"
-                  :value="dict.siteId"
-                  :key="dict.siteId"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="目的站" prop="toSiteId">
-              <el-select
-                class="w100%"
-                v-model="form.toSiteId"
-                placeholder="请选择目的站"
-              >
-                <el-option
-                  v-for="dict in sites"
-                  :label="dict.siteName"
-                  :value="dict.siteId"
-                  :key="dict.siteId"
-                ></el-option>
-              </el-select>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
             <el-form-item label="路线描述" prop="routeDescribe">
               <el-input
                 v-model="form.routeDescribe"
@@ -281,7 +235,7 @@
             <el-form-item label="状态" prop="status">
               <el-radio-group v-model="form.status">
                 <el-radio
-                  v-for="dict in dicts.type.sys_common_status"
+                  v-for="dict in dicts.type.sys_route_status"
                   :key="dict.value"
                   :label="dict.value"
                   >{{ dict.label }}</el-radio
@@ -305,45 +259,6 @@
         <span class="dialog-footer">
           <el-button @click="cancel">取消</el-button>
           <el-button type="primary" @click="submitForm" :loading="formLoading">
-            确定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
-
-    <el-dialog
-      v-model="detailDialogVisible"
-      title="站点详情"
-      width="350px"
-      append-to-body
-    >
-      <el-form label-suffix=":">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="站点名称">{{
-              siteDetail?.siteName
-            }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="站点拼音名称">{{
-              siteDetail?.sitePinyin
-            }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="站点描述">{{
-              siteDetail?.siteDescribe
-            }}</el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="站点备注">{{
-              siteDetail?.remark
-            }}</el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button type="primary" @click="detailDialogVisible = false">
             确定
           </el-button>
         </span>
@@ -377,10 +292,11 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
-import type { SiteVo } from '~/api/business/site/types';
-import type { RouteSearchBody, RouteBody, RouteVo } from '~/api/business/route/types';
-
-import { wxSiteList } from '@/api/business/site/index';
+import type {
+  RouteSearchBody,
+  RouteBody,
+  RouteVo
+} from '~/api/business/route/types';
 
 type ModelSearchBody = RouteSearchBody;
 type ModelBody = RouteBody;
@@ -412,7 +328,7 @@ const pageConfig = reactive({
   }
 });
 
-const dicts = useDictTypes('sys_common_status');
+const dicts = useDictTypes('sys_route_status');
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
@@ -420,11 +336,21 @@ const formLoading = ref<boolean>(false);
 const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
+const dateRange = ref<any>([]);
+
+const dateParams = computed(() => {
+  if (!dateRange.value) {
+    return {};
+  }
+  return {
+    beginTime: dateRange.value[0],
+    endTime: dateRange.value[1]
+  };
+});
+
 const searchForm = reactive<ModelSearchBody>({
   routeName: '',
-  status: '',
-  fromSiteId: '',
-  toSiteId: ''
+  status: ''
 });
 
 const rules = reactive<FormRules>({
@@ -437,10 +363,6 @@ const rules = reactive<FormRules>({
       trigger: 'blur'
     }
   ],
-  fromSiteId: [
-    { required: true, message: '起始站点不能为空', trigger: 'blur' }
-  ],
-  toSiteId: [{ required: true, message: '目的站点不能为空', trigger: 'blur' }],
   routeDescribe: [
     { required: true, message: '路线描述不能为空', trigger: 'blur' }
   ],
@@ -451,8 +373,6 @@ let form = reactive<ModelBody>({
   routeId: undefined,
   routeName: '',
   routeDescribe: '',
-  fromSiteId: -1,
-  toSiteId: -1,
   status: '0',
   remark: ''
 });
@@ -475,7 +395,11 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
+  tableRef.value &&
+    tableRef.value.search<ModelVo>({
+      ...searchForm,
+      params: { ...dateParams.value }
+    });
 }, 200);
 
 function switchBatchDelete(selectRowsLength: number) {
@@ -622,30 +546,7 @@ function cancel() {
 }
 
 /* --------------------Extra Features Start-------------------- */
-const sites = ref<SiteVo[]>();
-const siteDetail = ref<SiteVo>();
 
-const detailDialogVisible = ref<boolean>(false);
-
-onMounted(() => {
-  getSites();
-});
-/**
- * 获取所有站点
- */
-function getSites() {
-  wxSiteList().then((res) => {
-    const { data } = res;
-    if (data) {
-      sites.value = data;
-    }
-  });
-}
-
-function openSiteDetailDialog(site: SiteVo) {
-  detailDialogVisible.value = true;
-  siteDetail.value = site;
-}
 /* --------------------Extra Features End-------------------- */
 </script>
 

@@ -3,7 +3,7 @@
     <el-card class="mb-10px" shadow="never">
       <el-form ref="searchFormRef"  :model="searchForm">
         <el-row :gutter="20">
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="座位名称" prop="seatName">
               <el-input
                 v-model="searchForm.seatName"
@@ -16,7 +16,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="8">
+          <el-col :span="5">
             <el-form-item label="状态" prop="status">
               <el-select
                 class="w100%"
@@ -35,7 +35,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="8">
+          <el-col :span="6">
             <el-form-item label="价格区间" prop="seatName">
               <el-row :gutter="20">
                 <el-col :span="11">
@@ -150,7 +150,7 @@
           </template>
         </el-table-column>
 
-        <template v-for="item in formSeatIconItems" :key="item.prop">
+        <!-- <template v-for="item in formSeatIconItems" :key="item.prop">
           <el-table-column
             class-name="table-image-icon"
             :label="item.label"
@@ -160,7 +160,7 @@
               <img :src="apiUrl + row[item.prop]" class="avatar" />
             </template>
           </el-table-column>
-        </template>
+        </template> -->
 
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
@@ -248,7 +248,7 @@
             </el-form-item>
           </el-col>
 
-          <template v-for="item in formSeatIconItems" :key="item.prop">
+          <!-- <template v-for="item in formSeatIconItems" :key="item.prop">
             <el-col :span="24">
               <el-form-item :label="item.label" :prop="item.prop">
                 <el-upload
@@ -269,7 +269,7 @@
                 </el-upload>
               </el-form-item>
             </el-col>
-          </template>
+          </template> -->
 
           <el-col :span="24">
             <el-form-item label="座位描述" prop="seatDescribe">

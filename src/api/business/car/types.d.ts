@@ -18,9 +18,9 @@ export type CarVo = {
    */
   carNo:string;
   /**
-   * 车辆座位平面图
+   * 主图
    */
-  carSeatImage:string;
+  mainImgUrl:string;
   /**
    * 车辆状态
    */
