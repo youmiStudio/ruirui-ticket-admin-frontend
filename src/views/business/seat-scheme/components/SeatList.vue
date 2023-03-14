@@ -17,10 +17,10 @@
           <span class="text-center flex-1"
             >{{ seat.seatName }} | ¥{{ fenToYuan(seat.price) }}</span
           >
-          <img
+          <!-- <img
             class="w-20px h-20px pointer-events-none"
             :src="seat.unSelectedIcon"
-          />
+          /> -->
         </div>
       </el-col>
     </el-row>

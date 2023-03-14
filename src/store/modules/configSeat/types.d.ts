@@ -1,4 +1,4 @@
-import type { Seat,ParentSize } from '@/views/business/car/types';
+import type { Seat,ParentSize } from '~/views/business/seat-scheme/types';
 
 export interface ConfigSeatStoreState {
   seatList: Seat[];

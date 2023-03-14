@@ -1,7 +1,7 @@
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../../types';
 import type { CarAddAndEditBody } from './types';
-import type { Seat } from '~/views/business/car/types';
+import type { Seat } from '~/views/business/seat-scheme/types';
 
 const BASE_URL = '/admin/carSeat';
 

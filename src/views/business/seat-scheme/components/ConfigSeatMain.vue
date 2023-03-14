@@ -38,6 +38,7 @@
           :src="seat.unSelectedIcon"
           alt=""
         />
+        <span class="text-center">{{ seat.seatName }}</span>
       </Dragger>
       <img
         v-show="seatImageUrl"
@@ -113,7 +114,7 @@ const { seatList } = storeToRefs(configSeatStore);
 const currentSeat = ref<Seat>();
 
 const offsetWidth = computed(() => {
-  const width = document.body.offsetWidth - 300;
+  const width = document.body.offsetWidth - 330;
   return Math.abs(width / seatImageSize.value.width) > 0.7
     ? width * 0.7
     : width;
@@ -136,7 +137,8 @@ function pageInit() {
   nextTick(async () => {
     openLoading('页面加载中');
     const carInfo = await getCarInfo();
-    await getCarGbSize(carInfo.carSeatImage);
+    const carSeatImage = `/profile/upload/2023/01/10/WechatIMG24411_20230110133146A001.jpeg`
+    await getCarGbSize(carSeatImage);
     const parentSize = await getParentSize();
     configSeatStore.setParentSize(parentSize);
     await configSeatStore.getSeat(carInfo.carId);

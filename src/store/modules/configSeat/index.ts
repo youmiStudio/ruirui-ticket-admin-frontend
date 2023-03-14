@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ConfigSeatStoreState } from './types';
 import { useGlobSettings } from '@/hooks/settings/useGlobSettings';
-import type { Seat, ParentSize } from '@/views/business/car/types';
+import type { Seat, ParentSize } from '~/views/business/seat-scheme/types';
 import {
   carSeatList,
   saveCarSeat,

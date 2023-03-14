@@ -109,14 +109,14 @@ export const asyncRoutes: RouteItem[] = [
     ]
   },
   {
-    name: 'carConfigSeat',
-    path: '/ticket/car-config',
+    name: 'seatSchemeConfigSeat',
+    path: '/business/seat-scheme',
     hidden: true,
     permissions: ['ticket:car:edit'],
     children: [
       {
         path: 'seat/:carId',
-        component: () => import('@/views/business/car/configSeat.vue'),
+        component: () => import('~/views/business/seat-scheme/configSeat.vue'),
         name: 'ConfigSeat',
         meta: { title: '分配座位', activeMenu: '/ticket/car' }
       }
