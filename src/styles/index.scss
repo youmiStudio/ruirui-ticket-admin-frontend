@@ -92,3 +92,11 @@ p {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.link {
+  color: #2656bd;
+  cursor: pointer;
+  &:hover {
+    color: #173b96;
+  }
+}

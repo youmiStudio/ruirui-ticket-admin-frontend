@@ -29,6 +29,11 @@
     }
   }
 
+  .detail {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
   .top-info {
     margin-bottom: 3px;
   }
