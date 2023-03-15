@@ -6,6 +6,7 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Breadcrumb: typeof import('./../src/components/Breadcrumb/index.vue')['default']
+    DatePicker: typeof import('./../src/components/DatePicker/index.vue')['default']
     DictTag: typeof import('./../src/components/DictTag/index.vue')['default']
     ElBadge: typeof import('element-plus/es')['ElBadge']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
@@ -56,6 +57,7 @@ declare module '@vue/runtime-core' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Screenfull: typeof import('./../src/components/Screenfull/index.vue')['default']
+    SectionBox: typeof import('./../src/components/SectionBox/index.vue')['default']
     SvgIcon: typeof import('./../src/components/SvgIcon/index.vue')['default']
     TableOperation: typeof import('./../src/components/TableOperation/index.vue')['default']
     TablePanel: typeof import('./../src/components/TablePanel/index.vue')['default']

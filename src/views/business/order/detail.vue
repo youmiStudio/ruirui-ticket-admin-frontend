@@ -234,7 +234,7 @@ const orderInfo = ref({
       margin-right: 5px;
       width: 2px;
       height: 18px;
-      background-color: #407cff;
+      background-color: #1975ff;
       transform: translateY(1px);
     }
   }
