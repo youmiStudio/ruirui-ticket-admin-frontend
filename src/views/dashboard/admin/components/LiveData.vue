@@ -126,4 +126,8 @@ const list = ref([
     border-right: none;
   }
 }
+
+:deep(.el-statistic__content) {
+  height: 34px;
+}
 </style>

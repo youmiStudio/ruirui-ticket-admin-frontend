@@ -35,6 +35,9 @@ const props = defineProps({
   padding: 0 16px 16px;
   background: #fff;
   border-radius: 4px;
+  +.section-box {
+    margin-top: 15px;
+  }
   .section-box__header {
     display: flex;
     align-items: center;
