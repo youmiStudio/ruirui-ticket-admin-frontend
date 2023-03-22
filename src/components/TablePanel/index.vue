@@ -302,6 +302,12 @@ function initStaticData(dataList: any[], pageNum: number) {
  */
 function search<T = any>(params?: any) {
   setQueryPage(1);
+  Object.keys(query.value).forEach((key) => {
+    if (key === props.page.pageNum || key === props.page.pageSize) return;
+    if (!(key in params)) {
+      delete query.value[key];
+    }
+  });
   const p = Object.assign({}, unref(query), params);
   query.value = deepClone(p);
   if (props.url && typeof props.url === 'function') {

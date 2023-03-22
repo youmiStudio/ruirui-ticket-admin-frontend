@@ -343,8 +343,8 @@ const dateParams = computed(() => {
     return {};
   }
   return {
-    beginTime: dateRange.value[0],
-    endTime: dateRange.value[1]
+    beginTime: dateRange.value[0] || '',
+    endTime: dateRange.value[1] || ''
   };
 });
 
@@ -395,11 +395,14 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  tableRef.value &&
-    tableRef.value.search<ModelVo>({
+  const params = Object.assign(
+    {},
+    {
       ...searchForm,
-      params: { ...dateParams.value }
-    });
+      ...dateParams.value
+    }
+  );
+  tableRef.value && tableRef.value.search<ModelVo>(params);
 }, 200);
 
 function switchBatchDelete(selectRowsLength: number) {
