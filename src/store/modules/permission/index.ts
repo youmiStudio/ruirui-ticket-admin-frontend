@@ -95,10 +95,10 @@ function dynamicImport(
         component +
         '.tsx`, 请自行创建!'
     );
-    if(notFoundPage) {
-      return dynamicViewsModules[notFoundPage]
+    if (notFoundPage) {
+      return dynamicViewsModules[notFoundPage];
     }
-    return
+    return;
   }
 }
 
@@ -108,14 +108,18 @@ function dynamicImport(
  * @param route
  */
 function hasRolesPermission(roles: RoleEnum[], route: RouteItem): boolean {
+  if (route.meta && !route.meta.roles) {
+    return true;
+  }
+
   if (route.meta && route.meta.roles) {
     return roles.some(
       (role) =>
         route.meta && route.meta.roles && route.meta.roles.includes(role)
     );
-  } else {
-    return false;
   }
+
+  return false;
 }
 
 function hasAuthoritiesPermission(
@@ -123,13 +127,17 @@ function hasAuthoritiesPermission(
   route: RouteItem
 ): boolean {
   const all_permission = '*:*:*';
+  if (!route.permissions) {
+    return true;
+  }
+
   if (route.permissions && route.permissions.length > 0) {
     return authorities.some((v) => {
       return v === all_permission || route.permissions?.includes(v);
     });
-  } else {
-    return false;
   }
+
+  return false;
 }
 
 /**

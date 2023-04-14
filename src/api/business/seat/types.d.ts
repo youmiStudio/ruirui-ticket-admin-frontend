@@ -1,3 +1,4 @@
+import { type } from 'os';
 import type { BaseSearchBody, BaseVo } from '../../types';
 
 /**
@@ -28,60 +29,17 @@ export type SeatSearchBody = {
  * 座位信息信息
  */
 export type SeatVo = {
-  /**
-   * 座位Id
-   */
   seatId?: number;
-  /**
-   * 座位名称
-   */
   seatName: string;
-  /**
-   * 座位描述
-   */
-  seatDescribe: string;
-  /**
-   * 座位价格（分）
-   */
+  seatDescribe?: string;
   price: number | string;
-  /**
-   * 原座位价格（分）
-   */
-  oldPrice: number | string;
-  /**
-   * 未选座位 - 图标url
-   */
-  unSelectedIcon: string;
-  /**
-   * 已选座位 - 图标url
-   */
-  selectedIcon: string;
-  /**
-   * 已购买座位 - 图标url
-   */
-  boughtIcon: string;
-  /**
-   * 座位状态
-   */
-  status: string;
+  status?: string;
 } & BaseVo;
 
 /**
  * 新增和编辑请求体
  */
-export type SeatBody = Pick<
-  SeatVo,
-  | 'seatId'
-  | 'seatName'
-  | 'seatDescribe'
-  | 'price'
-  | 'oldPrice'
-  | 'unSelectedIcon'
-  | 'selectedIcon'
-  | 'boughtIcon'
-  | 'status'
-  | 'remark'
->;
+export type SeatDTO = SeatVo
 
 export type SeatVoOfCarConfig = Pick<
   SeatVo,

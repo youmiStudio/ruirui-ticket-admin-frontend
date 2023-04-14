@@ -6,9 +6,6 @@ import {
 
 const Layout = () => import('~/layouts/default/index.vue');
 
-import systemRouter from './modules/system';
-import businessRouter from './modules/business';
-
 export const constantRoutes: RouteItem[] = [
   {
     name: 'login',
@@ -135,6 +132,51 @@ export const asyncRoutes: RouteItem[] = [
         name: 'orderDetailBySn',
         meta: { title: '订单详情', activeMenu: '/ticket/order' }
       }
+    ]
+  },
+  {
+    name: 'routeAdd',
+    path: '/ticket/route/add',
+    hidden: true,
+    component: Layout,
+    permissions: ['ticket:route:add'],
+    children: [
+      {
+        name: 'routeAddView',
+        path: '',
+        component: () => import('~/views/business/route/detail.vue'),
+        meta: { title: '路线详情', activeMenu: '/ticket/route' }
+      },
+    ]
+  },
+  {
+    name: 'routeDetail',
+    path: '/ticket/route/detail',
+    hidden: true,
+    component: Layout,
+    permissions: ['ticket:route:query'],
+    children: [
+      {
+        name: 'routeDetailById',
+        path: ':routeId',
+        component: () => import('~/views/business/route/detail.vue'),
+        meta: { title: '路线详情', activeMenu: '/ticket/route' }
+      },
+    ]
+  },
+  {
+    name: 'routeEdit',
+    path: '/ticket/route/edit',
+    hidden: true,
+    component: Layout,
+    permissions: ['ticket:route:edit'],
+    children: [
+      {
+        name: 'routeEditById',
+        path: ':routeId',
+        component: () => import('~/views/business/route/detail.vue'),
+        meta: { title: '路线详情', activeMenu: '/ticket/route' }
+      },
     ]
   }
 ];

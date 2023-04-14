@@ -1,7 +1,7 @@
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../../types';
 import type {
-  SeatBody,
+  SeatDTO,
   SeatSearchBody,
   SeatVo,
   SeatVoOfCarConfig
@@ -23,13 +23,13 @@ export const seatAllList = async () =>
 export const getSeat = async (seatId: number) =>
   get<R<SeatVo>>({ url: URL.baseUrl + seatId });
 
-export const addSeat = async (seatBody: SeatBody) =>
+export const addSeat = async (seatBody: SeatDTO) =>
   post<R<SeatVo>>({ url: URL.baseUrl, data: seatBody });
 
 export const removeSeat = async (seatIds: string) =>
   del<R<String>>({ url: URL.baseUrl + seatIds });
 
-export const editSeat = async (seatBody: SeatBody) =>
+export const editSeat = async (seatBody: SeatDTO) =>
   put<R<SeatVo>>({ url: URL.baseUrl, data: seatBody });
 
 export const exportSeat = async (seatBody: SeatSearchBody) =>
