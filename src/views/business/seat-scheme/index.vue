@@ -66,17 +66,8 @@
             size="small"
             :icon="Delete"
             :disabled="batchDeleteDisable"
+            @click="handleBatchDelete"
             >删除</el-button
-          >
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-authority="[pageConfig.authorites.export]"
-            type="warning"
-            plain
-            size="small"
-            :icon="Download"
-            >导出</el-button
           >
         </el-col>
       </el-row>
@@ -122,15 +113,23 @@
           width="200px"
         >
           <template #default="{ row }">
-            <el-button size="small" link type="primary" :icon="Edit"
+            <el-button
+              v-authority="[pageConfig.authorites.edit]"
+              size="small"
+              link
+              type="primary"
+              :icon="Edit"
+              @click.stop="handleEdit(row)"
               >修改</el-button
             >
             <el-button
+              v-authority="[pageConfig.authorites.remove]"
               link
               size="small"
               type="danger"
               :key="row[pageConfig.id]"
               :icon="Delete"
+              @click.stop="handleRowDelete(row)"
               >删除</el-button
             >
           </template>
@@ -158,6 +157,11 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
+import {
+  seatSchemeList,
+  removeSeatScheme
+} from '@/api/business/seatScheme/index';
+import { SeatSchemeVO } from '~/api/business/seatScheme/types';
 
 type ModelSearchBody = any;
 type ModelBody = any;
@@ -167,25 +171,21 @@ type ModelVo = any;
  * 页面配置，抽离公共部分，少搬点砖
  */
 const pageConfig = reactive({
-  title: '车辆',
-  id: 'carId',
+  title: '座位方案',
+  id: 'seatSchemeId',
   isAsc: 'asc',
-  orderByColumn: 'car_id',
+  orderByColumn: 'seat_scheme_id',
   api: {
-    list: null,
-    get: null,
-    add: null,
-    remove: null,
-    edit: null,
-    export: null
+    list: seatSchemeList,
+    remove: removeSeatScheme
   },
   authorites: {
-    list: 'ticket:car:list',
-    get: 'ticket:car:query',
-    add: 'ticket:car:add',
-    edit: 'ticket:car:edit',
-    remove: 'ticket:car:remove',
-    export: 'ticket:car:export'
+    list: 'ticket:seatScheme:list',
+    get: 'ticket:seatScheme:query',
+    add: 'ticket:seatScheme:add',
+    edit: 'ticket:seatScheme:edit',
+    remove: 'ticket:seatScheme:remove',
+    export: 'ticket:seatScheme:export'
   }
 });
 
@@ -222,7 +222,11 @@ const search = useDebounceFn(() => {
 }, 200);
 
 const handleAdd = () => {
-  router.push("/ticket/seat-scheme/add")
+  router.push('/ticket/seat-scheme/add');
+};
+
+const handleEdit = (row: SeatSchemeVO) => {
+  router.push(`/ticket/seat-scheme/edit/${row.seatSchemeId}`);
 };
 
 function switchBatchDelete(selectRowsLength: number) {
@@ -238,31 +242,56 @@ function handleTableSelectChange(recordRows: any[]) {
 }
 
 function fetchList(obj: ModelSearchBody) {
-  // return pageConfig.api.list({
-  //   ...obj,
-  //   orderByColumn: pageConfig.orderByColumn,
-  //   isAsc: pageConfig.isAsc
-  // });
-  return new Promise((resolve, reject) => {
-    resolve({
-      code: 200,
-      data: {
-        total: 1,
-        items: [
-          {
-            seatSchemeId: 100,
-            seatSchemeName: '飞翔铁CPLUS座位',
-            status: 0,
-            createTime: new Date()
-          }
-        ]
-      }
-    });
+  return pageConfig.api.list({
+    ...obj,
+    orderByColumn: pageConfig.orderByColumn,
+    isAsc: pageConfig.isAsc
   });
 }
 function searchReset() {
   searchFormRef.value?.resetFields();
 }
+
+function handleBatchDelete() {
+  const ids = tableRecordRows.value.map((row) => row[pageConfig.id]);
+  batchDelete(ids.join(',')).then(() => {
+    search();
+    ElMessage.success('删除成功');
+  });
+}
+
+function batchDelete(ids: string) {
+  return new Promise((resolve, reject) => {
+    ElMessageBox.confirm(
+      `确定要删除${pageConfig.title}编号[${ids}]的数据项吗？`,
+      '警告',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }
+    )
+      .then(() => {
+        pageConfig.api.remove(ids).then((res) => {
+          const { code } = res;
+          if (code === 200) {
+            resolve(res);
+          } else {
+            reject(res);
+          }
+        });
+      })
+      .catch(() => {});
+  });
+}
+
+function handleRowDelete(row: any) {
+  batchDelete(row[pageConfig.id]).then(() => {
+    search();
+    ElMessage.success('删除成功');
+  });
+}
+
 function searchRefresh() {
   searchReset();
   search();

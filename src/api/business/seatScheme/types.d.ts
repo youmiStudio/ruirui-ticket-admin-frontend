@@ -23,3 +23,8 @@ export type SeatScheme = {
 export type SeatSchemeDTO = SeatScheme;
 
 export type SeatSchemeVO = SeatScheme;
+
+export type SeatSchemePageSearchDTO = Pick<
+  SeatScheme,
+  'seatSchemeName' | 'status'
+>;
