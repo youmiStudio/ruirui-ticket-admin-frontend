@@ -4,21 +4,16 @@ import type {
   SeatDTO,
   SeatSearchBody,
   SeatVo,
-  SeatVoOfCarConfig
 } from './types';
 
 enum URL {
   list = '/admin/seat/list',
-  allList = '/admin/seat/allList',
   baseUrl = '/admin/seat/',
   export = '/admin/seat/export'
 }
 
-export const seatList = async (seatBody: SeatSearchBody) =>
+export const seatList = async (seatBody?: SeatSearchBody) =>
   get<R<PageVo<SeatVo[]>>>({ url: URL.list, params: seatBody });
-
-export const seatAllList = async () =>
-  get<R<SeatVoOfCarConfig[]>>({ url: URL.allList });
 
 export const getSeat = async (seatId: number) =>
   get<R<SeatVo>>({ url: URL.baseUrl + seatId });

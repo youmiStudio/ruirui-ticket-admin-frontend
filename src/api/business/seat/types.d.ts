@@ -8,21 +8,21 @@ export type SeatSearchBody = {
   /**
    * 座位名称
    */
-  seatName: string;
+  seatName?: string;
 
   /**
    * 座位状态
    */
-  status: string;
+  status?: string;
 
   /**
    * 价格区间 - 最少
    */
-  minPrice: string;
+  minPrice?: string;
   /**
    * 价格区间 - 最多
    */
-  maxPrice: string;
+  maxPrice?: string;
 } & BaseSearchBody;
 
 /**
@@ -40,14 +40,3 @@ export type SeatVo = {
  * 新增和编辑请求体
  */
 export type SeatDTO = SeatVo
-
-export type SeatVoOfCarConfig = Pick<
-  SeatVo,
-  | 'seatId'
-  | 'seatName'
-  | 'boughtIcon'
-  | 'unSelectedIcon'
-  | 'selectedIcon'
-  | 'oldPrice'
-  | 'price'
->;

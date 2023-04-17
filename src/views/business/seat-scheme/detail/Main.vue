@@ -17,8 +17,7 @@
         conflict
         parent
         class="absolute"
-        v-for="seat in seatList"
-        :index="seat.carSeatId"
+        v-for="seat in positionList"
         :lockAspectRatio="true"
         :init-w="seat.size.width ? seat.size.width : seatConfig.iconSize.width"
         :init-h="
@@ -26,8 +25,8 @@
         "
         :parent-scale-x="parentScale"
         :parent-scale-y="parentScale"
-        v-model:x="seat.position.x"
-        v-model:y="seat.position.y"
+        v-model:x="seat.positionData.x"
+        v-model:y="seat.positionData.y"
         v-model:w="seat.size.width"
         v-model:h="seat.size.height"
         @click="onClick(seat)"
@@ -35,15 +34,17 @@
       >
         <img
           class="w100% h100% border border-dashed"
-          :src="seat.unSelectedIcon"
+          :src="defaultIcon"
           alt=""
         />
-        <span class="text-center">{{ seat.seatName }}</span>
+        <div>
+          <span class="text-center">{{ seat.name }}</span>
+        </div>
       </Dragger>
       <img
-        v-show="seatImageUrl"
+        v-show="carPlaneImage"
         class="w100% h100% pointer-events-none"
-        :src="globSettings.apiUrl + seatImageUrl"
+        :src="carPlaneImage"
       />
     </div>
   </main>
@@ -51,32 +52,28 @@
 
 <script lang="ts" setup>
 import { Back } from '@element-plus/icons-vue';
-import { getCar } from '@/api/business/car';
 import { useGlobSettings } from '@/hooks/settings/useGlobSettings';
-import { openLoading, closeLoading } from '@/hooks/web/useLoading';
 import useSeatConfig from '../hooks/useSeatConfig';
+import { ElMessage, ElMessageBox } from 'element-plus';
 
 import '@imengyu/vue3-context-menu/lib/vue3-context-menu.css';
 import ContextMenu from '@imengyu/vue3-context-menu';
 import Dragger from '~/components/Vue3DraggableResizable';
-import { useConfigSeatStore } from '@/store';
+import { useSeatSchemeStore } from '@/store';
 
 import type {
-  Seat,
+  Position,
   SeatPosition,
   SeatSize,
   CollisionPostion,
   ParentSize
 } from '../types';
-import type { SeatVoOfCarConfig } from '~/api/business/seat/types';
 import { storeToRefs } from 'pinia';
 import { useDebounceFn } from '@vueuse/shared';
-import { CarVo } from '~/api/business/car/types';
-import router from '~/router';
+import { SeatVo } from '~/api/business/seat/types';
 
-const globSettings = useGlobSettings();
 const seatConfig = useSeatConfig;
-const configSeatStore = useConfigSeatStore();
+const seatSchemeStore = useSeatSchemeStore();
 
 const parentRef = ref<HTMLElement>();
 
@@ -85,7 +82,6 @@ type ImageSize = {
   height: number;
 };
 
-const $route = useRoute();
 const $router = useRouter();
 
 const events = [
@@ -99,7 +95,7 @@ const events = [
     el: window,
     handle: 'addEventListener',
     type: 'resize',
-    func: useDebounceFn(onResize, 300)
+    func: useDebounceFn(onResize, 100)
   }
 ];
 
@@ -107,11 +103,10 @@ let seatImageSize = ref<ImageSize>({
   width: -1,
   height: -1
 });
-const seatImageUrl = ref<string>('');
-const carInfo = ref<CarVo>();
 
-const { seatList } = storeToRefs(configSeatStore);
-const currentSeat = ref<Seat>();
+const { positionList, carPlaneImage, defaultIcon, currentParentSize } =
+  storeToRefs(seatSchemeStore);
+const currentSeatPosition = ref<SeatPosition>();
 
 const offsetWidth = computed(() => {
   const width = document.body.offsetWidth - 330;
@@ -121,7 +116,18 @@ const offsetWidth = computed(() => {
 });
 
 const parentScale = computed(() => {
+  if (seatImageSize.value.width === -1) {
+    return 1;
+  }
   return offsetWidth.value / seatImageSize.value.width;
+});
+
+watch(carPlaneImage, () => {
+  pageInit();
+});
+
+watch(currentParentSize, () => {
+  seatSchemeStore.calcSeatXYByCurParentSize();
 });
 
 onMounted(() => {
@@ -133,47 +139,20 @@ onBeforeUnmount(() => {
 });
 
 function pageInit() {
-  configSeatStore.resetSeat()
   nextTick(async () => {
-    openLoading('页面加载中');
-    const carInfo = await getCarInfo();
-    const carSeatImage = `/profile/upload/2023/01/10/WechatIMG24411_20230110133146A001.jpeg`
-    await getCarGbSize(carSeatImage);
-    const parentSize = await getParentSize();
-    configSeatStore.setParentSize(parentSize);
-    await configSeatStore.getSeat(carInfo.carId);
+    getImageSize(carPlaneImage.value).then((res) => {
+      seatImageSize.value.width = res.width;
+      seatImageSize.value.height = res.height;
+    });
+    setParentSize();
     registerEvents();
-    closeLoading();
-  });
-}
-
-function getCarInfo(): Promise<CarVo> {
-  return new Promise((resolve) => {
-    const carId = $route.params.carId;
-    getCar(Number(carId)).then((res) => {
-      const { data } = res;
-      if (data) {
-        carInfo.value = data;
-        resolve(data);
-      }
-    });
-  });
-}
-
-function getCarGbSize(image: string) {
-  return new Promise((resolve) => {
-    getImageSize(image).then((imgSize) => {
-      seatImageSize.value = imgSize;
-      seatImageUrl.value = image;
-      resolve(true);
-    });
   });
 }
 
 function getImageSize(url: string): Promise<ImageSize> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.src = globSettings.apiUrl + url;
+    img.src = url;
     img.onload = () => {
       resolve({
         width: img.naturalWidth,
@@ -183,25 +162,28 @@ function getImageSize(url: string): Promise<ImageSize> {
   });
 }
 
-function onDrop(e: DragEvent) {
-  const { offsetX, offsetY } = e;
-  if (e.dataTransfer) {
-    const seatData = e.dataTransfer.getData('seat');
-    const seatDataJson = JSON.parse(seatData);
-    addSeat(seatDataJson, {
-      x: offsetX - seatConfig.iconSize.width / 2,
-      y: offsetY - seatConfig.iconSize.height / 2
-    });
-  }
-}
-
-function onContextMenu(e: MouseEvent, seat: Seat) {
+function onContextMenu(e: MouseEvent, seat: SeatPosition) {
   e.preventDefault();
   ContextMenu.showContextMenu({
     theme: 'flat',
     x: e.x,
     y: e.y,
     items: [
+      {
+        label: '修改名称',
+        onClick: () => {
+          ElMessageBox.prompt('', '修改名称', {
+            confirmButtonText: '修改',
+            cancelButtonText: '取消',
+            inputValue:seat.name
+          })
+            .then(({ value }) => {
+              seat.name = value
+            })
+            .catch(() => {
+            });
+        }
+      },
       {
         label: '删除',
         onClick: () => {
@@ -213,13 +195,12 @@ function onContextMenu(e: MouseEvent, seat: Seat) {
 }
 
 async function onResize() {
+  setParentSize();
+}
+
+async function setParentSize() {
   const parentSize = await getParentSize();
-  configSeatStore.setParentSize(parentSize);
-  // if (carInfo.value) {
-  //   configSeatStore.getSeat(carInfo.value.carId);
-  // }
-  openLoading("重新计算尺寸中")
-  window.location.reload()
+  currentParentSize.value = parentSize;
 }
 
 function registerEvents() {
@@ -237,18 +218,18 @@ function removeEvents() {
 
 function onKeyUp(e: KeyboardEvent) {
   if (e.key === 'Backspace') {
-    if (currentSeat.value) {
-      removeSeat(currentSeat.value);
+    if (currentSeatPosition.value) {
+      removeSeat(currentSeatPosition.value);
     }
   }
 }
 
-function onClick(seat: Seat) {
-  currentSeat.value = seat;
+function onClick(seat: SeatPosition) {
+  currentSeatPosition.value = seat;
 }
 
-function removeSeat(seat: Seat) {
-  configSeatStore.removeSeat(seat);
+function removeSeat(seatPosition: SeatPosition) {
+  seatSchemeStore.deleteSeatPosition(seatPosition.seatSchemePositionId!);
 }
 
 function getParentSize(): Promise<ParentSize> {
@@ -272,20 +253,20 @@ function getParentSize(): Promise<ParentSize> {
   });
 }
 
-async function changeRecordParentSize(seat: Seat) {
-  const { width, height, scale } = await getParentSize();
-  seat.size = Object.assign({}, seat.size, {
-    parentWidth: width,
-    parentHeight: height,
-    parentScale: scale
-  });
+function onDrop(e: DragEvent) {
+  const { offsetX, offsetY } = e;
+  if (e.dataTransfer) {
+    const seatData = e.dataTransfer.getData('seat');
+    const seatDataJson = JSON.parse(seatData);
+
+    addPosition(seatDataJson, {
+      x: offsetX - seatConfig.iconSize.width / 2,
+      y: offsetY - seatConfig.iconSize.height / 2
+    });
+  }
 }
 
-async function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
-  const initDragConfig = {
-    axis: 'both'
-  };
-
+async function addPosition(seatData: SeatVo, position: Position) {
   const { width: parentWidth, height: parentHeight } = await getParentSize();
 
   const initSize = {
@@ -296,21 +277,19 @@ async function addSeat(seatData: SeatVoOfCarConfig, position: SeatPosition) {
     parentHeight
   };
 
-  const seat: Seat = {
-    carSeatId: seatList.value.length + 1,
-    ...seatData,
-    carId: carInfo.value?.carId as number,
-    position,
-    dragConfig: initDragConfig,
-    size: initSize,
-    identity: 'local'
+  const seatPosition: SeatPosition = {
+    name: seatData.seatName,
+    seatId: seatData.seatId!,
+    price: seatData.price as number,
+    positionData: position,
+    size: initSize
   };
 
-  configSeatStore.addSeat(seat);
+  seatSchemeStore.addSeatPosition(seatPosition);
 }
 
 function goBack() {
-  $router.go(-1);
+  $router.push("/ticket/seat-scheme")
 }
 </script>
 

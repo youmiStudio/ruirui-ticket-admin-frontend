@@ -1,5 +1,3 @@
-import { SeatVoOfCarConfig } from '~/api/business/seat/types';
-
 export type Config = {
   /**
    * 初始化-座位图标大小
@@ -24,7 +22,7 @@ type ParentSize = {
   height: number;
 };
 
-type SeatPosition = {
+type Position = {
   x: number;
   y: number;
 };
@@ -40,12 +38,19 @@ type CollisionPostion = {
   bottom: number;
 };
 
-export type Seat = {
-  carSeatId?: number;
-  seatId?: number;
-  carId: number;
+export type SeatPosition = {
+  seatSchemePositionId?: number | string;
+  name: string;
+  seatId: number;
+  price?: number;
+  positionData: Position;
   size: SeatSize;
-  position: SeatPosition;
-  dragConfig: DragConfig;
-  identity?: string;
-} & SeatVoOfCarConfig;
+  firstPositionData?: Position;
+  firstSize?: SeatSize;
+};
+
+export type SeatIconItems = {
+  label: string;
+  prop: 'unSelectedIcon' | 'selectedIcon' | 'boughtIcon';
+  value: string;
+};

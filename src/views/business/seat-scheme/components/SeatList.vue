@@ -10,7 +10,7 @@
         <div
           class="seat seat-button flex items-center justify-between select-none"
           draggable="true"
-          @mouseenter="handleMouseEnter(seat)"
+          @mouseenter="handleMouseEnter()"
           @mousedown="handleMouseDown($event, seat)"
           @dragstart="handleDragStart($event)"
         >
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { SeatVoOfCarConfig } from '@/api/business/seat/types';
+import type { SeatVo } from '@/api/business/seat/types';
 import { PropType } from 'vue';
 import useSeatConfig from '../hooks/useSeatConfig';
 import { fenToYuan } from '@/utils/price';
@@ -36,7 +36,11 @@ import { fenToYuan } from '@/utils/price';
 const props = defineProps({
   data: {
     require: true,
-    type: Array as PropType<SeatVoOfCarConfig[]>
+    type: Array as PropType<SeatVo[]>
+  },
+  icon: {
+    require: true,
+    type: String
   }
 });
 const emit = defineEmits(['mouseDown']);
@@ -46,22 +50,23 @@ const config = useSeatConfig;
 let previewImage = ref<HTMLImageElement>(
   new Image(config?.iconSize.width, config?.iconSize.height)
 );
-const currentSeat = ref<SeatVoOfCarConfig>();
+const currentSeat = ref<SeatVo>();
 
-function handleMouseEnter(seat: SeatVoOfCarConfig) {
+function handleMouseEnter() {
   const previewImageDiv = document.querySelector('.preview-image');
   if (!previewImageDiv) {
-    previewImage.value.src = seat.unSelectedIcon;
+    previewImage.value.src = props.icon!;
     previewImage.value.style['position'] = 'absolute';
     previewImage.value.style['top'] = '-9999px';
     previewImage.value.className = 'preview-image';
     document.body.appendChild(previewImage.value);
   } else {
-    previewImageDiv.setAttribute('src', seat.unSelectedIcon);
+    previewImageDiv.setAttribute('src', props.icon!);
   }
 }
 
-function handleMouseDown(ev: MouseEvent, seat: SeatVoOfCarConfig) {
+function handleMouseDown(ev: MouseEvent, seat: SeatVo) {
+  
   const seatData = {
     ...seat,
     mousePosition: {

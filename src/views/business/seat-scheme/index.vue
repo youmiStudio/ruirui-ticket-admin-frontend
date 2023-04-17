@@ -54,6 +54,7 @@
             plain
             size="small"
             :icon="Plus"
+            @click="handleAdd"
             >新增</el-button
           >
         </el-col>
@@ -202,6 +203,8 @@ const searchForm = reactive<ModelSearchBody>({
   status: ''
 });
 
+const router = useRouter();
+
 onMounted(() => {
   search();
 });
@@ -217,6 +220,10 @@ watch(
 const search = useDebounceFn(() => {
   tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
 }, 200);
+
+const handleAdd = () => {
+  router.push("/ticket/seat-scheme/add")
+};
 
 function switchBatchDelete(selectRowsLength: number) {
   if (selectRowsLength > 0) {
@@ -246,7 +253,7 @@ function fetchList(obj: ModelSearchBody) {
             seatSchemeId: 100,
             seatSchemeName: '飞翔铁CPLUS座位',
             status: 0,
-            createTime:new Date()
+            createTime: new Date()
           }
         ]
       }

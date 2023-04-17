@@ -106,14 +106,28 @@ export const asyncRoutes: RouteItem[] = [
     ]
   },
   {
-    name: 'seatSchemeConfigSeat',
-    path: '/ticket/seat-scheme/seat',
+    name: 'editSeatScheme',
+    path: '/ticket/seat-scheme/edit',
     hidden: true,
-    permissions: ['ticket:car:edit'],
+    permissions: ['ticket:seatScheme:edit'],
     children: [
       {
-        path: ':carId',
-        component: () => import('~/views/business/seat-scheme/configSeat.vue'),
+        path: ':seatSchemeId',
+        component: () => import('~/views/business/seat-scheme/detail/index.vue'),
+        name: 'EditSeatScheme',
+        meta: { title: '分配座位', activeMenu: '/ticket/car' }
+      }
+    ]
+  },
+  {
+    name: 'addSeatScheme',
+    path: '/ticket/seat-scheme/add',
+    hidden: true,
+    permissions: ['ticket:seatScheme:add'],
+    children: [
+      {
+        path: '',
+        component: () => import('~/views/business/seat-scheme/detail/index.vue'),
         name: 'ConfigSeat',
         meta: { title: '分配座位', activeMenu: '/ticket/car' }
       }
