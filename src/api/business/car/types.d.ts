@@ -1,32 +1,37 @@
 import type { BaseSearchBody, BaseVo } from '../../types';
+import type { Gallery } from '@/components/UploadImage/types';
 
 export type CarVo = {
   /**
    * 车辆Id
    */
-  carId:number;
+  carId: number;
   /**
    * 车辆名称
    */
-  carName:string;
+  carName: string;
   /**
    * 车辆描述
    */
-  carDescribe:string;
+  carDescribe: string;
   /**
    * 车牌号码
    */
-  carNo:string;
-  /**
-   * 主图
-   */
-  mainImgUrl:string;
+  carNo: string;
   /**
    * 车辆状态
    */
-  status:string
-} & BaseVo
+  status: string;
 
-export type CarSearchBody = Partial<Pick<CarVo, 'carName' | 'carNo' | 'status'>> & BaseSearchBody
+  /**
+   * 图像列表
+   */
+  gallery?: Gallery[];
+} & BaseVo;
+
+export type CarSearchBody = Partial<
+  Pick<CarVo, 'carName' | 'carNo' | 'status'>
+> &
+  BaseSearchBody;
 
 export type CarAddAndEditBody = Partial<CarVo>;

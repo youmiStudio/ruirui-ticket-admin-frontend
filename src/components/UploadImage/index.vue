@@ -10,13 +10,16 @@
 </template>
 
 <script lang="ts" setup>
+import { PropType } from 'vue';
+import { Gallery } from './types';
+
 const props = defineProps({
   multiple: {
     type: Boolean,
     default: false
   },
   modelValue: {
-    type: [String, Array]
+    type: [String, Array<Gallery>]
   }
 });
 

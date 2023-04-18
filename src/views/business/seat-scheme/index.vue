@@ -173,7 +173,7 @@ type ModelVo = any;
 const pageConfig = reactive({
   title: '座位方案',
   id: 'seatSchemeId',
-  isAsc: 'asc',
+  isAsc: 'desc',
   orderByColumn: 'seat_scheme_id',
   api: {
     list: seatSchemeList,

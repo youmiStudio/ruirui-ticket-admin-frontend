@@ -109,6 +109,7 @@ import SeatList from '../components/SeatList.vue';
 import { ElMessage } from 'element-plus';
 
 import { storeToRefs } from 'pinia';
+import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 
 const seatSchemeStore = useSeatSchemeStore();
 const router = useRouter();
@@ -146,15 +147,15 @@ function handleReset() {
 <style lang="scss" scoped>
 :deep() {
   .seat-upload {
-    .avatar-uploader,
-    .avatar-uploader-icon {
+    .image-uploader,
+    .image-uploader-icon {
       width: 65px !important;
       height: 65px !important;
     }
   }
   .plane-upload {
-    .avatar-uploader,
-    .avatar-uploader-icon {
+    .image-uploader,
+    .image-uploader-icon {
       height: 150px !important;
     }
     .avatar {

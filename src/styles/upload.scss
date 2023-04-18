@@ -14,28 +14,3 @@ $--icon-height: 50px;
 .el-form-item__label {
   font-weight: 700;
 }
-
-.avatar-uploader .el-upload {
-  border: 1px dashed $--el-border-color;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: $--el-transition-duration-fast;
-}
-
-.avatar-uploader .el-upload:hover {
-  border-color: $--el-color-primary;
-}
-
-.el-icon.avatar-uploader-icon {
-  font-size: 14px;
-  color: #8c939d;
-  width: $--icon-width;
-  height: $--icon-height;
-  text-align: center;
-}
-.avatar {
-  width: $--icon-width;
-  height: $--icon-height;
-}

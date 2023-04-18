@@ -65,11 +65,11 @@ export const useSeatSchemeStore = defineStore({
   },
   actions: {
     reset() {
-      if(this.seatSchemeId) {
-        this.getSeatScheme()
-        return
+      if (this.seatSchemeId) {
+        this.getSeatScheme();
+        return;
       }
-      this.$reset()
+      this.$reset();
     },
     setSeatSchemeId(id: number) {
       this.seatSchemeId = id;
@@ -85,10 +85,7 @@ export const useSeatSchemeStore = defineStore({
         });
       };
       const convertImageUrlOfFrontBack = (url: string) => {
-        if (url.startsWith(useGlobSettings().apiUrl)) {
-          return;
-        }
-        return useGlobSettings().apiUrl + url;
+        return url;
       };
       const waitParent = () => {
         return new Promise((resolve) => {
@@ -161,9 +158,10 @@ export const useSeatSchemeStore = defineStore({
      * 删除未使用的图片
      */
     deleteUnuseImage() {
-      this.deleteImageFileName.forEach((fileName) => {
-        deleteFile(fileName);
-      });
+      // 想了想还是后端处理好了
+      // this.deleteImageFileName.forEach((fileName) => {
+      //   deleteFile(fileName);
+      // });
       this.deleteImageFileName = [];
     },
     /**
@@ -171,7 +169,7 @@ export const useSeatSchemeStore = defineStore({
      */
     destory() {
       this.deleteUnuseImage();
-      this.$reset()
+      this.$reset();
     },
     /**
      * 新增座位位置
@@ -245,14 +243,7 @@ export const useSeatSchemeStore = defineStore({
           return obj;
         });
       };
-      const markUseImage = () => {
-        ICON_KEYS.forEach((icon) => {
-          const index = this.deleteImageFileName.indexOf(params[icon]);
-          if (index > -1) {
-            this.deleteImageFileName.splice(index, 1);
-          }
-        });
-      };
+     
       const convertUploadPath = (path: string) => {
         if (!path.startsWith(SERVER_PROFILE)) {
           return path.substring(path.indexOf(SERVER_PROFILE));
@@ -260,8 +251,8 @@ export const useSeatSchemeStore = defineStore({
         return path;
       };
 
-      this.reSetParentSize()
-      
+      this.reSetParentSize();
+
       const params: SeatSchemeDTO = {
         seatSchemeId: this.seatSchemeId,
         seatSchemeName: this.seatSchemeName,
@@ -279,7 +270,6 @@ export const useSeatSchemeStore = defineStore({
         api(params)
           .then((res) => {
             if (res.code === 200) {
-              markUseImage();
               this.deleteUnuseImage();
               const { data } = res;
 

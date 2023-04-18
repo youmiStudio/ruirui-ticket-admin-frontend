@@ -124,27 +124,6 @@
         </el-table-column>
         <el-table-column label="车辆描述" prop="carDescribe" align="center">
         </el-table-column>
-      
-        <!-- <template v-for="item in formSeatIconItems" :key="item.prop">
-          <el-table-column
-            class-name="table-image-icon"
-            :label="item.label"
-            align="center"
-          >
-            <template #default="{ row }">
-              <el-image
-                :src="apiUrl + row[item.prop]"
-                :zoom-rate="1.2"
-                :preview-src-list="[apiUrl + row[item.prop]]"
-                :initial-index="1"
-                :preview-teleported="true"
-                :hide-on-click-modal="true"
-                fit="cover"
-                @click.stop
-              />
-            </template>
-          </el-table-column>
-        </template> -->
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
             <DictTag
@@ -175,15 +154,6 @@
               :icon="Edit"
               @click.stop="handleEdit(row)"
               >修改</el-button
-            >
-            <el-button
-              v-authority="[pageConfig.authorites.edit]"
-              size="small"
-              link
-              type="primary"
-              :icon="Setting"
-              @click.stop="goToConfigSeat(row)"
-              >分配座位</el-button
             >
             <el-button
               v-authority="[pageConfig.authorites.remove]"
@@ -218,6 +188,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
+            <el-form-item label="车辆图片" prop="carNo">
+              <upload-image multiple v-model="form.gallery"></upload-image>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
             <el-form-item label="车牌号码" prop="carNo">
               <el-input
                 v-model="form.carNo"
@@ -226,28 +201,6 @@
               ></el-input>
             </el-form-item>
           </el-col>
-          <!-- <template v-for="item in formSeatIconItems" :key="item.prop">
-            <el-col :span="24">
-              <el-form-item :label="item.label" :prop="item.prop">
-                <el-upload
-                  class="avatar-uploader"
-                  :show-file-list="false"
-                  :before-upload="beforeAvatarUpload"
-                  :http-request="uploadHttpRequest"
-                  :on-success="handleSeatIconUploadOnSuccess(item.prop)"
-                >
-                  <img
-                    v-if="form[item.prop]"
-                    :src="apiUrl + form[item.prop]"
-                    class="avatar"
-                  />
-                  <el-icon v-else class="avatar-uploader-icon"
-                    ><Plus
-                  /></el-icon>
-                </el-upload>
-              </el-form-item>
-            </el-col>
-          </template> -->
           <el-col :span="24">
             <el-form-item label="车辆描述" prop="carDescribe">
               <el-input
@@ -384,6 +337,7 @@ let form = reactive<ModelBody>({
   carId: undefined,
   carName: '',
   carDescribe: '',
+  gallery: [],
   carNo: '',
   status: '0',
   remark: ''
@@ -514,6 +468,7 @@ function formReset() {
   Object.keys(form).forEach((key) => {
     form[key] = null;
   });
+  form['gallery'] = [];
   form['status'] = '0';
 }
 
@@ -552,56 +507,6 @@ function cancel() {
   dialogState.dialogVisible = false;
   formReset();
 }
-
-/* --------------------Extra Features Start-------------------- */
-const $router = useRouter();
-
-// type SeatIconItems = {
-//   label: string;
-//   prop: keyof Pick<ModelBody, 'carSeatImage'>;
-// };
-
-// const globSettings = useGlobSettings();
-// const apiUrl = globSettings.apiUrl;
-// const formSeatIconItems = ref<SeatIconItems[]>([
-//   {
-//     label: '座位图',
-//     prop: 'carSeatImage'
-//   }
-// ]);
-
-// const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-//   if (!isImage(rawFile.type)) {
-//     ElMessage.error('请上传图片!');
-//     return false;
-//   } else if (rawFile.size / 1024 / 1024 > 2) {
-//     ElMessage.error('图片不能大于2MB!');
-//     return false;
-//   }
-//   return true;
-// };
-
-// const uploadHttpRequest: UploadProps['httpRequest'] = (options) => {
-//   const { file } = options;
-//   let form = new FormData();
-//   form.append('file', file);
-//   return uploadFile(form);
-// };
-
-// const handleSeatIconUploadOnSuccess = (
-//   prop: string
-// ): UploadProps['onSuccess'] => {
-//   return (res) => {
-//     const { data } = res;
-//     if (data) {
-//       form[prop] = data.fileName;
-//     }
-//   };
-// };
-
-function goToConfigSeat(row: ModelBody) {
-  $router.push(`/ticket/car-config/seat/${row.carId}`);
-}
 /* --------------------Extra Features End-------------------- */
 </script>
 
@@ -609,12 +514,12 @@ function goToConfigSeat(row: ModelBody) {
 $--icon-width: 100%;
 $--icon-height: 175px;
 :deep() {
-  .avatar-uploader,
+  .image-uploader,
   .el-upload {
     width: 100%;
   }
 }
-.el-icon.avatar-uploader-icon {
+.el-icon.image-uploader-icon {
   width: $--icon-width;
   height: $--icon-height;
 }
