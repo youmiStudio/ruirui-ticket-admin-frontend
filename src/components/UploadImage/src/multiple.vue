@@ -54,6 +54,10 @@ const props = defineProps({
   modelValue: {
     type: Array as PropType<Gallery[]>,
     default: []
+  },
+  idKey: {
+    type: String,
+    default: 'galleryId'
   }
 });
 
@@ -90,7 +94,7 @@ watch(
 
 const deleteImageOfList = (obj: Gallery) => {
   imageList.value = imageList.value.filter(
-    (item) => item.galleryId !== obj.galleryId
+    (item) => item[props.idKey] !== obj[props.idKey]
   );
   emit('delete', obj);
 };
@@ -98,10 +102,10 @@ const deleteImageOfList = (obj: Gallery) => {
 const addImageOfList = (url: string) => {
   const time = new Date().getTime();
   const obj: Gallery = {
-    galleryId: time + imageList.value.length + 1,
     original: url,
     sort: imageList.value.length + 1
   };
+  obj[props.idKey] = time + imageList.value.length + 1
   imageList.value.push(obj);
 };
 

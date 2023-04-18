@@ -136,7 +136,7 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="车辆图片" prop="gallery">
-              <upload-image multiple v-model="form.gallery"></upload-image>
+              <upload-image multiple v-model="form.gallery" idKey="carGalleryId"></upload-image>
             </el-form-item>
           </el-col>
           <el-col :span="24">
