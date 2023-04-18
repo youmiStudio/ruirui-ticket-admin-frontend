@@ -3,10 +3,10 @@
     <el-card class="mb-10px" shadow="never">
       <el-form ref="searchFormRef" :model="searchForm">
         <el-row :gutter="20">
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="座位方案名称" prop="carName">
               <el-input
-                v-model="searchForm.carName"
+                v-model="searchForm.seatSchemeName"
                 placeholder="请输入座位方案"
                 clearable
                 maxlength="100"
@@ -16,7 +16,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item label="状态" prop="status">
               <el-select
                 class="w100%"
@@ -35,7 +35,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="6">
+          <el-col :span="8">
             <el-form-item>
               <el-button type="primary" :icon="Search" @click="search"
                 >查询</el-button
@@ -46,7 +46,7 @@
         </el-row>
       </el-form>
 
-      <el-row :gutter="10" class="mb8">
+      <el-row v-if="!checkMode" :gutter="10">
         <el-col :span="1.5">
           <el-button
             v-authority="[pageConfig.authorites.add]"
@@ -58,83 +58,32 @@
             >新增</el-button
           >
         </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-authority="[pageConfig.authorites.remove]"
-            type="danger"
-            plain
-            size="small"
-            :icon="Delete"
-            :disabled="batchDeleteDisable"
-            @click="handleBatchDelete"
-            >删除</el-button
-          >
-        </el-col>
       </el-row>
 
-      <TablePanel
+      <table-card
         ref="tableRef"
         :url="fetchList"
-        :primary-key="pageConfig.id"
-        @select-change="handleTableSelectChange"
+        :authority="{
+          edit: [pageConfig.authorites.edit],
+          delete: [pageConfig.authorites.remove]
+        }"
+        :show-delete="!checkMode"
+        :show-setting="!checkMode"
+        @click="
+          (item) => {
+            emit('check', item);
+          }
+        "
+        @edit="handleEdit"
+        @delete="handleRowDelete"
       >
-        <el-table-column
-          label="座位方案编号"
-          prop="seatSchemeId"
-          sortable="custom"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column
-          label="座位方案名称"
-          prop="seatSchemeName"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column label="状态" align="center">
-          <template #default="{ row }">
-            <DictTag
-              :options="dicts.type.sys_common_status"
-              :value="row.status"
-            ></DictTag>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" width="150px" align="center">
-          <template #default="{ row }">
-            <span>{{
-              row.createTime && parseTime(row.createTime, '{y}-{m}-{d} {h}:{i}')
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          align="center"
-          class-name="fixed-width"
-          width="200px"
-        >
-          <template #default="{ row }">
-            <el-button
-              v-authority="[pageConfig.authorites.edit]"
-              size="small"
-              link
-              type="primary"
-              :icon="Edit"
-              @click.stop="handleEdit(row)"
-              >修改</el-button
-            >
-            <el-button
-              v-authority="[pageConfig.authorites.remove]"
-              link
-              size="small"
-              type="danger"
-              :key="row[pageConfig.id]"
-              :icon="Delete"
-              @click.stop="handleRowDelete(row)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </TablePanel>
+        <template #default="{ element, index }">
+          <div class="table-view">
+            <el-image :src="element.carPlaneImage"></el-image>
+            <span class="name">方案名称：{{ element.seatSchemeName }}</span>
+          </div>
+        </template>
+      </table-card>
     </el-card>
   </div>
 </template>
@@ -151,6 +100,7 @@ import {
   Setting
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
+import TabelCard from '@/components/TableCard/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
 import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
@@ -166,6 +116,15 @@ import { SeatSchemeVO } from '~/api/business/seatScheme/types';
 type ModelSearchBody = any;
 type ModelBody = any;
 type ModelVo = any;
+
+const props = defineProps({
+  checkMode: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emit = defineEmits(['check']);
 
 /**
  * 页面配置，抽离公共部分，少搬点砖
@@ -190,7 +149,7 @@ const pageConfig = reactive({
 });
 
 const dicts = useDictTypes(['sys_common_status']);
-const tableRef = ref<InstanceType<typeof TablePanel>>();
+const tableRef = ref<InstanceType<typeof TabelCard>>();
 const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
 const formLoading = ref<boolean>(false);
@@ -198,7 +157,7 @@ const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
 const searchForm = reactive<ModelSearchBody>({
-  carName: '',
+  seatSchemeName: '',
   carNo: '',
   status: ''
 });
@@ -218,7 +177,7 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
+  tableRef.value && tableRef.value.search();
 }, 200);
 
 const handleAdd = () => {
@@ -241,9 +200,10 @@ function handleTableSelectChange(recordRows: any[]) {
   tableRecordRows.value = recordRows;
 }
 
-function fetchList(obj: ModelSearchBody) {
+function fetchList(obj: any) {
   return pageConfig.api.list({
     ...obj,
+    ...searchForm,
     orderByColumn: pageConfig.orderByColumn,
     isAsc: pageConfig.isAsc
   });
@@ -298,4 +258,11 @@ function searchRefresh() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.table-view {
+  .name {
+    padding: 0 10px;
+    font-size: 16px;
+  }
+}
+</style>

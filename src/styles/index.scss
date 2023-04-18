@@ -100,3 +100,16 @@ p {
     color: #173b96;
   }
 }
+
+.dialog-body-p0 {
+  .el-dialog__body {
+    padding: 0 !important;
+  }
+}
+
+.dialog-body-scroll {
+  .el-dialog__body {
+    max-height: 50vh;
+    overflow: auto;
+  }
+}

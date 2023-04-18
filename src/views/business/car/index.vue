@@ -59,7 +59,7 @@
         </el-row>
       </el-form>
 
-      <el-row :gutter="10" class="mb8">
+      <el-row :gutter="10">
         <el-col :span="1.5">
           <el-button
             v-authority="[pageConfig.authorites.add]"
@@ -69,18 +69,6 @@
             :icon="Plus"
             @click="handleAdd"
             >新增</el-button
-          >
-        </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-authority="[pageConfig.authorites.remove]"
-            type="danger"
-            plain
-            size="small"
-            :icon="Delete"
-            :disabled="batchDeleteDisable"
-            @click="handleBatchDelete"
-            >删除</el-button
           >
         </el-col>
         <el-col :span="1.5">
@@ -96,81 +84,39 @@
         </el-col>
       </el-row>
 
-      <TablePanel
+      <table-card
         ref="tableRef"
         :url="fetchList"
-        :primary-key="pageConfig.id"
-        @select-change="handleTableSelectChange"
+        :authority="{
+          edit: [pageConfig.authorites.edit],
+          delete: [pageConfig.authorites.remove]
+        }"
+        @edit="handleEdit"
+        @delete="handleRowDelete"
       >
-        <el-table-column
-          label="车辆编号"
-          prop="carId"
-          sortable="custom"
-          align="center"
-        >
-        </el-table-column>
-        <el-table-column label="车辆图片" align="center" width="150">
-          <template #default="{ row }">
-            <el-image
-              fit="contain"
-              style="width: 150px; height: 75px"
-              :src="row.mainImgUrl"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column label="车辆名称" prop="carName" align="center">
-        </el-table-column>
-        <el-table-column label="车牌号码" prop="carNo" align="center">
-        </el-table-column>
-        <el-table-column label="车辆描述" prop="carDescribe" align="center">
-        </el-table-column>
-        <el-table-column label="状态" align="center">
-          <template #default="{ row }">
-            <DictTag
-              :options="dicts.type.sys_common_status"
-              :value="row.status"
-            ></DictTag>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" width="150px" align="center">
-          <template #default="{ row }">
-            <span>{{
-              row.createTime && parseTime(row.createTime, '{y}-{m}-{d} {h}:{i}')
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="操作"
-          align="center"
-          class-name="fixed-width"
-          width="200px"
-        >
-          <template #default="{ row }">
-            <el-button
-              v-authority="[pageConfig.authorites.edit]"
-              size="small"
-              link
-              type="primary"
-              :icon="Edit"
-              @click.stop="handleEdit(row)"
-              >修改</el-button
-            >
-            <el-button
-              v-authority="[pageConfig.authorites.remove]"
-              link
-              size="small"
-              type="danger"
-              :key="row[pageConfig.id]"
-              :icon="Delete"
-              @click.stop="handleRowDelete(row)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </TablePanel>
+        <template #default="{ element }">
+          <div>
+            <el-image :src="element.mainImgUrl"></el-image>
+            <div class="car-info">
+              <el-tag class="mr-5px" type="warning">{{ element.carNo }}</el-tag>
+              <DictTag
+                style="display: inline-block"
+                :options="dicts.type.sys_common_status"
+                :value="element.status"
+              ></DictTag>
+
+              <div class="name">{{ element.carName }}</div>
+              <div v-if="element.carDescribe" class="describe">{{
+                element.carDescribe
+              }}</div>
+            </div>
+          </div>
+        </template>
+      </table-card>
     </el-card>
 
     <el-dialog
+      class="dialog-body-scroll"
       v-model="dialogState.dialogVisible"
       :title="dialogState.title"
       width="500px"
@@ -184,11 +130,12 @@
                 v-model="form.carName"
                 placeholder="请输入车辆名称"
                 maxlength="20"
+                show-word-limit
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="车辆图片" prop="carNo">
+            <el-form-item label="车辆图片" prop="gallery">
               <upload-image multiple v-model="form.gallery"></upload-image>
             </el-form-item>
           </el-col>
@@ -198,17 +145,21 @@
                 v-model="form.carNo"
                 placeholder="请输入车牌号码"
                 maxlength="10"
+                show-word-limit
               ></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="车辆描述" prop="carDescribe">
-              <el-input
-                v-model="form.carDescribe"
-                placeholder="车辆描述"
-                type="textarea"
-                :row="3"
-              ></el-input>
+            <el-form-item label="座位方案" prop="seatSchemeId">
+              <div>
+                <div v-if="form.seatSchemeId">
+                  <el-image :src="currentSeatScheme?.carPlaneImage"></el-image>
+                  <span>方案名称:{{ currentSeatScheme?.seatSchemeName }}</span>
+                </div>
+                <el-button type="primary" @click="openSeatScheme"
+                  >选择方案</el-button
+                >
+              </div>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -224,12 +175,14 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
+            <el-form-item label="车辆描述" prop="carDescribe">
               <el-input
-                v-model="form.remark"
-                placeholder="请输入内容"
+                show-word-limit
+                v-model="form.carDescribe"
+                placeholder="车辆描述"
                 type="textarea"
-                :row="2"
+                :row="3"
+                maxlength="100"
               ></el-input>
             </el-form-item>
           </el-col>
@@ -243,6 +196,19 @@
           </el-button>
         </span>
       </template>
+    </el-dialog>
+
+    <el-dialog
+      class="dialog-body-p0"
+      v-model="seatSchemeDialogVisible"
+      title="选择座位方案"
+      width="60%"
+      append-to-body
+    >
+      <seat-scheme-page
+        check-mode
+        @check="seatSchemeCheckHandler"
+      ></seat-scheme-page>
     </el-dialog>
   </div>
 </template>
@@ -282,6 +248,8 @@ import type {
 import { useGlobSettings } from '@/hooks/settings/useGlobSettings';
 import { isAmount, isImage } from '@/utils/is';
 import { uploadFile } from '@/api/common/index';
+import { SeatSchemeDTO } from '~/api/business/seatScheme/types';
+import SeatSchemePage from '@/views/business/seat-scheme/index.vue';
 
 type ModelSearchBody = CarSearchBody;
 type ModelBody = CarAddAndEditBody;
@@ -329,15 +297,21 @@ const searchForm = reactive<ModelSearchBody>({
 const rules = reactive<FormRules>({
   carName: [{ required: true, message: '车辆名称不能为空', trigger: 'blur' }],
   carNo: [{ required: true, message: '车牌号码不能为空', trigger: 'blur' }],
-  carSeatImage: [{ required: true, message: '座位图不能为空' }],
-  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
+  gallery: [{ required: true, message: '座位图不能为空' }],
+  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }],
+  seatSchemeId: [
+    { required: true, message: '座位方案不能为空', trigger: 'blur' }
+  ]
 });
+
+let currentSeatScheme = ref<SeatSchemeDTO>();
 
 let form = reactive<ModelBody>({
   carId: undefined,
   carName: '',
   carDescribe: '',
   gallery: [],
+  seatSchemeId: 0,
   carNo: '',
   status: '0',
   remark: ''
@@ -347,6 +321,8 @@ const dialogState = reactive({
   title: '',
   dialogVisible: false
 });
+
+const seatSchemeDialogVisible = ref<boolean>();
 
 onMounted(() => {
   search();
@@ -376,9 +352,10 @@ function handleTableSelectChange(recordRows: any[]) {
   tableRecordRows.value = recordRows;
 }
 
-function fetchList(obj: ModelSearchBody) {
+function fetchList(obj: any) {
   return pageConfig.api.list({
     ...obj,
+    ...searchForm,
     orderByColumn: pageConfig.orderByColumn,
     isAsc: pageConfig.isAsc
   });
@@ -400,6 +377,7 @@ function handleEdit(row: any) {
         form[key] = data[key];
       }
     });
+    currentSeatScheme.value = data.seatScheme;
   });
 }
 
@@ -470,6 +448,7 @@ function formReset() {
   });
   form['gallery'] = [];
   form['status'] = '0';
+  currentSeatScheme.value = undefined;
 }
 
 function searchReset() {
@@ -486,6 +465,8 @@ function submitForm() {
     if (valid) {
       formLoading.value = true;
       const isAdd = form[pageConfig.id] === null;
+      if (!form.gallery) return;
+      form.mainImgUrl = form.gallery[0].original;
       const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
       api(form).then((res) => {
         const { code } = res;
@@ -507,6 +488,16 @@ function cancel() {
   dialogState.dialogVisible = false;
   formReset();
 }
+
+function openSeatScheme() {
+  seatSchemeDialogVisible.value = true;
+}
+
+function seatSchemeCheckHandler(row: SeatSchemeDTO) {
+  currentSeatScheme.value = row;
+  form.seatSchemeId = row.seatSchemeId;
+  seatSchemeDialogVisible.value = false;
+}
 /* --------------------Extra Features End-------------------- */
 </script>
 
@@ -526,5 +517,22 @@ $--icon-height: 175px;
 .avatar {
   width: $--icon-width;
   height: $--icon-height;
+}
+
+.car-info {
+  padding: 0 10px;
+  .name {
+    margin-top: 5px;
+    font-size: 22px;
+    font-weight: 500;
+  }
+  .carNo {
+    margin-top: 5px;
+    font-size: 16px;
+  }
+  .describe {
+    margin-top: 10px;
+    font-size: 14px;
+  }
 }
 </style>

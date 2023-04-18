@@ -69,6 +69,12 @@ watch(
   (arr) => {
     if (imageList.value.length > 0 && arr.length === 0) {
       imageList.value = [];
+      return;
+    }
+
+    if (imageList.value.length !== arr.length) {
+      imageList.value = [...arr];
+      return;
     }
   },
   { deep: true }

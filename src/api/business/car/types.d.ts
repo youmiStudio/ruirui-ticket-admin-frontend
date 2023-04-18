@@ -1,5 +1,6 @@
 import type { BaseSearchBody, BaseVo } from '../../types';
 import type { Gallery } from '@/components/UploadImage/types';
+import { SeatSchemeDTO } from '../seatScheme/types';
 
 export type CarVo = {
   /**
@@ -26,7 +27,20 @@ export type CarVo = {
   /**
    * 图像列表
    */
-  gallery?: Gallery[];
+  gallery: Gallery[];
+
+  /**
+   * 主图
+   */
+  mainImgUrl: string;
+  /**
+   * 座位方案id
+   */
+  seatSchemeId: number;
+  /**
+   * 座位方案
+   */
+  seatScheme: SeatSchemeDTO;
 } & BaseVo;
 
 export type CarSearchBody = Partial<
