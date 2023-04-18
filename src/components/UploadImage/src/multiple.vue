@@ -65,6 +65,16 @@ nextTick(() => {
 });
 
 watch(
+  () => props.modelValue,
+  (arr) => {
+    if (imageList.value.length > 0 && arr.length === 0) {
+      imageList.value = [];
+    }
+  },
+  { deep: true }
+);
+
+watch(
   () => imageList.value,
   (arr) => {
     emit('update:modelValue', arr);
