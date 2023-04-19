@@ -34,6 +34,9 @@
         </div>
       </el-col>
     </el-row>
+    <div v-if="!data" class="empty-img">
+        <img src="@/assets/images/empty.png" />
+      </div>
     <div class="mt20px flex flex-row-reverse">
       <el-pagination
         v-model:current-page="pageNum"
@@ -193,6 +196,14 @@ $--el-color-primary: #409eff;
         }
       }
     }
+  }
+}
+
+.empty-img {
+  display: flex;
+  justify-content: center;
+  img {
+   width: 8vw;
   }
 }
 </style>

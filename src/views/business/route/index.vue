@@ -84,17 +84,6 @@
             >删除</el-button
           >
         </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-authority="[pageConfig.authorites.export]"
-            type="warning"
-            plain
-            size="small"
-            :icon="Download"
-            @click="handleExport"
-            >导出</el-button
-          >
-        </el-col>
       </el-row>
 
       <TablePanel
@@ -202,68 +191,6 @@
         </el-table-column>
       </TablePanel>
     </el-card>
-
-    <el-dialog
-      v-model="dialogState.dialogVisible"
-      :title="dialogState.title"
-      width="450px"
-      append-to-body
-    >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="路线名称" prop="routeName">
-              <el-input
-                v-model="form.routeName"
-                placeholder="请输入路线名称"
-                maxlength="20"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="路线描述" prop="routeDescribe">
-              <el-input
-                v-model="form.routeDescribe"
-                placeholder="请输入路线描述"
-                type="textarea"
-                :row="3"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dicts.type.sys_route_status"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
-              <el-input
-                v-model="form.remark"
-                placeholder="请输入内容"
-                type="textarea"
-                :row="2"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="cancel">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="formLoading">
-            确定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -499,10 +426,6 @@ function batchDelete(ids: string) {
   });
 }
 
-function clearTableRecordRows() {
-  if (!tableRef.value) return;
-  tableRef.value.clearRecord();
-}
 
 function formReset() {
   formRef.value?.resetFields();
@@ -519,33 +442,6 @@ function searchReset() {
 function searchRefresh() {
   searchReset();
   search();
-}
-
-function submitForm() {
-  formRef.value?.validate((valid) => {
-    if (valid) {
-      formLoading.value = true;
-      const isAdd = form[pageConfig.id] === null;
-      const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
-      api(form).then((res) => {
-        const { code } = res;
-        if (code !== 200) {
-          formLoading.value = false;
-          return;
-        }
-        search();
-        formReset();
-        dialogState.dialogVisible = false;
-        formLoading.value = false;
-        ElMessage.success(`${pageConfig.title}${isAdd ? '新增' : '编辑'}成功`);
-      });
-    }
-  });
-}
-
-function cancel() {
-  dialogState.dialogVisible = false;
-  formReset();
 }
 
 /* --------------------Extra Features Start-------------------- */

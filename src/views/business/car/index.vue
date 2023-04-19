@@ -29,7 +29,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="8">
+          <el-col v-if="!checkMode" :span="8">
             <el-form-item label="状态" prop="status">
               <el-select
                 class="w100%"
@@ -59,7 +59,7 @@
         </el-row>
       </el-form>
 
-      <el-row :gutter="10">
+      <el-row :gutter="10" v-if="!checkMode">
         <el-col :span="1.5">
           <el-button
             v-authority="[pageConfig.authorites.add]"
@@ -71,17 +71,6 @@
             >新增</el-button
           >
         </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-authority="[pageConfig.authorites.export]"
-            type="warning"
-            plain
-            size="small"
-            :icon="Download"
-            @click="handleExport"
-            >导出</el-button
-          >
-        </el-col>
       </el-row>
 
       <table-card
@@ -91,8 +80,11 @@
           edit: [pageConfig.authorites.edit],
           delete: [pageConfig.authorites.remove]
         }"
+        :show-delete="!checkMode"
+        :show-setting="!checkMode"
         @edit="handleEdit"
         @delete="handleRowDelete"
+        @click="(item) => emit('check', item)"
       >
         <template #default="{ element }">
           <div>
@@ -136,7 +128,11 @@
           </el-col>
           <el-col :span="24">
             <el-form-item label="车辆图片" prop="gallery">
-              <upload-image multiple v-model="form.gallery" idKey="carGalleryId"></upload-image>
+              <upload-image
+                multiple
+                v-model="form.gallery"
+                idKey="carGalleryId"
+              ></upload-image>
             </el-form-item>
           </el-col>
           <el-col :span="24">
@@ -251,6 +247,15 @@ import { uploadFile } from '@/api/common/index';
 import { SeatSchemeDTO } from '~/api/business/seatScheme/types';
 import SeatSchemePage from '@/views/business/seat-scheme/index.vue';
 
+const props = defineProps({
+  checkMode: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emit = defineEmits(['check']);
+
 type ModelSearchBody = CarSearchBody;
 type ModelBody = CarAddAndEditBody;
 type ModelVo = CarVo;
@@ -291,7 +296,7 @@ const tableRecordRows = ref<ModelVo[]>([]);
 const searchForm = reactive<ModelSearchBody>({
   carName: '',
   carNo: '',
-  status: ''
+  status: props.checkMode ? '0' : ''
 });
 
 const rules = reactive<FormRules>({

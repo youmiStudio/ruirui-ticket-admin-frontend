@@ -5,7 +5,7 @@
       v-model="imageList"
       tag="div"
       :animation="300"
-      item-key="galleryId"
+      :item-key="props.idKey"
       @end="dragEndHandler"
     >
       <template #item="{ element, index }">
@@ -93,9 +93,22 @@ watch(
 );
 
 const deleteImageOfList = (obj: Gallery) => {
-  imageList.value = imageList.value.filter(
-    (item) => item[props.idKey] !== obj[props.idKey]
-  );
+  imageList.value = imageList.value.filter((item) => {
+    if (
+      Object.hasOwn(obj, props.idKey) &&
+      item[props.idKey] === obj[props.idKey]
+    ) {
+      return false;
+    }
+    if (
+      Object.hasOwn(obj, 'galleryId') &&
+      (item[props.idKey] === obj['galleryId'] ||
+        item['galleryId'] === obj['galleryId'])
+    ) {
+      return false;
+    }
+    return true;
+  });
   emit('delete', obj);
 };
 
@@ -105,7 +118,7 @@ const addImageOfList = (url: string) => {
     original: url,
     sort: imageList.value.length + 1
   };
-  obj[props.idKey] = time + imageList.value.length + 1
+  obj['galleryId'] = time + imageList.value.length + 1;
   imageList.value.push(obj);
 };
 

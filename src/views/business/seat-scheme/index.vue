@@ -16,7 +16,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="8">
+          <el-col v-if="!checkMode" :span="8">
             <el-form-item label="状态" prop="status">
               <el-select
                 class="w100%"
@@ -80,7 +80,16 @@
         <template #default="{ element, index }">
           <div class="table-view">
             <el-image :src="element.carPlaneImage"></el-image>
-            <span class="name">方案名称：{{ element.seatSchemeName }}</span>
+            <div class="info">
+              <DictTag
+                style="display: inline-block"
+                :options="dicts.type.sys_common_status"
+                :value="element.status"
+              ></DictTag>
+              <div class="mt-10px">
+                <span class="name">方案名称：{{ element.seatSchemeName }}</span>
+              </div>
+            </div>
           </div>
         </template>
       </table-card>
@@ -159,7 +168,7 @@ const tableRecordRows = ref<ModelVo[]>([]);
 const searchForm = reactive<ModelSearchBody>({
   seatSchemeName: '',
   carNo: '',
-  status: ''
+  status: props.checkMode ? '0' : ''
 });
 
 const router = useRouter();
@@ -260,8 +269,10 @@ function searchRefresh() {
 
 <style lang="scss" scoped>
 .table-view {
-  .name {
+  .info {
     padding: 0 10px;
+  }
+  .name {
     font-size: 16px;
   }
 }

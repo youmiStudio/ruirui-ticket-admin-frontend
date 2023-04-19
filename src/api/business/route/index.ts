@@ -1,7 +1,7 @@
 // 权限问题后期增加
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../../types';
-import type { RouteBody, RouteSearchBody, RouteVo } from './types';
+import type { RouteDTO, RouteSearchBody, RouteVo } from './types';
 
 enum URL {
   list = '/admin/route/list',
@@ -15,14 +15,14 @@ export const routeList = async (body: RouteSearchBody) =>
 export const getRoute = async (routeId: number) =>
   get<R<RouteVo>>({ url: URL.baseUrl + routeId });
 
-export const addRoute = async (siteBody: RouteBody) =>
-  post<R<RouteVo>>({ url: URL.baseUrl, data: siteBody });
+export const addRoute = async (siteBody: RouteDTO) =>
+  post<R<{routeId:number}>>({ url: URL.baseUrl, data: siteBody });
 
 export const removeRoute = async (routeIds: string) =>
   del<R<string>>({ url: URL.baseUrl + routeIds });
 
-export const editRoute = async (siteBody: RouteBody) =>
-  put<R<RouteVo>>({ url: URL.baseUrl, data: siteBody });
+export const editRoute = async (siteBody: RouteDTO) =>
+  put<R<any>>({ url: URL.baseUrl, data: siteBody });
 
 export const exportRoute = async (siteBody: RouteSearchBody) =>
   download(URL.export, siteBody, `route_${new Date().getTime()}.xlsx`);

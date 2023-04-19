@@ -1,5 +1,6 @@
 import type { SiteVo } from '~/api/business/site/types';
 import type { BaseSearchBody, BaseVo } from '../../types';
+import { CarVo } from '../car/types';
 
 /**
  * 路线信息 - 请求对象
@@ -59,11 +60,11 @@ export type RouteSku = {
   /**
    * 路线时间段
    */
-  routeSkuId: number;
+  routeSkuId?: number;
   /**
    * 路线ID
    */
-  routeId: number;
+  routeId?: number;
   /**
    * 车辆ID
    */
@@ -72,7 +73,12 @@ export type RouteSku = {
    * 时间段名称
    */
   name: string;
-}
+
+  car?: CarVo;
+
+  sort: number;
+  flag?: 'local';
+};
 
 /**
  * 站点信息 - 返回对象
@@ -104,21 +110,24 @@ export type RouteVo = {
   /**
    * 开始时间
    */
-  beginTime: Date;
+  beginTime: string;
 
   /**
    * 结束时间
    */
-  endTime: Date;
+  endTime: string;
 
   /**
    * 路线图片
    */
-  gallery: RouteGallery;
+  gallery: RouteGallery[];
 
+  sku: RouteSku[];
 
   /**
    * 状态
    */
   status: string;
 } & BaseVo;
+
+export type RouteDTO = RouteVo;
