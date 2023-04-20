@@ -84,10 +84,55 @@
 
       <TablePanel
         ref="tableRef"
+        :show-expand="true"
         :url="fetchList"
         :primary-key="pageConfig.id"
         @select-change="handleTableSelectChange"
+        @expand-change="handleExpandChange"
       >
+        <template #expand="{ row }">
+          <div class="p-15px">
+            <el-table border :data="passengerMap[row.userId]">
+              <el-table-column label="乘车人姓名" prop="name">
+              </el-table-column>
+              <el-table-column label="手机号码" prop="phone"> </el-table-column>
+              <el-table-column label="证件类型" prop="idType">
+                <template #default="{ row }">
+                  <dict-tag
+                    :options="dicts.type.sys_passenger_idType"
+                    :value="row.idType"
+                  ></dict-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="证件号码" prop="idNumber">
+              </el-table-column>
+              <el-table-column label="操作">
+                <template #default="{ row }">
+                  <el-button
+                    v-authority="[pageConfig.authorites.edit]"
+                    size="small"
+                    link
+                    type="primary"
+                    :icon="Edit"
+                    @click.stop="handlePassengerEdit(row)"
+                    >修改</el-button
+                  >
+
+                  <el-button
+                    v-authority="[pageConfig.authorites.remove]"
+                    link
+                    size="small"
+                    type="danger"
+                    :key="row[pageConfig.id]"
+                    :icon="Delete"
+                    @click.stop="handlePassengerDelete(row)"
+                    >删除</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </template>
         <el-table-column
           label="用户编号"
           prop="userId"
@@ -97,7 +142,7 @@
         </el-table-column>
 
         <el-table-column
-          label="用户名称"
+          label="用户账号"
           prop="username"
           align="center"
           :show-overflow-tooltip="true"
@@ -114,10 +159,13 @@
 
         <el-table-column
           width="120"
-          label="手机号码"
+          label="用户头像"
           prop="phoneNumber"
           align="center"
         >
+          <template #default="{ row }">
+            <el-image class="w-50px h-50px" :src="row.avatar"></el-image>
+          </template>
         </el-table-column>
 
         <el-table-column label="状态" align="center">
@@ -151,7 +199,10 @@
           class-name="align-center"
         >
           <template #default="{ row }">
-            <div class="flex align-center justify-center" v-if="row.userId !== 1">
+            <div
+              class="flex align-center justify-center"
+              v-if="row.userId !== 1"
+            >
               <el-button
                 v-authority="[pageConfig.authorites.edit]"
                 size="small"
@@ -196,6 +247,13 @@
                         command="handleAuthRole"
                         :icon="CircleCheck"
                         >分配角色</el-dropdown-item
+                      >
+                    </div>
+                    <div v-authority="[pageConfig.authorites.add]">
+                      <el-dropdown-item
+                        command="handleAddPassenger"
+                        :icon="CircleCheck"
+                        >新增乘车人</el-dropdown-item
                       >
                     </div>
                   </el-dropdown-menu>
@@ -362,7 +420,7 @@ import {
   resetPwdUser
 } from '@/api/system/user/index';
 import { parseTime } from '@/utils';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox, ElMessage, RowClassNameGetter } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 import { isPhone } from '@/utils/is';
@@ -373,6 +431,12 @@ import type { UserSearchBody, UserBody, UserVo } from '~/api/system/user/types';
 
 import { RoleVo } from '@/api/system/role/types';
 import { roleOptionList } from '@/api/system/role';
+import { passengerList, deletePssenger } from '@/api/business/passenger/index';
+
+import PassengerBox from './PassengerBox/index';
+import { PassengerDTO, PassengerVO } from '~/api/business/passenger/types';
+import { emitWarning } from 'process';
+import { encrypt } from '@/utils/rsa'
 
 type ModelSearchBody = UserSearchBody;
 type ModelBody = UserBody;
@@ -418,7 +482,11 @@ const validatePhoneNumber = (
   }
 };
 
-const dicts = useDictTypes(['sys_common_status', 'sys_user_sex']);
+const dicts = useDictTypes([
+  'sys_common_status',
+  'sys_user_sex',
+  'sys_passenger_idType'
+]);
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
@@ -464,6 +532,8 @@ const dialogState = reactive({
   title: '',
   dialogVisible: false
 });
+
+const passengerMap = ref<Record<number, PassengerVO[]>>({});
 
 onMounted(() => {
   search();
@@ -606,6 +676,8 @@ function submitForm() {
       formLoading.value = true;
       const isAdd = form[pageConfig.id] === null;
       const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
+      form.username = encrypt(form.username) as string;
+      form.password = encrypt(form.password) as string;
       api(form).then((res) => {
         const { code } = res;
         if (code !== 200) {
@@ -628,7 +700,7 @@ function cancel() {
 }
 
 /* --------------------Extra Features Start-------------------- */
-defineExpose({ handleAuthRole, handleResetPwd });
+defineExpose({ handleAuthRole, handleResetPwd, handleAddPassenger });
 
 const instance = getCurrentInstance();
 
@@ -675,7 +747,72 @@ function handleCommand(command: string, row: ModelVo) {
   const { exposed } = instance as any;
   exposed[command](row);
 }
+
+function handleAddPassenger(row: any) {
+  PassengerBox.show({
+    userId: row.userId
+  })
+    .then(() => {})
+    .catch(() => {});
+}
+
+function handleExpandChange(row: any, expandRows: any[]) {
+  expandRows.forEach((item) => {
+    if (item.userId === row.userId) {
+      fetchPassengerList(row);
+    }
+  });
+}
+
+function fetchPassengerList(row: any) {
+  passengerList(row.userId).then((res) => {
+    if (res.code === 200) {
+      const { data } = res;
+      if (!data) {
+        passengerMap.value[row.userId] = [];
+        return;
+      }
+      passengerMap.value[row.userId] = data;
+    }
+  });
+}
+
+function handlePassengerEdit(row: any) {
+  PassengerBox.show({
+    userId: row.userId,
+    id: row.passengerId
+  })
+    .then(() => {
+      fetchPassengerList(row);
+      ElMessage.success('保存成功');
+    })
+    .catch(() => {});
+}
+
+function handlePassengerDelete(row: any) {
+  ElMessageBox.confirm(`确定要删除乘车人"${row.name}"的数据项吗？`, '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      deletePssenger(row.passengerId).then((res) => {
+        if (res.code === 200) {
+          ElMessage.success('删除乘车人成功');
+          fetchPassengerList(row);
+        }
+      });
+    })
+    .catch(() => {});
+}
+
 /* --------------------Extra Features End-------------------- */
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:deep() {
+  .el-button:focus-visible {
+    outline: none;
+  }
+}
+</style>

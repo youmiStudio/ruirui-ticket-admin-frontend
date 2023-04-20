@@ -36,6 +36,11 @@
           <span>{{ (currentPage - 1) * pageSize + scope.$index + 1 }}</span>
         </template>
       </el-table-column>
+      <el-table-column v-if="showExpand" type="expand">
+        <template #default="{ row }">
+          <slot name="expand" :row="row"></slot>
+        </template>
+      </el-table-column>
       <slot></slot>
       <div class="empty-img" slot="empty">
         <img src="@/assets/images/empty.png" />
@@ -118,6 +123,10 @@ const props = defineProps({
     default: 'select'
   },
   showIndex: {
+    type: Boolean,
+    default: false
+  },
+  showExpand: {
     type: Boolean,
     default: false
   },

@@ -140,7 +140,7 @@
         <el-button class="ml-10px" type="primary" @click="submitHandler"
           >保存</el-button
         >
-        <el-button>取消</el-button>
+        <el-button @click="goBack">取消</el-button>
       </div>
     </el-card>
 
@@ -282,7 +282,7 @@ const rules = ref<FormRules>({
 
 function getRouteInfo() {
   const setDateToDatePicker = (beginTime: string, endTime: string) => {
-    travelDate.value = [new Date(beginTime), new Date(endTime)]
+    travelDate.value = [new Date(beginTime), new Date(endTime)];
   };
   getRoute(routeId.value!).then((res) => {
     if (res.code === 200) {
@@ -307,7 +307,7 @@ const addRouteSku = () => {
     carId: 0,
     sort: 0,
     car: undefined,
-    flag:'local'
+    flag: 'local'
   });
 };
 
@@ -356,16 +356,20 @@ const checkCarHandler = (car: CarVo) => {
   carDialogVisible.value = false;
 };
 
+const goBack = () => {
+  router.push('/ticket/route');
+};
+
 const submitHandler = () => {
   const api = pageMode.value === 'add' ? addRoute : editRoute;
   formRef.value?.validate((valid) => {
     if (valid) {
       form.value.mainImgUrl = form.value.gallery[0].original;
-      form.value.sku.forEach(sku=>{
-        if(sku.flag === 'local') {
-          sku.routeSkuId = undefined
+      form.value.sku.forEach((sku) => {
+        if (sku.flag === 'local') {
+          sku.routeSkuId = undefined;
         }
-      })
+      });
       api(form.value).then((res) => {
         if (res.code === 200) {
           if (pageMode.value === 'add') {
@@ -376,7 +380,7 @@ const submitHandler = () => {
               window.location.reload();
             }, 300);
           } else {
-            getRouteInfo()
+            getRouteInfo();
           }
           ElMessage.success('保存成功');
         }

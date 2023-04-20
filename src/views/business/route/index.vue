@@ -60,7 +60,7 @@
         </el-row>
       </el-form>
 
-      <el-row :gutter="10" class="mb8">
+      <el-row :gutter="10">
         <el-col :span="1.5">
           <el-button
             v-authority="[pageConfig.authorites.add]"
@@ -72,124 +72,40 @@
             >新增</el-button
           >
         </el-col>
-        <el-col :span="1.5">
-          <el-button
-            v-authority="[pageConfig.authorites.remove]"
-            type="danger"
-            plain
-            size="small"
-            :icon="Delete"
-            :disabled="batchDeleteDisable"
-            @click="handleBatchDelete"
-            >删除</el-button
-          >
-        </el-col>
       </el-row>
 
-      <TablePanel
+      <table-card
         ref="tableRef"
         :url="fetchList"
-        :primary-key="pageConfig.id"
-        @select-change="handleTableSelectChange"
+        :authority="{
+          edit: [pageConfig.authorites.edit],
+          delete: [pageConfig.authorites.remove]
+        }"
+        @edit="handleEdit"
+        @delete="handleRowDelete"
       >
-        <el-table-column label="路线名称" width="300">
-          <template #default="{ row }">
-            <div class="goods-info-wrap">
-              <div class="image-wrap" @click.stop>
-                <el-image
-                  style="width: 80px; height: 80px"
-                  :src="row.mainImgUrl"
-                  :preview-src-list="[row.mainImgUrl]"
-                  :initial-index="1"
-                  :preview-teleported="true"
-                  :hide-on-click-modal="true"
-                  fit="cover"
-                />
-                <div class="img-preview">预览</div>
-              </div>
-              <div class="detail">
-                <div class="top-info">
-                  <p class="goods-id"> ID: {{ row.routeId }} </p>
-                </div>
-                <span class="goods-name">{{ row.routeName }}</span>
-              </div>
+        <template #default="{ element }">
+          <div>
+            <el-image :src="element.mainImgUrl"></el-image>
+            <div class="car-info">
+              <el-tag type="warning"
+                >{{ element.beginTime }}至{{ element.endTime }}</el-tag
+              >
+              <DictTag
+                class="ml-5px"
+                style="display: inline-block"
+                :options="dicts.type.sys_route_status"
+                :value="element.status"
+              ></DictTag>
+
+              <div class="name">{{ element.routeName }}</div>
+              <div v-if="element.routeDescribe" class="describe">{{
+                element.routeDescribe
+              }}</div>
             </div>
-          </template>
-        </el-table-column>
-        <el-table-column
-          label="路线描述"
-          prop="routeDescribe"
-          align="center"
-          :show-overflow-tooltip="true"
-          width="150"
-        >
-        </el-table-column>
-        <el-table-column label="累计销量" align="center" width="100">
-          <template #default>
-            <span>0</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="30日销量" align="center" width="100">
-          <template #default>
-            <span>0</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="出行时间" align="center" width="200">
-          <template #default="{ row }">
-            <span>{{
-              row.beginTime && parseTime(row.beginTime, '{y}-{m}-{d}')
-            }}</span>
-            -
-            <span>{{
-              row.endTime && parseTime(row.endTime, '{y}-{m}-{d}')
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" align="center">
-          <template #default="{ row }">
-            <DictTag
-              :options="dicts.type.sys_route_status"
-              :value="row.status"
-            ></DictTag>
-          </template>
-        </el-table-column>
-        <el-table-column label="创建时间" width="150px" align="center">
-          <template #default="{ row }">
-            <span>{{
-              row.createTime && parseTime(row.createTime, '{y}-{m}-{d} {h}:{i}')
-            }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          fixed="right"
-          min-width="120px"
-          label="操作"
-          align="center"
-          class-name="fixed-width"
-        >
-          <template #default="{ row }">
-            <el-button
-              v-authority="[pageConfig.authorites.edit]"
-              size="small"
-              link
-              type="primary"
-              :icon="Edit"
-              @click.stop="handleEdit(row)"
-              >修改</el-button
-            >
-            <el-button
-              v-authority="[pageConfig.authorites.remove]"
-              link
-              size="small"
-              type="danger"
-              :key="row[pageConfig.id]"
-              :icon="Delete"
-              @click.stop="handleRowDelete(row)"
-              >删除</el-button
-            >
-          </template>
-        </el-table-column>
-      </TablePanel>
+          </div>
+        </template>
+      </table-card>
     </el-card>
   </div>
 </template>
@@ -224,6 +140,7 @@ import type {
   RouteBody,
   RouteVo
 } from '~/api/business/route/types';
+import router from '~/router';
 
 type ModelSearchBody = RouteSearchBody;
 type ModelBody = RouteBody;
@@ -340,12 +257,10 @@ function switchBatchDelete(selectRowsLength: number) {
   batchDeleteDisable.value = true;
 }
 
-function handleTableSelectChange(recordRows: any[]) {
-  tableRecordRows.value = recordRows;
-}
-
-function fetchList(obj: ModelSearchBody) {
+function fetchList(obj: any) {
   return pageConfig.api.list({
+    ...searchForm,
+    ...dateParams.value,
     ...obj,
     orderByColumn: pageConfig.orderByColumn,
     isAsc: pageConfig.isAsc
@@ -359,43 +274,19 @@ function handleAdd() {
 }
 
 function handleEdit(row: any) {
-  formReset();
-  dialogState.title = `修改${pageConfig.title}`;
-  dialogState.dialogVisible = true;
-  getDetail(row[pageConfig.id]).then((data) => {
-    Object.keys(form).forEach((key) => {
-      if (key in data) {
-        form[key] = data[key];
-      }
-    });
-  });
-}
-
-function handleExport() {
-  pageConfig.api.export(searchForm);
-}
-
-function getDetail(id: number): Promise<ModelVo> {
-  return new Promise((resolve, reject) => {
-    pageConfig.api.get(id).then((res) => {
-      const { data } = res;
-      if (data) {
-        resolve(data);
-      }
-    });
-  });
-}
-
-function handleRowDelete(row: any) {
-  batchDelete(row[pageConfig.id]).then(() => {
-    search();
-    ElMessage.success('删除成功');
-  });
+  router.push(`/ticket/route/detail/${row.routeId}`);
 }
 
 function handleBatchDelete() {
   const ids = tableRecordRows.value.map((row) => row[pageConfig.id]);
   batchDelete(ids.join(',')).then(() => {
+    search();
+    ElMessage.success('删除成功');
+  });
+}
+
+function handleRowDelete(row: any) {
+  batchDelete(row[pageConfig.id]).then(() => {
     search();
     ElMessage.success('删除成功');
   });
@@ -426,7 +317,6 @@ function batchDelete(ids: string) {
   });
 }
 
-
 function formReset() {
   formRef.value?.resetFields();
   Object.keys(form).forEach((key) => {
@@ -449,4 +339,21 @@ function searchRefresh() {
 /* --------------------Extra Features End-------------------- */
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.car-info {
+  padding: 0 10px;
+  .name {
+    margin-top: 5px;
+    font-size: 22px;
+    font-weight: 500;
+  }
+  .carNo {
+    margin-top: 5px;
+    font-size: 16px;
+  }
+  .describe {
+    margin-top: 10px;
+    font-size: 14px;
+  }
+}
+</style>

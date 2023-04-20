@@ -13,7 +13,8 @@ export const useUserStore = defineStore({
     avatar: '',
     introduction: '',
     roles: [],
-    authorities: []
+    authorities: [],
+    rasKey:'',
   }),
   getters: {},
   actions: {
@@ -49,7 +50,7 @@ export const useUserStore = defineStore({
               return;
             }
 
-            const { roles, name, avatar, introduction, authorities } = data;
+            const { roles, name, avatar, introduction, authorities,rsaKey } = data;
 
             // roles must be a non-empty array
             if (!roles || roles.length <= 0) {
@@ -61,6 +62,7 @@ export const useUserStore = defineStore({
             this.introduction = introduction;
             this.roles = roles;
             this.authorities = authorities;
+            this.rasKey = rsaKey
 
             resolve(data);
           })

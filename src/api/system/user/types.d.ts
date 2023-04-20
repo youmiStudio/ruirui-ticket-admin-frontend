@@ -15,6 +15,7 @@ export type UserInfoData = {
   name?: string;
   roles: RoleEnum[];
   authorities: string[];
+  rsaKey:string;
 };
 
 export type UserLoginVo = {

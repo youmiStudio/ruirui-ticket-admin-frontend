@@ -17,12 +17,13 @@
           >{{ userInfo && userInfo.username }}</el-descriptions-item
         >
         <el-descriptions-item
-          label="手机号"
+          label="用户头像"
           label-align="right"
           align="center"
           width="150px"
-          >{{ userInfo && userInfo.phoneNumber }}</el-descriptions-item
         >
+          <el-image class="w-50px h-50px" :src="userInfo?.avatar"></el-image>
+        </el-descriptions-item>
       </el-descriptions>
       <h4>角色信息</h4>
       <table-panel
@@ -74,6 +75,7 @@ import { UserVo } from '@/api/system/user/types';
 import { parseTime } from '@/utils';
 import { RoleVo } from '@/api/system/role/types';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { useCloned } from '@vueuse/core';
 
 const $route = useRoute();
 const $router = useRouter();
@@ -113,9 +115,12 @@ function handleGetInfo() {
  * select table row by user roles.
  */
 function selectTableRowsByUserRoles() {
-  const selectList = tableData.value?.filter((row) =>
-    userInfo.value?.roles.some((role) => role.roleId === row.roleId)
-  );
+  const selectList = tableData.value?.filter((row) => {
+    if (!userInfo.value?.roles) return false;
+
+    return userInfo.value?.roles.some((role) => role.roleId === row.roleId);
+  });
+
   tableRef.value && tableRef.value.triggerRecordsAll(selectList);
 }
 
@@ -123,7 +128,7 @@ function handleTableGetDataOnSuccess(res: any) {
   const {
     data: { items }
   } = res;
-  tableData.value = items;
+  tableData.value = [...items];
   selectTableRowsByUserRoles();
 }
 
@@ -143,10 +148,9 @@ function handleSumbit() {
       }
       const { recordRows } = tableRef.value;
       const selectIds = recordRows.map((row) => row.roleId);
-      const userRoleIds = userInfo.value?.roles.map((role) => role.roleId);
-
-      // if roles not change
-      if (selectIds.toString() === userRoleIds?.toString()) {
+      
+      if (selectIds.length === 0) {
+        ElMessage.error('请至少选择一名角色');
         return;
       }
 
