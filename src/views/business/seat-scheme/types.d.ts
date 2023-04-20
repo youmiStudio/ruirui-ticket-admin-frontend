@@ -45,6 +45,7 @@ export type SeatPosition = {
   price?: number;
   positionData: Position;
   size: SeatSize;
+  sizeData?: SeatSize;
   firstPositionData?: Position;
   firstSize?: SeatSize;
 };

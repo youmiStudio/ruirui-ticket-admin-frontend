@@ -149,7 +149,12 @@
             <el-form-item label="座位方案" prop="seatSchemeId">
               <div>
                 <div v-if="form.seatSchemeId">
-                  <el-image :src="currentSeatScheme?.carPlaneImage"></el-image>
+                  <position-view
+                    :image="currentSeatScheme?.carPlaneImage"
+                    :icon="currentSeatScheme?.unSelectedIcon"
+                    :positions="currentSeatScheme?.positions as SeatPosition[]"
+                  ></position-view>
+                  <!-- <el-image :src="currentSeatScheme?.carPlaneImage"></el-image> -->
                   <span>方案名称:{{ currentSeatScheme?.seatSchemeName }}</span>
                 </div>
                 <el-button type="primary" @click="openSeatScheme"
@@ -246,6 +251,9 @@ import { isAmount, isImage } from '@/utils/is';
 import { uploadFile } from '@/api/common/index';
 import { SeatSchemeDTO } from '~/api/business/seatScheme/types';
 import SeatSchemePage from '@/views/business/seat-scheme/index.vue';
+
+import PositionView from '@/views/business/seat-scheme/components/PositionView.vue';
+import { SeatPosition } from '../seat-scheme/types';
 
 const props = defineProps({
   checkMode: {

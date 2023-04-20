@@ -79,7 +79,11 @@
       >
         <template #default="{ element, index }">
           <div class="table-view">
-            <el-image :src="element.carPlaneImage"></el-image>
+            <position-view
+              :image="element.carPlaneImage"
+              :icon="element.unSelectedIcon"
+              :positions="element.positions"
+            ></position-view>
             <div class="info">
               <DictTag
                 style="display: inline-block"
@@ -121,6 +125,7 @@ import {
   removeSeatScheme
 } from '@/api/business/seatScheme/index';
 import { SeatSchemeVO } from '~/api/business/seatScheme/types';
+import PositionView from './components/PositionView.vue';
 
 type ModelSearchBody = any;
 type ModelBody = any;
@@ -173,7 +178,7 @@ const searchForm = reactive<ModelSearchBody>({
 
 const router = useRouter();
 
-onMounted(() => {
+nextTick(() => {
   search();
 });
 
