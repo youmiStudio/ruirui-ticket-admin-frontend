@@ -533,7 +533,7 @@ $--icon-height: 175px;
 }
 
 .car-info {
-  padding: 0 10px;
+  padding: 3px 12px;
   .name {
     margin-top: 5px;
     font-size: 22px;
