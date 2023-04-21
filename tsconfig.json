@@ -29,5 +29,5 @@
     "types/**/*.d.ts",
     "build/**/*.ts",
     "build/**/*.d.ts"
-  ]
+, "src/store/modules/seatScheme/index.ts.back"  ]
 }

@@ -196,7 +196,7 @@ function querySearch(query: string) {
     display: inline-block;
     vertical-align: middle;
 
-    ::v-deep(.el-input__inner) {
+    :deep(.el-input__inner) {
       border-radius: 0;
       border: 0;
       padding-left: 0;

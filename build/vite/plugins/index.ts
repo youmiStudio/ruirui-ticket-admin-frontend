@@ -9,6 +9,7 @@ import { configAutoImport } from './autoImport';
 import { configSvgIcons } from './svgIcons';
 import { configIcons } from './icons';
 import { configMock } from './mock';
+import {configViteRequireContext} from './requireContext'
 
 type vitePlugins = PluginOption[] | undefined;
 
@@ -32,6 +33,8 @@ export function createVitePlugins(
   vitePlugins.push(configAutoImport(isBuild));
 
   vitePlugins.push(configSvgIcons(isBuild));
+
+  vitePlugins.push(configViteRequireContext(isBuild))
 
   VITE_USE_MOCK && vitePlugins.push(configMock(isBuild));
 

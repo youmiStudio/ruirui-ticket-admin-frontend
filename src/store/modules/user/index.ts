@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { getToken, setToken, removeToken } from '~/utils/auth';
-import { login, getInfo, logout } from '@/api/user';
+import { login, getInfo, logout } from '~/api/system/user';
 import { useTagsViewStore, usePermissionStore } from '@/store';
-import type * as API from '~/api/user/types';
+import type * as API from '~/api/system/user/types';
 import { addRoutes } from '@/router';
 
 export const useUserStore = defineStore({
@@ -13,7 +13,8 @@ export const useUserStore = defineStore({
     avatar: '',
     introduction: '',
     roles: [],
-    authorities: []
+    authorities: [],
+    rasKey:'',
   }),
   getters: {},
   actions: {
@@ -49,7 +50,7 @@ export const useUserStore = defineStore({
               return;
             }
 
-            const { roles, name, avatar, introduction, authorities } = data;
+            const { roles, name, avatar, introduction, authorities,rsaKey } = data;
 
             // roles must be a non-empty array
             if (!roles || roles.length <= 0) {
@@ -61,6 +62,7 @@ export const useUserStore = defineStore({
             this.introduction = introduction;
             this.roles = roles;
             this.authorities = authorities;
+            this.rasKey = rsaKey
 
             resolve(data);
           })
@@ -107,11 +109,14 @@ export const useUserStore = defineStore({
         this.token = token;
         setToken(token);
 
-        const { roles } = await this.getInfo();
+        const { roles, authorities } = await this.getInfo();
 
         // generate accessible routes map based on roles
         const permissionStroe = usePermissionStore();
-        const accessRoutes = await permissionStroe.generateRoutes(roles);
+        const accessRoutes = await permissionStroe.generateRoutes(
+          roles,
+          authorities
+        );
         addRoutes(accessRoutes);
 
         // reset visited views and cached views

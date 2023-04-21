@@ -8,11 +8,12 @@ export const vAuthority: Directive = {
   mounted: (el, binding, vnode, prevVnode) => {
     const { value } = binding;
     const { authorities } = storeToRefs(userStore);
+    const allPermission = "*:*:*";
 
     if (authorities?.value && value && value instanceof Array) {
 
       if (value.length > 0) {
-        const hasAuthority = authorities.value.some((authority) => {
+        const hasAuthority = authorities.value.includes(allPermission) ||authorities.value.some((authority) => {
           return value.includes(authority);
         });
 

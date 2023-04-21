@@ -54,6 +54,7 @@
               class="flex-1"
               v-model="loginForm.code"
               placeholder="验证码"
+              @keyup.enter="handleLogin(ruleFormRef)"
             >
             </el-input>
             <img
@@ -70,6 +71,7 @@
               color="#155bd4"
               style="width: 100%; height: 48px"
               @click.native.prevent="handleLogin(ruleFormRef)"
+              @keyup.enter="handleLogin(ruleFormRef)"
             >
               登录
             </el-button>
@@ -90,8 +92,8 @@ import type { InternalRuleItem } from 'async-validator/dist-types/interface';
 import { LoginTypeEnum } from '~/enums/userEnum';
 import { LocationQuery, LocationQueryValue } from 'vue-router';
 import { useUserStore } from '~/store';
-import { getCaptchaImage } from '~/api/user/index';
-import type * as API from '~/api/user/types';
+import { getCaptchaImage } from '@/api/system/user/index';
+import type * as API from '@/api/system/user/types';
 import { useDebounceFn } from '@vueuse/shared';
 import { ElMessage } from 'element-plus';
 
@@ -206,12 +208,11 @@ function handleLogin(formEl: FormInstance | undefined): boolean {
           message: '登录成功'
         });
         router.push({ path: (redirect as string) || '/', query: otherQuery });
+      } else {
+        loginForm.code = '';
+        getCaptchaImageHandle();
+        loading.value = false;
       }
-
-      loginForm.code = '';
-      getCaptchaImageHandle();
-
-      loading.value = false;
     } else {
       console.log('error submit!!');
       return false;

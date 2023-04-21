@@ -9,7 +9,6 @@ import { saveAs } from 'file-saver';
 
 import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
 import { useUserStore } from '~/store';
-import { cloneFnJSON } from '@vueuse/core';
 
 const globSetting = useGlobSettings();
 
@@ -79,8 +78,16 @@ axiosInstance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
     const token = getToken();
     if (token) {
-      config.headers = {};
-      config.headers.Authorization = `${token}`;
+      if(config.headers) {
+        config.headers.Authorization = `${token}`;
+      }
+    }
+    // get请求映射params参数
+    if (config.method === 'get' && config.params) {
+      let url = config.url + '?' + tansParams(config.params);
+      url = url.slice(0, -1);
+      config.params = {};
+      config.url = url;
     }
     return config;
   },
@@ -96,8 +103,9 @@ const request = <T = any>(config: AxiosRequestConfig): Promise<T> => {
       .request<any, AxiosResponse<IResponse>>(conf)
       .then((res: AxiosResponse<IResponse>) => {
         // resolve(res as unknown as Promise<T>);
-        const { data } = res;
-        resolve(data as T);
+        if (res && res.data) {
+          resolve(res.data as T);
+        }
       })
       .catch((error) => {
         reject(error);
@@ -146,13 +154,13 @@ export function download(
   return post({
     url,
     data: params,
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     transformRequest: [
-      (params) => {
-        return tansParams(params);
+      (data, headers) => {
+        return tansParams(data);
       }
     ],
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    responseType: 'blob',
     ...config
   })
     .then(async (data) => {

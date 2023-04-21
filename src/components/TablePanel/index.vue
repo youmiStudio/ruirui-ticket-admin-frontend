@@ -31,20 +31,23 @@
         align="center"
         :selectable="handleCheckSelectable"
       ></el-table-column>
-      <el-table-column
-        v-if="showIndex"
-        label="序号"
-        type="index"
-        width="50"
-        align="center"
-      ></el-table-column>
+      <el-table-column v-if="showIndex" label="序号" width="65" align="center">
+        <template #default="scope">
+          <span>{{ (currentPage - 1) * pageSize + scope.$index + 1 }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="showExpand" type="expand">
+        <template #default="{ row }">
+          <slot name="expand" :row="row"></slot>
+        </template>
+      </el-table-column>
       <slot></slot>
       <div class="empty-img" slot="empty">
         <img src="@/assets/images/empty.png" />
       </div>
     </el-table>
     <el-pagination
-      v-if="page"
+      v-if="hasPagination"
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
       small
@@ -88,6 +91,10 @@ const props = defineProps({
       };
     }
   },
+  hasPagination: {
+    type: Boolean,
+    default: true
+  },
   page: {
     type: Object as PropType<PropsPageType>,
     default: () => {
@@ -104,7 +111,7 @@ const props = defineProps({
     default: 200
   },
   pageSizes: {
-    type: Array,
+    type: Array<number>,
     default: () => [10, 20, 30, 50]
   },
   pageSize: {
@@ -116,6 +123,10 @@ const props = defineProps({
     default: 'select'
   },
   showIndex: {
+    type: Boolean,
+    default: false
+  },
+  showExpand: {
     type: Boolean,
     default: false
   },
@@ -175,7 +186,10 @@ const tableRef = ref<InstanceType<typeof ElTable>>();
 defineExpose({
   refresh,
   search,
-  clearRecord
+  clearRecord,
+  triggerRecords,
+  triggerRecordsAll,
+  recordRows
 });
 
 onBeforeMount(() => {
@@ -203,7 +217,7 @@ const currentSelectNames = computed(() => {
 });
 
 watch(
-  props.dataValue,
+  () => props.dataValue,
   (newVal) => {
     initStaticData(newVal, 1);
   },
@@ -211,7 +225,7 @@ watch(
 );
 
 watch(
-  props.selectedIds,
+  () => props.selectedIds,
   (newVal: any) => {
     nextTick(() => {
       recordRows.value = newVal.map((item: any) => Object.assign({}, item));
@@ -276,10 +290,15 @@ function refresh() {
 function initStaticData(dataList: any[], pageNum: number) {
   const list = deepClone(dataList);
   total.value = list.length;
-  tableData.value = list.slice(
-    pageSize.value * (pageNum - 1),
-    pageSize.value * pageNum
-  );
+
+  if (props.hasPagination) {
+    tableData.value = list.slice(
+      pageSize.value * (pageNum - 1),
+      pageSize.value * pageNum
+    );
+  } else {
+    tableData.value = list;
+  }
   nextTick(() => {
     setSelection();
   });
@@ -292,6 +311,12 @@ function initStaticData(dataList: any[], pageNum: number) {
  */
 function search<T = any>(params?: any) {
   setQueryPage(1);
+  Object.keys(query.value).forEach((key) => {
+    if (key === props.page.pageNum || key === props.page.pageSize) return;
+    if (!(key in params)) {
+      delete query.value[key];
+    }
+  });
   const p = Object.assign({}, unref(query), params);
   query.value = deepClone(p);
   if (props.url && typeof props.url === 'function') {

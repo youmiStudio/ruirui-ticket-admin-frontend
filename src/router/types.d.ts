@@ -5,7 +5,8 @@ import type {
   RouteLocationRaw,
   LocationQueryRaw,
   RouteLocationPathRaw,
-  RouteLocationNamedRaw
+  RouteLocationNamedRaw,
+  RawRouteComponent
 } from 'vue-router';
 import { RoleEnum } from '~/enums/roleEnum';
 
@@ -17,6 +18,7 @@ declare module 'vue-router' {
     affix?: boolean;
     roles?: RoleEnum[];
     activeMenu?: string;
+    link?: string
   }
 }
 
@@ -32,6 +34,8 @@ declare global {
     fullPath?: string;
     path?: string;
     query?: LocationQueryRaw;
+    permissions?: string[];
+    component?: RawRouteComponent | null | undefined | string;
   } & RouteRecordRaw;
 }
 

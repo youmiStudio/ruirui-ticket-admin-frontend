@@ -7,6 +7,7 @@ declare global {
     introduction?: string;
     roles?: string[];
     authorities?: string[];
+    rasKey:string;
   }
 }
 

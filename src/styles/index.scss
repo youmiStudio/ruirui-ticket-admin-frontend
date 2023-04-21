@@ -4,14 +4,16 @@
 //   --ep-color-primary: red;
 // }
 
-@import './variables.module.scss';
-@import './sidebar.scss';
-@import './transition.scss';
+@import "./variables.module.scss";
+@import "./sidebar.scss";
+@import "./transition.scss";
 @import "./element/card.scss";
 @import "./element/table.scss";
 @import "./element/form.scss";
-
-
+@import "./element/input.scss";
+@import "./element/tree.scss";
+@import "./upload.scss";
+@import "./goods.scss";
 
 body {
   margin: 0;
@@ -66,8 +68,48 @@ div:focus {
   outline: none;
 }
 
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0;
+}
+
 .app-container {
   height: 100%;
   padding: 20px;
 }
 
+.w100p {
+  width: 100% !important;
+}
+
+.translate-center { 
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.link {
+  color: #2656bd;
+  cursor: pointer;
+  &:hover {
+    color: #173b96;
+  }
+}
+
+.dialog-body-p0 {
+  .el-dialog__body {
+    padding: 0 !important;
+  }
+}
+
+.dialog-body-scroll {
+  .el-dialog__body {
+    max-height: 50vh;
+    overflow: auto;
+  }
+}

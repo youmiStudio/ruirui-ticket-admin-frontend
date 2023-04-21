@@ -22,8 +22,8 @@ const props = defineProps({
 
 const chartRef = ref<HTMLDivElement | null>(null);
 const { setOptions } = useECharts(
-  chartRef as Ref<HTMLDivElement>,
-  'macarons'
+  chartRef as Ref<HTMLDivElement>
+  // 'macarons'
 );
 
 onMounted(() => {
@@ -39,11 +39,32 @@ watch(
 );
 
 function setChartOptions(options: any) {
-  const { expectedData, actualData } = options;
+  // const { createData, paymentNumber, paymentData } = options;
+  const legendData = options.map((item: any) => item.label);
+  const date = options[0].date;
+  const series: any[] = [];
+  options.forEach((item: any) => {
+    const defaultStyle = {
+      name: item.label,
+      smooth: true,
+      type: 'line',
+      color: item.color,
+      lineStyle: {
+        color: item.color,
+        width: 2
+      },
+
+      data: item.value,
+      animationDuration: 2800,
+      animationEasing: 'quadraticOut'
+    };
+
+    series.push(defaultStyle);
+  });
   setOptions({
     xAxis: {
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      boundaryGap: false,
+      data: date,
+      boundaryGap: true,
       axisTick: {
         show: false
       }
@@ -52,7 +73,7 @@ function setChartOptions(options: any) {
       left: 10,
       right: 10,
       bottom: 20,
-      top: 30,
+      top: 40,
       containLabel: true
     },
     tooltip: {
@@ -68,39 +89,13 @@ function setChartOptions(options: any) {
       }
     },
     legend: {
-      data: ['expected', 'actual']
+      icon: 'rect',
+      itemWidth: 10,
+      itemHeight: 10,
+      left: 10,
+      data: legendData
     },
-    series: [
-      {
-        name: 'expected',
-        color: '#FF005A',
-        lineStyle: {
-          color: '#FF005A',
-          width: 2
-        },
-        smooth: true,
-        type: 'line',
-        data: expectedData,
-        animationDuration: 2800,
-        animationEasing: 'cubicInOut'
-      },
-      {
-        name: 'actual',
-        smooth: true,
-        type: 'line',
-        color: '#3888fa',
-        lineStyle: {
-          color: '#3888fa',
-          width: 2
-        },
-        areaStyle: {
-          color: '#f3f8ff'
-        },
-        data: actualData,
-        animationDuration: 2800,
-        animationEasing: 'quadraticOut'
-      }
-    ]
+    series: [...series]
   });
 }
 </script>

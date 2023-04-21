@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
     <el-card class="mb-10px" shadow="never">
-      <el-form ref="searchFormRef" label-width="75px" :model="searchForm">
+      <el-form ref="searchFormRef" :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="用户名称" prop="userName">
               <el-input
-                v-model="searchForm.nickname"
+                v-model="searchForm.username"
                 placeholder="请输入用户名称"
                 clearable
                 maxlength="20"
@@ -84,10 +84,55 @@
 
       <TablePanel
         ref="tableRef"
+        :show-expand="true"
         :url="fetchList"
         :primary-key="pageConfig.id"
         @select-change="handleTableSelectChange"
+        @expand-change="handleExpandChange"
       >
+        <template #expand="{ row }">
+          <div class="p-15px">
+            <el-table border :data="passengerMap[row.userId]">
+              <el-table-column label="乘车人姓名" prop="name">
+              </el-table-column>
+              <el-table-column label="手机号码" prop="phone"> </el-table-column>
+              <el-table-column label="证件类型" prop="idType">
+                <template #default="{ row }">
+                  <dict-tag
+                    :options="dicts.type.sys_passenger_idType"
+                    :value="row.idType"
+                  ></dict-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="证件号码" prop="idNumber">
+              </el-table-column>
+              <el-table-column label="操作">
+                <template #default="{ row }">
+                  <el-button
+                    v-authority="[pageConfig.authorites.edit]"
+                    size="small"
+                    link
+                    type="primary"
+                    :icon="Edit"
+                    @click.stop="handlePassengerEdit(row)"
+                    >修改</el-button
+                  >
+
+                  <el-button
+                    v-authority="[pageConfig.authorites.remove]"
+                    link
+                    size="small"
+                    type="danger"
+                    :key="row[pageConfig.id]"
+                    :icon="Delete"
+                    @click.stop="handlePassengerDelete(row)"
+                    >删除</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
+        </template>
         <el-table-column
           label="用户编号"
           prop="userId"
@@ -97,7 +142,7 @@
         </el-table-column>
 
         <el-table-column
-          label="用户名称"
+          label="用户账号"
           prop="username"
           align="center"
           :show-overflow-tooltip="true"
@@ -110,6 +155,17 @@
           align="center"
           :show-overflow-tooltip="true"
         >
+        </el-table-column>
+
+        <el-table-column
+          width="120"
+          label="用户头像"
+          prop="phoneNumber"
+          align="center"
+        >
+          <template #default="{ row }">
+            <el-image class="w-50px h-50px" :src="row.avatar"></el-image>
+          </template>
         </el-table-column>
 
         <el-table-column label="状态" align="center">
@@ -136,27 +192,74 @@
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column label="操作" align="center" class-name="fixed-width">
+        <el-table-column
+          width="200px"
+          label="操作"
+          align="center"
+          class-name="align-center"
+        >
           <template #default="{ row }">
-            <el-button
-              v-authority="[pageConfig.authorites.edit]"
-              size="small"
-              link
-              type="primary"
-              :icon="Edit"
-              @click.stop="handleEdit(row)"
-              >修改</el-button
+            <div
+              class="flex align-center justify-center"
+              v-if="row.userId !== 1"
             >
-            <el-button
-              v-authority="[pageConfig.authorites.remove]"
-              link
-              size="small"
-              type="danger"
-              :key="row[pageConfig.id]"
-              :icon="Delete"
-              @click.stop="handleRowDelete(row)"
-              >删除</el-button
-            >
+              <el-button
+                v-authority="[pageConfig.authorites.edit]"
+                size="small"
+                link
+                type="primary"
+                :icon="Edit"
+                @click.stop="handleEdit(row)"
+                >修改</el-button
+              >
+
+              <el-button
+                v-authority="[pageConfig.authorites.remove]"
+                link
+                size="small"
+                type="danger"
+                :key="row[pageConfig.id]"
+                :icon="Delete"
+                @click.stop="handleRowDelete(row)"
+                >删除</el-button
+              >
+
+              <el-dropdown
+                class="ml12px"
+                @command="(command: string)=>handleCommand(command,row)"
+                v-authority="[
+                  pageConfig.authorites.resetPwd,
+                  pageConfig.authorites.edit
+                ]"
+              >
+                <el-button link size="small" type="primary" :icon="DArrowRight"
+                  >更多</el-button
+                >
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <div v-authority="[pageConfig.authorites.resetPwd]">
+                      <el-dropdown-item command="handleResetPwd" :icon="Key"
+                        >重置密码</el-dropdown-item
+                      >
+                    </div>
+                    <div v-authority="[pageConfig.authorites.edit]">
+                      <el-dropdown-item
+                        command="handleAuthRole"
+                        :icon="CircleCheck"
+                        >分配角色</el-dropdown-item
+                      >
+                    </div>
+                    <div v-authority="[pageConfig.authorites.add]">
+                      <el-dropdown-item
+                        command="handleAddPassenger"
+                        :icon="CircleCheck"
+                        >新增乘车人</el-dropdown-item
+                      >
+                    </div>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
+            </div>
           </template>
         </el-table-column>
       </TablePanel>
@@ -211,8 +314,7 @@
                   <el-input
                     v-model="form.phoneNumber"
                     placeholder="请输入手机号码"
-                    maxlength="13"
-                    :show-password="true"
+                    maxlength="11"
                   ></el-input>
                 </el-form-item>
               </el-col>
@@ -225,9 +327,8 @@
                 <el-form-item label="性别" prop="sex">
                   <el-select
                     class="w100%"
-                    v-model="searchForm.status"
-                    placeholder="用户状态"
-                    @change="search"
+                    v-model="form.sex"
+                    placeholder="用户性别"
                   >
                     <el-option
                       v-for="dict in dicts.type.sys_user_sex"
@@ -239,8 +340,20 @@
                 </el-form-item>
               </el-col>
               <el-col :span="12">
-                <el-form-item label="角色" prop="postIds"> 
-
+                <el-form-item label="角色" prop="roleIds">
+                  <el-select
+                    class="w100%"
+                    v-model="form.roleIds"
+                    multiple
+                    placeholder="用户角色"
+                  >
+                    <el-option
+                      v-for="role in roleOptions"
+                      :label="role.roleName"
+                      :value="role.roleId"
+                      :key="role.roleId"
+                    ></el-option>
+                  </el-select>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -290,7 +403,10 @@ import {
   Plus,
   Edit,
   Delete,
-  Download
+  Download,
+  DArrowRight,
+  Key,
+  CircleCheck
 } from '@element-plus/icons-vue';
 import TablePanel from '@/components/TablePanel/index.vue';
 import useDictTypes from '@/hooks/web/useDictTypes';
@@ -300,15 +416,27 @@ import {
   addUser,
   removeUser,
   editUser,
-  exportUser
-} from '@/api/user/index';
+  exportUser,
+  resetPwdUser
+} from '@/api/system/user/index';
 import { parseTime } from '@/utils';
-import type { FormInstance, FormRules } from 'element-plus';
-import { ElMessageBox, ElMessage } from 'element-plus';
+import { ElMessageBox, ElMessage, RowClassNameGetter } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
+import { isPhone } from '@/utils/is';
 
-import type { UserSearchBody, UserBody, UserVo } from '~/api/user/types';
+import type { InternalRuleItem } from 'async-validator/dist-types/interface';
+import type { FormInstance, FormRules } from 'element-plus';
+import type { UserSearchBody, UserBody, UserVo } from '~/api/system/user/types';
+
+import { RoleVo } from '@/api/system/role/types';
+import { roleOptionList } from '@/api/system/role';
+import { passengerList, deletePssenger } from '@/api/business/passenger/index';
+
+import PassengerBox from './PassengerBox/index';
+import { PassengerDTO, PassengerVO } from '~/api/business/passenger/types';
+import { emitWarning } from 'process';
+import { encrypt } from '@/utils/rsa'
 
 type ModelSearchBody = UserSearchBody;
 type ModelBody = UserBody;
@@ -328,7 +456,8 @@ const pageConfig = reactive({
     add: addUser,
     remove: removeUser,
     edit: editUser,
-    export: exportUser
+    export: exportUser,
+    resetPwd: resetPwdUser
   },
   authorites: {
     list: 'system:user:list',
@@ -336,11 +465,28 @@ const pageConfig = reactive({
     add: 'system:user:add',
     edit: 'system:user:edit',
     remove: 'system:user:remove',
-    export: 'system:user:export'
+    export: 'system:user:export',
+    resetPwd: 'system:user:resetPwd'
   }
 });
 
-const dicts = useDictTypes(['sys_common_status', 'sys_user_sex']);
+const validatePhoneNumber = (
+  rule: InternalRuleItem,
+  value: string,
+  callback: Function
+) => {
+  if (value && !isPhone(value)) {
+    callback(new Error('请输入正确的手机号码'));
+  } else {
+    callback();
+  }
+};
+
+const dicts = useDictTypes([
+  'sys_common_status',
+  'sys_user_sex',
+  'sys_passenger_idType'
+]);
 const tableRef = ref<InstanceType<typeof TablePanel>>();
 const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
@@ -349,7 +495,7 @@ const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
 const searchForm = reactive<ModelSearchBody>({
-  nickname: '',
+  username: '',
   status: ''
 });
 
@@ -365,7 +511,9 @@ const rules = reactive<FormRules>({
   ],
   password: [{ required: true, message: '用户密码不能为空', trigger: 'blur' }],
   status: [{ required: true, message: '状态必须选择', trigger: 'blur' }],
-  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }]
+  nickname: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
+  roleIds: [{ required: true, message: '用户角色不能为空', trigger: 'blur' }],
+  phoneNumber: [{ validator: validatePhoneNumber, trigger: 'blur' }]
 });
 
 let form = reactive<ModelBody>({
@@ -376,13 +524,16 @@ let form = reactive<ModelBody>({
   remark: '',
   phoneNumber: '',
   nickname: '',
-  sex: ''
+  sex: '',
+  roleIds: []
 });
 
 const dialogState = reactive({
   title: '',
-  dialogVisible: true
+  dialogVisible: false
 });
+
+const passengerMap = ref<Record<number, PassengerVO[]>>({});
 
 onMounted(() => {
   search();
@@ -421,12 +572,14 @@ function fetchList(obj: ModelSearchBody) {
 }
 
 function handleAdd() {
+  getRoleOptions();
   formReset();
   dialogState.title = `添加${pageConfig.title}`;
   dialogState.dialogVisible = true;
 }
 
 function handleEdit(row: any) {
+  getRoleOptions();
   formReset();
   dialogState.title = `修改${pageConfig.title}`;
   dialogState.dialogVisible = true;
@@ -436,6 +589,7 @@ function handleEdit(row: any) {
         form[key] = data[key];
       }
     });
+    form.roleIds = data.roles.map((role) => role.roleId);
   });
 }
 
@@ -522,6 +676,8 @@ function submitForm() {
       formLoading.value = true;
       const isAdd = form[pageConfig.id] === null;
       const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
+      form.username = encrypt(form.username) as string;
+      form.password = encrypt(form.password) as string;
       api(form).then((res) => {
         const { code } = res;
         if (code !== 200) {
@@ -544,8 +700,119 @@ function cancel() {
 }
 
 /* --------------------Extra Features Start-------------------- */
+defineExpose({ handleAuthRole, handleResetPwd, handleAddPassenger });
+
+const instance = getCurrentInstance();
+
+const $router = useRouter();
+const roleOptions = ref<RoleVo[]>();
+function getRoleOptions() {
+  roleOptionList().then((res) => {
+    const { data } = res;
+    if (data) {
+      roleOptions.value = data;
+    }
+  });
+}
+/** 分配角色操作 */
+function handleAuthRole(row: ModelVo) {
+  const userId = row.userId;
+  $router.push('/system/user-auth/role/' + userId);
+}
+
+function handleResetPwd(row: ModelVo) {
+  ElMessageBox.prompt(`请输入"${row.username}"的新密码`, '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputPattern: /^.{5,20}$/,
+    inputErrorMessage: '用户密码长度必须介于 5 和 20 之间'
+  })
+    .then(({ value }) => {
+      pageConfig.api
+        .resetPwd({
+          userId: row.userId,
+          password: value
+        })
+        .then((res) => {
+          const { code } = res;
+          if (code === 200) {
+            ElMessage.success(`"${row.username}"的密码修改成功`);
+          }
+        });
+    })
+    .catch(() => {});
+}
+
+function handleCommand(command: string, row: ModelVo) {
+  const { exposed } = instance as any;
+  exposed[command](row);
+}
+
+function handleAddPassenger(row: any) {
+  PassengerBox.show({
+    userId: row.userId
+  })
+    .then(() => {})
+    .catch(() => {});
+}
+
+function handleExpandChange(row: any, expandRows: any[]) {
+  expandRows.forEach((item) => {
+    if (item.userId === row.userId) {
+      fetchPassengerList(row);
+    }
+  });
+}
+
+function fetchPassengerList(row: any) {
+  passengerList(row.userId).then((res) => {
+    if (res.code === 200) {
+      const { data } = res;
+      if (!data) {
+        passengerMap.value[row.userId] = [];
+        return;
+      }
+      passengerMap.value[row.userId] = data;
+    }
+  });
+}
+
+function handlePassengerEdit(row: any) {
+  PassengerBox.show({
+    userId: row.userId,
+    id: row.passengerId
+  })
+    .then(() => {
+      fetchPassengerList(row);
+      ElMessage.success('保存成功');
+    })
+    .catch(() => {});
+}
+
+function handlePassengerDelete(row: any) {
+  ElMessageBox.confirm(`确定要删除乘车人"${row.name}"的数据项吗？`, '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      deletePssenger(row.passengerId).then((res) => {
+        if (res.code === 200) {
+          ElMessage.success('删除乘车人成功');
+          fetchPassengerList(row);
+        }
+      });
+    })
+    .catch(() => {});
+}
 
 /* --------------------Extra Features End-------------------- */
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:deep() {
+  .el-button:focus-visible {
+    outline: none;
+  }
+}
+</style>

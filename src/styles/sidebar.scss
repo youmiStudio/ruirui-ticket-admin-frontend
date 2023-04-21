@@ -101,9 +101,9 @@
       margin-left: 54px;
     }
 
-    .sidebar-logo-container {
-      display: none;
-    }
+    // .sidebar-logo-container {
+    //   display: none;
+    // }
     
     .el-menu--vertical .el-menu-item, .el-menu--vertical .el-sub-menu__title {
       margin: 10px 0px;
@@ -216,7 +216,7 @@
 
   .el-menu-item,
   .el-sub-menu__title {
-    margin: 10px 20px;
+    margin: 0 20px;
     border-radius: 8px;
     box-sizing: border-box;
     user-select: none;

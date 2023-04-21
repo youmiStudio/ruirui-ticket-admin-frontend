@@ -6,17 +6,27 @@ import '@vue/runtime-core'
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Breadcrumb: typeof import('./../src/components/Breadcrumb/index.vue')['default']
+    DatePicker: typeof import('./../src/components/DatePicker/index.vue')['default']
+    DictRadio: typeof import('./../src/components/DictRadio/index.vue')['default']
+    DictSelect: typeof import('./../src/components/DictSelect/index.vue')['default']
     DictTag: typeof import('./../src/components/DictTag/index.vue')['default']
     ErrorLog: typeof import('./../src/components/ErrorLog/index.vue')['default']
     Hamburger: typeof import('./../src/components/Hamburger/index.vue')['default']
     HeaderSearch: typeof import('./../src/components/HeaderSearch/index.vue')['default']
+    IconSelect: typeof import('./../src/components/IconSelect/index.vue')['default']
+    IFrame: typeof import('./../src/components/IFrame/index.vue')['default']
+    Item: typeof import('./../src/components/UploadImage/src/item.vue')['default']
+    Multiple: typeof import('./../src/components/UploadImage/src/multiple.vue')['default']
     PanThumb: typeof import('./../src/components/PanThumb/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Screenfull: typeof import('./../src/components/Screenfull/index.vue')['default']
+    SectionBox: typeof import('./../src/components/SectionBox/index.vue')['default']
     SvgIcon: typeof import('./../src/components/SvgIcon/index.vue')['default']
+    TableCard: typeof import('./../src/components/TableCard/index.vue')['default']
     TableOperation: typeof import('./../src/components/TableOperation/index.vue')['default']
     TablePanel: typeof import('./../src/components/TablePanel/index.vue')['default']
+    UploadImage: typeof import('./../src/components/UploadImage/index.vue')['default']
   }
 }
 

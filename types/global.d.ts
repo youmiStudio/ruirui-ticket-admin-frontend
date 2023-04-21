@@ -7,3 +7,4 @@ declare global {
   }
   export type TimeoutHandle = ReturnType<typeof global.setTimeout>;
 }
+

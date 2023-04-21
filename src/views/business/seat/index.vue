@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-card class="mb-10px" shadow="never">
-      <el-form ref="searchFormRef" label-width="75px" :model="searchForm">
+      <el-form ref="searchFormRef" :model="searchForm">
         <el-row :gutter="20">
           <el-col :span="8">
             <el-form-item label="座位名称" prop="seatName">
@@ -144,24 +144,6 @@
           </template>
         </el-table-column>
 
-        <el-table-column width="125px" label="原座位价格(元)" align="center">
-          <template #default="{ row }">
-            {{ row.oldPrice && fenToYuan(row.oldPrice) }}
-          </template>
-        </el-table-column>
-
-        <template v-for="item in formSeatIconItems" :key="item.prop">
-          <el-table-column
-            class-name="seat-icon"
-            :label="item.label"
-            align="center"
-          >
-            <template #default="{ row }">
-              <img :src="apiUrl + row[item.prop]" class="avatar" />
-            </template>
-          </el-table-column>
-        </template>
-
         <el-table-column label="状态" align="center">
           <template #default="{ row }">
             <DictTag
@@ -178,13 +160,11 @@
           </template>
         </el-table-column>
         <el-table-column
-          label="备注"
-          prop="remark"
+          width="175px"
+          label="操作"
           align="center"
-          :show-overflow-tooltip="true"
+          class-name="fixed-width"
         >
-        </el-table-column>
-        <el-table-column width="175px" label="操作" align="center" class-name="fixed-width">
           <template #default="{ row }">
             <el-button
               v-authority="[pageConfig.authorites.edit]"
@@ -209,112 +189,6 @@
         </el-table-column>
       </TablePanel>
     </el-card>
-
-    <el-dialog
-      v-model="dialogState.dialogVisible"
-      :title="dialogState.title"
-      width="450px"
-      append-to-body
-    >
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="90px">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="座位名称" prop="seatName">
-              <el-input
-                v-model="form.seatName"
-                placeholder="请输入座位名称"
-                maxlength="20"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="座位价格" prop="price">
-              <el-input
-                maxLength="10"
-                v-model="form.price"
-                placeholder="请输入座位价格"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="原座位价格" prop="oldPrice">
-              <el-input
-                maxLength="10"
-                v-model="form.oldPrice"
-                placeholder="请输入原座位价格"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-
-          <template v-for="item in formSeatIconItems" :key="item.prop">
-            <el-col :span="24">
-              <el-form-item :label="item.label" :prop="item.prop">
-                <el-upload
-                  class="avatar-uploader"
-                  :show-file-list="false"
-                  :before-upload="beforeAvatarUpload"
-                  :http-request="uploadHttpRequest"
-                  :on-success="handleSeatIconUploadOnSuccess(item.prop)"
-                >
-                  <img
-                    v-if="form[item.prop]"
-                    :src="apiUrl + form[item.prop]"
-                    class="avatar"
-                  />
-                  <el-icon v-else class="avatar-uploader-icon"
-                    ><Plus
-                  /></el-icon>
-                </el-upload>
-              </el-form-item>
-            </el-col>
-          </template>
-
-          <el-col :span="24">
-            <el-form-item label="座位描述" prop="seatDescribe">
-              <el-input
-                v-model="form.seatDescribe"
-                placeholder="请输入座位描述"
-                type="textarea"
-                :row="3"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-
-          <el-col :span="24">
-            <el-form-item label="状态" prop="status">
-              <el-radio-group v-model="form.status">
-                <el-radio
-                  v-for="dict in dicts.type.sys_common_status"
-                  :key="dict.value"
-                  :label="dict.value"
-                  >{{ dict.label }}</el-radio
-                >
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="备注" prop="remark">
-              <el-input
-                v-model="form.remark"
-                placeholder="请输入内容"
-                type="textarea"
-                :row="2"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="cancel">取消</el-button>
-          <el-button type="primary" @click="submitForm" :loading="formLoading">
-            确定
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
@@ -336,7 +210,7 @@ import {
   removeSeat,
   editSeat,
   exportSeat
-} from '@/api/seat/index';
+} from '@/api/business/seat/index';
 import { uploadFile } from '@/api/common/index';
 import { isAmount, isImage } from '@/utils/is';
 import { yuanToFen, fenToYuan } from '@/utils/price';
@@ -345,14 +219,12 @@ import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 
-import type { UploadProps } from 'element-plus';
 import type { FormInstance, FormRules } from 'element-plus';
-import type { InternalRuleItem } from 'async-validator/dist-types/interface';
-import type { SeatBody, SeatSearchBody, SeatVo } from '~/api/seat/types';
-import { useGlobSettings } from '~/hooks/settings/useGlobSettings';
+import type { SeatSearchBody, SeatVo } from '~/api/business/seat/types';
+
+import seatBox from './SeatBox';
 
 type ModelSearchBody = SeatSearchBody;
-type ModelBody = SeatBody;
 type ModelVo = SeatVo;
 
 /**
@@ -383,9 +255,7 @@ const pageConfig = reactive({
 
 const dicts = useDictTypes('sys_common_status');
 const tableRef = ref<InstanceType<typeof TablePanel>>();
-const formRef = ref<FormInstance>();
 const searchFormRef = ref<FormInstance>();
-const formLoading = ref<boolean>(false);
 const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
@@ -394,59 +264,6 @@ const searchForm = reactive<ModelSearchBody>({
   status: '',
   minPrice: '',
   maxPrice: ''
-});
-
-const validatePrice = (
-  rule: InternalRuleItem,
-  value: string,
-  callback: Function
-) => {
-  if (rule.required && !value) {
-    return callback(new Error('请输入金额'));
-  }
-  if (value && !isAmount(value)) {
-    return callback(new Error('请输入正确的金额, 最多保留2位小数'));
-  }
-  callback();
-};
-
-const rules = reactive<FormRules>({
-  seatName: [
-    { required: true, message: '座位名称不能为空', trigger: 'blur' },
-    {
-      min: 2,
-      max: 20,
-      message: '座位名称长度必须介于 2 和 20 之间',
-      trigger: 'blur'
-    }
-  ],
-  price: [{ required: true, validator: validatePrice }],
-  oldPrice: [{ required: false, validator: validatePrice }],
-  unSelectedIcon: [{ required: true, message: '未选座时图标不能为空' }],
-  selectedIcon: [{ required: true, message: '已选座时图标不能为空' }],
-  boughtIcon: [{ required: true, message: '已购座时图标不能为空' }],
-  seatDescribe: [
-    { required: true, message: '座位描述不能为空', trigger: 'blur' }
-  ],
-  status: [{ required: true, message: '状态必须选择', trigger: 'blur' }]
-});
-
-let form = reactive<ModelBody>({
-  seatId: undefined,
-  seatName: '',
-  seatDescribe: '',
-  price: '',
-  oldPrice: '0',
-  unSelectedIcon: '',
-  selectedIcon: '',
-  boughtIcon: '',
-  status: '0',
-  remark: ''
-});
-
-const dialogState = reactive({
-  title: '',
-  dialogVisible: false
 });
 
 onMounted(() => {
@@ -475,8 +292,6 @@ const search = useDebounceFn(() => {
   if (minPrice && maxPrice) {
     if (Number(minPrice) > Number(maxPrice)) {
       searchForm.minPrice = maxPrice;
-    } else {
-      searchForm.maxPrice = minPrice;
     }
   }
 
@@ -505,27 +320,6 @@ function fetchList(obj: ModelSearchBody) {
     ...obj,
     orderByColumn: pageConfig.orderByColumn,
     isAsc: pageConfig.isAsc
-  });
-}
-
-function handleAdd() {
-  formReset();
-  dialogState.title = `添加${pageConfig.title}`;
-  dialogState.dialogVisible = true;
-}
-
-function handleEdit(row: any) {
-  formReset();
-  dialogState.title = `修改${pageConfig.title}`;
-  dialogState.dialogVisible = true;
-  getDetail(row[pageConfig.id]).then((data) => {
-    Object.keys(form).forEach((key) => {
-      if (key in data) {
-        form[key] = data[key];
-      }
-    });
-    form.price = fenToYuan(form.price);
-    form.oldPrice = fenToYuan(form.oldPrice);
   });
 }
 
@@ -589,14 +383,6 @@ function clearTableRecordRows() {
   tableRef.value.clearRecord();
 }
 
-function formReset() {
-  formRef.value?.resetFields();
-  Object.keys(form).forEach((key) => {
-    form[key] = null;
-  });
-  form.status = '0';
-}
-
 function searchReset() {
   searchFormRef.value?.resetFields();
   Object.keys(searchForm).forEach((key) => {
@@ -609,130 +395,25 @@ function searchRefresh() {
   search();
 }
 
-function submitForm() {
-  formRef.value?.validate((valid) => {
-    if (valid) {
-      formLoading.value = true;
-      const isAdd = form[pageConfig.id] === null;
-      const api = isAdd ? pageConfig.api.add : pageConfig.api.edit;
-
-      form.price = yuanToFen(form.price);
-      form.oldPrice = yuanToFen(form.oldPrice);
-
-      api(form).then((res) => {
-        const { code } = res;
-        if (code !== 200) {
-          formLoading.value = false;
-          return;
-        }
-        search();
-        formReset();
-        dialogState.dialogVisible = false;
-        formLoading.value = false;
-        ElMessage.success(`${pageConfig.title}${isAdd ? '新增' : '编辑'}成功`);
-      });
-    }
-  });
+function handleAdd() {
+  seatBox
+    .show()
+    .then(() => {
+      search();
+    })
+    .catch(() => {});
 }
 
-function cancel() {
-  dialogState.dialogVisible = false;
-  formReset();
+function handleEdit(row: ModelVo) {
+  seatBox
+    .show({
+      id: row.seatId
+    })
+    .then(() => {
+      search();
+    })
+    .catch(() => {});
 }
-
-/* --------------------Extra Features Start-------------------- */
-type SeatIconItems = {
-  label: string;
-  prop: keyof Pick<ModelBody, 'unSelectedIcon' | 'selectedIcon' | 'boughtIcon'>;
-};
-
-const globSettings = useGlobSettings();
-const apiUrl = globSettings.apiUrl;
-const formSeatIconItems = ref<SeatIconItems[]>([
-  {
-    label: '未选座位',
-    prop: 'unSelectedIcon'
-  },
-  {
-    label: '已选座位',
-    prop: 'selectedIcon'
-  },
-  {
-    label: '已购座位',
-    prop: 'boughtIcon'
-  }
-]);
-
-const beforeAvatarUpload: UploadProps['beforeUpload'] = (rawFile) => {
-  if (!isImage(rawFile.type)) {
-    ElMessage.error('请上传图片!');
-    return false;
-  } else if (rawFile.size / 1024 / 1024 > 2) {
-    ElMessage.error('图片不能大于2MB!');
-    return false;
-  }
-  return true;
-};
-
-const uploadHttpRequest: UploadProps['httpRequest'] = (options) => {
-  const { file } = options;
-  let form = new FormData();
-  form.append('file', file);
-  return uploadFile(form);
-};
-
-const handleSeatIconUploadOnSuccess = (
-  prop: string
-): UploadProps['onSuccess'] => {
-  return (res) => {
-    const { data } = res;
-    if (data) {
-      form[prop] = data.fileName;
-    }
-  };
-};
-/* --------------------Extra Features End-------------------- */
 </script>
 
-<style lang="scss" scoped>
-$--el-border-color: #dcdfe6;
-$--el-transition-duration-fast: 0.2s;
-$--el-color-primary: #409eff;
-::v-deep {
-  .seat-icon {
-    .cell {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-  }
-  .el-form-item__label {
-    font-weight: 700;
-  }
-
-  .avatar-uploader .el-upload {
-    border: 1px dashed $--el-border-color;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: $--el-transition-duration-fast;
-  }
-
-  .avatar-uploader .el-upload:hover {
-    border-color: $--el-color-primary;
-  }
-
-  .el-icon.avatar-uploader-icon {
-    font-size: 14px;
-    color: #8c939d;
-    width: 50px;
-    height: 50px;
-    text-align: center;
-  }
-  .avatar {
-    width: 50px;
-    height: 50px;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

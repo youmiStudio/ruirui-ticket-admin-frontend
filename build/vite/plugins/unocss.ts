@@ -1,4 +1,5 @@
 import Unocss from 'unocss/vite';
+import { PluginOption } from 'vite';
 
 import {
   presetAttributify,
@@ -21,7 +22,7 @@ export function configUnocss(isBuild?: boolean) {
       })
     ],
     transformers: [transformerDirectives(), transformerVariantGroup()]
-  });
+  }) as PluginOption;
 
   return unocssPlugin;
 }

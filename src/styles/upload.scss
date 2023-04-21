@@ -1,0 +1,16 @@
+$--el-border-color: #dcdfe6;
+$--el-transition-duration-fast: 0.2s;
+$--el-color-primary: #409eff;
+$--icon-width: 50px;
+$--icon-height: 50px;
+
+.table-image-icon {
+  .cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+.el-form-item__label {
+  font-weight: 700;
+}

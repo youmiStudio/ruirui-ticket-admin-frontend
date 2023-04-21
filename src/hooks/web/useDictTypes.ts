@@ -1,4 +1,4 @@
-import { getDictType } from '@/api/dict/index';
+import { getDictType } from '~/api/system/dict/index';
 
 enum DictDataOtption {
   LABEL = 'dictLabel',

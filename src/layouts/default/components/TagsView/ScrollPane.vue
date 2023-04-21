@@ -115,10 +115,10 @@ function moveToTarget(currentTag: VisitedViews) {
   overflow: hidden;
   width: 100%;
 
-  ::v-deep(.el-scrollbar__bar) {
+  :deep(.el-scrollbar__bar) {
     bottom: 0px;
   }
-  ::v-deep(.el-scrollbar__wrap) {
+  :deep(.el-scrollbar__wrap) {
     height: 49px;
   }
 }
