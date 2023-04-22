@@ -4,7 +4,7 @@ import defaultSettings from '@/settings';
 const { showSettings, tagsView, fixedHeader, sidebarLogo } = defaultSettings;
 
 export const useGlobSettings = (): Readonly<GlobalConfig> => {
-  const { VITE_GLOB_APP_TITLE, VITE_GLOB_API_URL, VITE_GLOB_UPLOAD_URL } =
+  const { VITE_GLOB_APP_TITLE, VITE_GLOB_API_URL, VITE_GLOB_UPLOAD_URL,VITE_GLOB_WEBSOCKET_URL } =
     getAppEnvConfig();
 
   // Take global configuration
@@ -12,6 +12,7 @@ export const useGlobSettings = (): Readonly<GlobalConfig> => {
     title: VITE_GLOB_APP_TITLE,
     apiUrl: VITE_GLOB_API_URL,
     uploadUrl: VITE_GLOB_UPLOAD_URL,
+    websocketUrl: VITE_GLOB_WEBSOCKET_URL,
     showSettings,
     tagsView,
     fixedHeader,

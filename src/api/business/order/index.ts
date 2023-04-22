@@ -1,20 +1,33 @@
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../../types';
-import type { OrderVO, OrderPageSearchDTO } from './types';
+import type { OrderVO, OrderPageSearchDTO, OrderItem } from './types';
 
 const BASE_URL = '/admin/order';
 
 enum URL {
   list = '/list',
+  itemList = '/items',
   refund = '/refund',
-  cancel = '/cancel'
+  cancel = '/cancel',
+  itemReceipt = '/item/receipt',
+  itemRefund = '/item/refund'
 }
 
 export const orderList = async (body?: OrderPageSearchDTO) =>
   get<R<PageVo<OrderVO[]>>>({ url: BASE_URL + URL.list, params: body });
+export const orderItemList = async (orderNo?: string) =>
+  get<R<PageVo<OrderItem[]>>>({ url: BASE_URL + URL.itemList + `/${orderNo}` });
 export const getOrder = async (orderNo?: string) =>
   get<R<OrderVO>>({ url: BASE_URL + `/${orderNo}` });
 export const cancelOrder = async (orderNo?: string) =>
-  post<R<string>>({ url: BASE_URL + URL.cancel +`/${orderNo}` });
+  post<R<string>>({ url: BASE_URL + URL.cancel + `/${orderNo}` });
 export const refundOrder = async (orderNo?: string) =>
-  post<R<string>>({ url: BASE_URL + URL.refund +`/${orderNo}` });
+  post<R<string>>({ url: BASE_URL + URL.refund + `/${orderNo}` });
+export const receiptOrderItem = async (body?: {
+  orderNo: string;
+  orderItemId: number;
+}) => post<R<string>>({ url: BASE_URL + URL.itemReceipt, data: body });
+export const refundOrderItem = async (body?: {
+  orderNo: string;
+  orderItemId: number;
+}) => post<R<string>>({ url: BASE_URL + URL.itemRefund, data: body });

@@ -4,7 +4,10 @@ import { PassengerDTO, PassengerVO } from './types';
 
 enum URL {
   LIST = '/list',
-  BASE_URL = '/admin/passenger'
+  BASE_URL = '/admin/passenger',
+  ID_CARD = '/idCard',
+  PHONE = '/phone',
+  INFO = '/info'
 }
 
 export const passengerList = async (userId: number) =>
@@ -14,7 +17,17 @@ export const passengerList = async (userId: number) =>
 
 export const getPassenger = async (passengerId: number) =>
   get<R<PassengerVO>>({
-    url: URL.BASE_URL + `/${passengerId}`
+    url: URL.BASE_URL + URL.INFO + `/${passengerId}`
+  });
+
+export const getPassengerIdCard = async (passengerId: number) =>
+  get<R<string>>({
+    url: URL.BASE_URL + URL.ID_CARD + `/${passengerId}`
+  });
+
+export const getPassengerPhone = async (passengerId: number) =>
+  get<R<string>>({
+    url: URL.BASE_URL + URL.PHONE + `/${passengerId}`
   });
 
 export const addPassenger = async (body: PassengerDTO) =>

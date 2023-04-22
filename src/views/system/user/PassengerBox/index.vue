@@ -55,6 +55,7 @@ import {
 import type { FormInstance, FormRules } from 'element-plus';
 import { PassengerDTO } from '~/api/business/passenger/types';
 import { encrypt } from '@/utils/rsa';
+import AES from '@/utils/aes';
 
 type Mode = 'add' | 'edit';
 
@@ -133,11 +134,11 @@ const getDetail = () => {
     if (res.code === 200) {
       const { data } = res;
       if (!data) return;
-      form.value['name'] = data.name;
-      form.value['idNumber'] = data.idNumber;
+      form.value['name'] = AES.decrypt(data.name);
+      form.value['idNumber'] = AES.decrypt(data.idNumber);
       form.value['idType'] = data.idType;
       form.value['passengerId'] = data.passengerId;
-      form.value['phone'] = data.phone;
+      form.value['phone'] = AES.decrypt(data.phone);
       form.value['userId'] = data.userId;
     }
   });

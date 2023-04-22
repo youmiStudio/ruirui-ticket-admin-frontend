@@ -1,3 +1,5 @@
+import { SeatPosition, SeatSize } from '~/views/business/seat-scheme/types';
+
 export type Order = {
   orderId: number;
   userId: number;
@@ -20,7 +22,28 @@ export type Order = {
   car: OrderCarVO;
 };
 
-export type OrderVO = Order
+export type OrderItem = {
+  orderItemId: number;
+  orderNo: string;
+  passengerId: number;
+  seatSchemePositionId: number;
+  seatId: number;
+  seatName: string;
+  seatPosition: SeatPosition;
+  seatSize: SeatSize;
+  seatDescribe: string;
+  seatPrice: number;
+  passengerName: string;
+  passengerIdType: string;
+  passengerIdNumber: string;
+  passengerPhone: string;
+  passengerGender: string;
+  status: string;
+};
+
+export type OrderItemVo = OrderItem;
+
+export type OrderVO = Order;
 
 export type OrderBuyerVO = {
   // properties of OrderBuyerVO
@@ -51,7 +74,6 @@ export type OrderCarVO = {
   no: string;
   mainImgUrl: string;
 };
-
 
 export type OrderPageSearchDTO = {
   userId?: number;

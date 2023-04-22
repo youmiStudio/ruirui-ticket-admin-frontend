@@ -253,7 +253,7 @@
               v-authority="[pageConfig.authorites.refund]"
               link
               type="danger"
-              @click="refundOrderFn(row.orderNo)"
+              @click="refundOrderFn(row.orderNo, row)"
               >退款</el-button
             >
             <el-button
@@ -290,6 +290,7 @@ import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
 import { orderList, cancelOrder, refundOrder } from '@/api/business/order';
 import { fenToYuan, yuanToFen } from '@/utils/price';
+import { OrderVO } from '~/api/business/order/types';
 
 type ModelSearchBody = any;
 type ModelBody = any;
@@ -445,9 +446,9 @@ function cancelOrderFn(orderNo: string) {
     .catch(() => {});
 }
 
-function refundOrderFn(orderNo: string) {
+function refundOrderFn(orderNo: string, row: OrderVO) {
   ElMessageBox.confirm(
-    `退款订单后，支付金额将全额返还用户，确定取消吗？`,
+    `提交退款后，将退款${fenToYuan(row.payAmount)}元给用户，确定退款吗？`,
     '警告',
     {
       confirmButtonText: '确定',
