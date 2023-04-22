@@ -141,7 +141,7 @@ export const asyncRoutes: RouteItem[] = [
     permissions: ['ticket:order:query'],
     children: [
       {
-        path: ':orderSn',
+        path: ':orderNo',
         component: () => import('~/views/business/order/detail.vue'),
         name: 'orderDetailBySn',
         meta: { title: '订单详情', activeMenu: '/ticket/order' }

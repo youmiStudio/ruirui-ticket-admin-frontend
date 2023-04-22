@@ -1,6 +1,7 @@
 <template>
   <div class="app-container">
-    <el-card class="mb-10px" shadow="never">
+    <el-button :icon="ArrowLeft" size="small" @click="goBack">返回</el-button>
+    <el-card class="mt-10px mb-10px" shadow="never">
       <el-form
         ref="searchFormRef"
         :model="orderInfo"
@@ -10,46 +11,52 @@
       >
         <el-row :gutter="20">
           <el-col :span="8">
-            <el-form-item label="订单编号" prop="carName">
+            <el-form-item label="订单编号">
               {{ orderInfo.orderNo }}
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="订单状态" prop="carName">
-              待支付
+            <el-form-item label="订单状态">
+              <dict-tag type="sys_order_status" :value="orderInfo.status" />
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="订单来源" prop="carName">
-              小程序端
+            <el-form-item label="订单来源"> 小程序端 </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="买家名称">
+              {{ orderInfo.buyer.nickname }}
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="买家名称" prop="carName"> L </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="买家电话" prop="carName">
-              131****1111
-              <span class="ml-3px link">查看</span>
+            <el-form-item label="买家头像">
+              <el-image
+                class="w-50px h-50px"
+                :src="orderInfo.buyer.avatar"
+              ></el-image>
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="出行人数" prop="carName"> 1 </el-form-item>
+            <el-form-item label="出行人数"> 1 </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="支付方式" prop="carName"> - </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="支付时间" prop="carName"> - </el-form-item>
-          </el-col>
-          <el-col :span="8">
-            <el-form-item label="下单时间" prop="carName">
-              2023-03-14 16:38
+            <el-form-item label="支付方式">
+              {{ orderInfo.payAmount ? '微信支付' : '-' }}
             </el-form-item>
           </el-col>
           <el-col :span="8">
-            <el-form-item label="发票信息" prop="carName">
-              暂无发票信息
+            <el-form-item label="支付时间">
+              {{ orderInfo.paymentTime ? orderInfo.paymentTime : '-' }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="下单时间">
+              {{ orderInfo.orderTime ? orderInfo.orderTime : '-' }}
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="发票信息">
+              {{ orderInfo.paymentTime ? '暂无发票信息' : '-' }}
             </el-form-item>
           </el-col>
         </el-row>
@@ -78,21 +85,21 @@
             <tbody>
               <tr>
                 <td>
-                  <el-image
-                    src="https://imgcache.dealmoon.com/thumbimg.dealmoon.com/dealmoon/f45/d74/022/f7246d0ba033a4b6e4ee6ed.jpg_1280_1280_3_964e.jpg"
-                  ></el-image>
+                  <el-image :src="orderInfo.route.mainImgUrl"></el-image>
                 </td>
                 <td>
-                  <span>雪山房车之旅 体验大自然 享受自由冒险</span>
+                  <span>{{ orderInfo.route.name }}</span>
+                </td>
+                <td>
+                  <span>{{
+                    orderInfo.route.describe ? orderInfo.route.describe : '-'
+                  }}</span>
                 </td>
                 <td>
                   <span
-                    >在房车之旅中，您可以进行各种户外活动，如徒步旅行、滑雪、钓
-                    鱼、皮划艇等。亲身体验大自然的魅力，享受一次自由的冒险之旅。</span
+                    >{{ orderInfo.travelDate }}
+                    {{ orderInfo.routeSku.name }}</span
                   >
-                </td>
-                <td>
-                  <span>2023-03-18 10:00～11:30</span>
                 </td>
               </tr>
             </tbody>
@@ -121,18 +128,18 @@
             <tbody>
               <tr>
                 <td>
-                  <el-image
-                    src="https://p26.toutiaoimg.com/origin/motor-img/1a5d02003fa8464e94c0c4070c04757c?from=pc"
-                  ></el-image>
+                  <el-image :src="orderInfo.car.mainImgUrl"></el-image>
                 </td>
                 <td>
-                  <span>飞翔铁C PLUS房车</span>
+                  <span>{{ orderInfo.car.name }}</span>
                 </td>
                 <td>
-                  <span>飞翔铁C PLUS房车 </span>
+                  <span>{{
+                    orderInfo.car.describe ? orderInfo.car.describe : '-'
+                  }}</span>
                 </td>
                 <td>
-                  <span>粤A 3R123</span>
+                  <span>{{ orderInfo.car.no }}</span>
                 </td>
               </tr>
             </tbody>
@@ -200,7 +207,7 @@
 
       <div class="price-wrap">
         <span class="mr-3px">总金额:</span>
-        <span class="price">88.88</span>
+        <span class="price">{{ fenToYuan(orderInfo.payAmount) }}</span>
         <span class="ml-3px">元</span>
       </div>
     </el-card>
@@ -208,16 +215,49 @@
 </template>
 
 <script lang="ts" setup>
-const orderInfo = ref({
-  orderId: 100,
-  orderNo: 'O202303141635475492190617601',
-  status: 0,
-  price: '88.88',
-  payPrice: '-',
-  routeName: '雪山房车之旅 体验大自然 享受自由冒险',
-  tripTime: '2023-03-18 10:00~11:30',
-  createTime: new Date()
+import { ArrowLeft } from '@element-plus/icons-vue';
+
+import { getOrder } from '@/api/business/order/index';
+import { OrderVO } from '~/api/business/order/types';
+
+import { fenToYuan } from '@/utils/price';
+
+const route = useRoute();
+const router = useRouter();
+
+const orderInfo = ref<OrderVO>({
+  buyer: {},
+  route: {},
+  routeSku: {},
+  car: {}
+} as OrderVO);
+
+const orderNo = computed(() => {
+  return route.params.orderNo;
 });
+
+const getDetail = () => {
+  getOrder(orderNo.value as string).then((res) => {
+    if (res.code === 200) {
+      if (!res.data) return;
+      orderInfo.value = res.data;
+    }
+  });
+};
+
+watch(
+  () => route.params,
+  () => {
+    if (orderNo.value) {
+      getDetail();
+    }
+  },
+  { immediate: true }
+);
+
+const goBack = () => {
+  router.push('/ticket/order');
+};
 </script>
 
 <style lang="scss" scoped>
@@ -281,5 +321,4 @@ const orderInfo = ref({
     font-weight: bold;
   }
 }
-
 </style>

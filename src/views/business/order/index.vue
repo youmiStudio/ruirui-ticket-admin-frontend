@@ -16,7 +16,7 @@
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col  :span="6">
+            <el-col :span="6">
               <el-form-item label="用户名称" prop="nickName">
                 <el-input
                   v-model="searchForm.nickName"
@@ -151,12 +151,41 @@
         @select-change="handleTableSelectChange"
       >
         <el-table-column
-          width="280"
+          width="200"
           label="订单编号"
           prop="orderNo"
           align="center"
           :show-overflow-tooltip="true"
         >
+        </el-table-column>
+
+        <el-table-column label="总价格(元)" align="center" width="100">
+          <template #default="{ row }">
+            <div> {{ fenToYuan(row.totalAmount) }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="实收金额(元)" align="center" width="125">
+          <template #default="{ row }">
+            <div> {{ row.payAmount ? fenToYuan(row.payAmount) : '-' }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column width="100" label="买家名称" align="center">
+          <template #default="{ row }">
+            <div> {{ row.buyer.nickname }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column width="100" label="买家头像" align="center">
+          <template #default="{ row }">
+            <el-image class="w-50px h-50px" :src="row.buyer.avatar"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column width="150" label="订单状态" align="center">
+          <template #default="{ row }">
+            <DictTag
+              :options="dicts.type.sys_order_status"
+              :value="row.status"
+            ></DictTag>
+          </template>
         </el-table-column>
         <el-table-column
           width="200"
@@ -169,6 +198,7 @@
             <div>{{ row.route.name }}</div>
           </template>
         </el-table-column>
+
         <el-table-column
           width="200"
           label="车辆名称"
@@ -191,34 +221,6 @@
             <div>{{ row.car.no }}</div>
           </template>
         </el-table-column>
-        <el-table-column width="150" label="买家名称" align="center">
-          <template #default="{ row }">
-            <div> {{ row.buyer.nickname }} </div>
-          </template>
-        </el-table-column>
-        <el-table-column width="150" label="买家头像" align="center">
-          <template #default="{ row }">
-            <el-image class="w-50px h-50px" :src="row.buyer.avatar"></el-image>
-          </template>
-        </el-table-column>
-        <el-table-column label="总价格(元)" align="center" width="150">
-          <template #default="{ row }">
-            <div> {{ fenToYuan(row.totalAmount) }} </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="实收金额(元)" align="center" width="150">
-          <template #default="{ row }">
-            <div> {{ row.payAmount ? fenToYuan(row.payAmount) : '-' }} </div>
-          </template>
-        </el-table-column>
-        <el-table-column width="150" label="订单状态" align="center">
-          <template #default="{ row }">
-            <DictTag
-              :options="dicts.type.sys_order_status"
-              :value="row.status"
-            ></DictTag>
-          </template>
-        </el-table-column>
         <el-table-column label="出行时间" width="220px" align="center">
           <template #default="{ row }">
             <span>{{ row.travelDate }}</span>
@@ -231,9 +233,36 @@
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column width="100" fixed="right" label="操作" align="center">
+        <el-table-column
+          width="125px"
+          fixed="right"
+          label="操作"
+          align="center"
+        >
           <template #default="{ row }">
-            <el-button>查看</el-button>
+            <el-button
+              v-if="['0', '1', '2'].some((status) => row.status === status)"
+              v-authority="[pageConfig.authorites.cancel]"
+              link
+              type="info"
+              @click="cancelOrderFn(row.orderNo)"
+              >取消</el-button
+            >
+            <el-button
+              v-if="['3'].some((status) => row.status === status)"
+              v-authority="[pageConfig.authorites.refund]"
+              link
+              type="danger"
+              @click="refundOrderFn(row.orderNo)"
+              >退款</el-button
+            >
+            <el-button
+              v-authority="[pageConfig.authorites.get]"
+              link
+              type="primary"
+              @click="gotoDetail(row)"
+              >查看</el-button
+            >
           </template>
         </el-table-column>
       </TablePanel>
@@ -259,12 +288,14 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
-import { orderList } from '@/api/business/order';
+import { orderList, cancelOrder, refundOrder } from '@/api/business/order';
 import { fenToYuan, yuanToFen } from '@/utils/price';
 
 type ModelSearchBody = any;
 type ModelBody = any;
 type ModelVo = any;
+
+const router = useRouter();
 
 /**
  * 页面配置，抽离公共部分，少搬点砖
@@ -272,23 +303,17 @@ type ModelVo = any;
 const pageConfig = reactive({
   title: '车辆',
   id: 'orderId',
-  isAsc: 'asc',
-  orderByColumn: 'order_id',
+  isAsc: 'desc',
+  orderByColumn: 'order_time',
   api: {
     list: orderList,
-    get: null,
-    add: null,
-    remove: null,
-    edit: null,
-    export: null
+    refund: refundOrder,
+    cancel: cancelOrder
   },
   authorites: {
-    list: 'ticket:car:list',
-    get: 'ticket:car:query',
-    add: 'ticket:car:add',
-    edit: 'ticket:car:edit',
-    remove: 'ticket:car:remove',
-    export: 'ticket:car:export'
+    get: 'ticket:order:query',
+    refund: 'ticket:order:refund',
+    cancel: 'ticket:order:cancel'
   }
 });
 
@@ -389,14 +414,56 @@ function fetchList(obj: ModelSearchBody) {
 }
 function searchReset() {
   searchFormRef.value?.resetFields();
-  searchForm.minPriceAmount = ''
-  searchForm.maxPriceAmount = ''
-  travelDate.value = ''
-  orderDate.value = ''
+  searchForm.minPriceAmount = '';
+  searchForm.maxPriceAmount = '';
+  travelDate.value = '';
+  orderDate.value = '';
 }
 function searchRefresh() {
   searchReset();
   search();
+}
+
+function gotoDetail(row: ModelVo) {
+  router.push(`/ticket/order/detail/${row.orderNo}`);
+}
+
+function cancelOrderFn(orderNo: string) {
+  ElMessageBox.confirm(`取消订单后，将无法进行“支付”，确定取消吗？`, '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      pageConfig.api.cancel(orderNo).then((res) => {
+        if (res.code === 200) {
+          ElMessage.success('订单取消成功');
+          search();
+        }
+      });
+    })
+    .catch(() => {});
+}
+
+function refundOrderFn(orderNo: string) {
+  ElMessageBox.confirm(
+    `退款订单后，支付金额将全额返还用户，确定取消吗？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
+    .then(() => {
+      pageConfig.api.refund(orderNo).then((res) => {
+        if (res.code === 200) {
+          ElMessage.success('订单提交退款成功');
+          search();
+        }
+      });
+    })
+    .catch(() => {});
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <template v-for="(item, index) in options">
+    <template v-for="(item, index) in optionsData">
       <template v-if="values.includes(item.value)">
         <span
           v-if="item.raw.listClass === 'default' || item.raw.listClass === ''"
@@ -24,12 +24,26 @@
 </template>
 
 <script lang="ts" setup name="DictTag">
+import useDictTypes from '@/hooks/web/useDictTypes';
 const props = defineProps({
   options: {
     type: Array as any,
     default: () => []
   },
-  value: [Number, String, Array]
+  value: [Number, String, Array],
+  type: {
+    type: String
+  }
+});
+const dicts = useDictTypes(props.type!);
+
+const optionsData = computed(() => {
+  if (props.options && props.options.length > 0) {
+    return props.options;
+  }
+  if (props.type) {
+    return dicts.type[props.type!];
+  }
 });
 
 const values = computed(() => {
