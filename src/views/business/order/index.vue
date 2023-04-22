@@ -448,7 +448,7 @@ function cancelOrderFn(orderNo: string) {
 
 function refundOrderFn(orderNo: string, row: OrderVO) {
   ElMessageBox.confirm(
-    `提交退款后，将退款${fenToYuan(row.payAmount)}元给用户，确定退款吗？`,
+    `提交退款后，将退款${fenToYuan(row.payAmount - row.refundAmount)}元给用户，确定退款吗？`,
     '警告',
     {
       confirmButtonText: '确定',
