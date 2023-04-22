@@ -4,8 +4,8 @@
       <div class="search-form">
         <el-form ref="searchFormRef" :model="searchForm">
           <el-row :gutter="20">
-            <el-col :span="6">
-              <el-form-item label="订单编号" prop="carName">
+            <el-col :span="12">
+              <el-form-item label="订单编号" prop="orderNo">
                 <el-input
                   v-model="searchForm.orderNo"
                   placeholder="请输入订单编号"
@@ -16,10 +16,10 @@
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
-              <el-form-item label="用户名称" prop="carName">
+            <el-col :offset="6" :pull="24" :span="6">
+              <el-form-item label="用户名称" prop="nickName">
                 <el-input
-                  v-model="searchForm.orderNo"
+                  v-model="searchForm.nickName"
                   placeholder="请输入用户名称"
                   clearable
                   maxlength="100"
@@ -29,9 +29,9 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="路线名称" prop="carName">
+              <el-form-item label="路线名称" prop="routeName">
                 <el-input
-                  v-model="searchForm.orderNo"
+                  v-model="searchForm.routeName"
                   placeholder="请输入路线名称"
                   clearable
                   maxlength="100"
@@ -41,29 +41,45 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="订单状态" prop="status">
-                <el-select
-                  class="w100%"
-                  v-model="searchForm.status"
-                  placeholder="订单状态"
+              <el-form-item label="车辆名称" prop="carName">
+                <el-input
+                  v-model="searchForm.carName"
+                  placeholder="请输入车辆名称"
+                  clearable
+                  maxlength="100"
+                  @clear="search"
                   @change="search"
-                >
-                  <el-option label="全部" value=""></el-option>
-                  <el-option
-                    v-for="dict in dicts.type.sys_common_status"
-                    :label="dict.label"
-                    :value="dict.value"
-                    :key="dict.value"
-                  ></el-option>
-                </el-select>
+                ></el-input>
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="订单价格" prop="seatName">
+              <el-form-item label="车牌号码" prop="carNo">
+                <el-input
+                  v-model="searchForm.carNo"
+                  placeholder="请输入车牌号码"
+                  clearable
+                  maxlength="100"
+                  @clear="search"
+                  @change="search"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="订单状态" prop="orderStatus">
+                <dict-select
+                  showNormal
+                  v-model="searchForm.orderStatus"
+                  type="sys_order_status"
+                  @change="search"
+                ></dict-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="订单价格">
                 <el-row :gutter="10">
                   <el-col :span="11">
                     <el-input
-                      v-model="searchForm.minPrice"
+                      v-model="searchForm.minPriceAmount"
                       placeholder="最少价格"
                       clearable
                       maxlength="20"
@@ -73,7 +89,7 @@
                   <el-col :span="2"> - </el-col>
                   <el-col :span="11">
                     <el-input
-                      v-model="searchForm.maxPrice"
+                      v-model="searchForm.maxPriceAmount"
                       placeholder="最多价格"
                       clearable
                       maxlength="20"
@@ -86,6 +102,7 @@
             <el-col :span="6">
               <el-form-item label="出行时间">
                 <el-date-picker
+                  v-model="travelDate"
                   class="w100%"
                   value-format="YYYY-MM-DD"
                   type="daterange"
@@ -99,6 +116,7 @@
             <el-col :span="6">
               <el-form-item label="下单时间">
                 <el-date-picker
+                  v-model="orderDate"
                   class="w100%"
                   value-format="YYYY-MM-DD"
                   type="daterange"
@@ -131,7 +149,6 @@
         :primary-key="pageConfig.id"
         :selectType="false"
         @select-change="handleTableSelectChange"
-        border="true"
       >
         <el-table-column
           width="280"
@@ -148,20 +165,50 @@
           align="center"
           :show-overflow-tooltip="true"
         >
+          <template #default="{ row }">
+            <div>{{ row.route.name }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="200"
+          label="车辆名称"
+          prop="routeName"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
+          <template #default="{ row }">
+            <div>{{ row.car.name }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="200"
+          label="车牌号码"
+          prop="routeName"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
+          <template #default="{ row }">
+            <div>{{ row.car.no }}</div>
+          </template>
         </el-table-column>
         <el-table-column width="150" label="买家名称" align="center">
-          <template #default>
-            <div> L </div>
+          <template #default="{ row }">
+            <div> {{ row.buyer.nickname }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column width="150" label="买家头像" align="center">
+          <template #default="{ row }">
+            <el-image class="w-50px h-50px" :src="row.buyer.avatar"></el-image>
           </template>
         </el-table-column>
         <el-table-column label="总价格(元)" align="center" width="150">
-          <template #default="{row}">
-            <div> {{ row.price }} </div>
+          <template #default="{ row }">
+            <div> {{ fenToYuan(row.totalAmount) }} </div>
           </template>
         </el-table-column>
         <el-table-column label="实收金额(元)" align="center" width="150">
-          <template #default="{row}">
-            <div> {{ row.payPrice }} </div>
+          <template #default="{ row }">
+            <div> {{ row.payAmount ? fenToYuan(row.payAmount) : '-' }} </div>
           </template>
         </el-table-column>
         <el-table-column width="150" label="订单状态" align="center">
@@ -173,18 +220,18 @@
           </template>
         </el-table-column>
         <el-table-column label="出行时间" width="220px" align="center">
-          <template #default="{row}">
-            <span>{{ row.tripTime }}</span>
+          <template #default="{ row }">
+            <span>{{ row.travelDate }}</span>
           </template>
         </el-table-column>
         <el-table-column label="下单时间" width="150px" align="center">
           <template #default="{ row }">
             <span>{{
-              row.createTime && parseTime(row.createTime, '{y}-{m}-{d} {h}:{i}')
+              row.orderTime && parseTime(row.orderTime, '{y}-{m}-{d} {h}:{i}')
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center">
+        <el-table-column width="100" fixed="right" label="操作" align="center">
           <template #default="{ row }">
             <el-button>查看</el-button>
           </template>
@@ -212,6 +259,8 @@ import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
 import { vAuthority } from '@/directive/authority';
+import { orderList } from '@/api/business/order';
+import { fenToYuan, yuanToFen } from '@/utils/price';
 
 type ModelSearchBody = any;
 type ModelBody = any;
@@ -222,11 +271,11 @@ type ModelVo = any;
  */
 const pageConfig = reactive({
   title: '车辆',
-  id: 'carId',
+  id: 'orderId',
   isAsc: 'asc',
-  orderByColumn: 'car_id',
+  orderByColumn: 'order_id',
   api: {
-    list: null,
+    list: orderList,
     get: null,
     add: null,
     remove: null,
@@ -251,15 +300,53 @@ const formLoading = ref<boolean>(false);
 const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
+const travelDate = ref();
+const orderDate = ref();
+
 const searchForm = reactive<ModelSearchBody>({
   orderNo: '',
+  nickName: '',
+  routeName: '',
+  carName: '',
   carNo: '',
-  status: ''
+  orderStatus: '',
+  minPriceAmount: '',
+  maxPriceAmount: '',
+  beginTravelDate: '',
+  endTravelDate: '',
+  beginOrderTime: '',
+  endOrderTime: ''
 });
 
 onMounted(() => {
   search();
 });
+
+watch(
+  () => travelDate.value,
+  (arr) => {
+    if (!arr) {
+      searchForm.beginTravelDate = '';
+      searchForm.endTravelDate = '';
+      return;
+    }
+    searchForm.beginTravelDate = arr[0];
+    searchForm.endTravelDate = arr[1];
+  }
+);
+
+watch(
+  () => orderDate.value,
+  (arr) => {
+    if (!arr) {
+      searchForm.beginOrderTime = '';
+      searchForm.endOrderTime = '';
+      return;
+    }
+    searchForm.beginOrderTime = arr[0];
+    searchForm.endOrderTime = arr[1];
+  }
+);
 
 watch(
   tableRecordRows,
@@ -270,7 +357,15 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
+  const params: ModelSearchBody = Object.assign({}, searchForm, {
+    minPriceAmount: searchForm.minPriceAmount
+      ? yuanToFen(searchForm.minPriceAmount)
+      : '',
+    maxPriceAmount: searchForm.maxPriceAmount
+      ? yuanToFen(searchForm.maxPriceAmount)
+      : ''
+  });
+  tableRef.value && tableRef.value.search<ModelVo>(params);
 }, 200);
 
 function switchBatchDelete(selectRowsLength: number) {
@@ -286,44 +381,18 @@ function handleTableSelectChange(recordRows: any[]) {
 }
 
 function fetchList(obj: ModelSearchBody) {
-  // return pageConfig.api.list({
-  //   ...obj,
-  //   orderByColumn: pageConfig.orderByColumn,
-  //   isAsc: pageConfig.isAsc
-  // });
-  return new Promise((resolve, reject) => {
-    resolve({
-      code: 200,
-      data: {
-        total: 1,
-        items: [
-          {
-            orderId: 100,
-            orderNo: 'O202303141635475492190617601',
-            status: 0,
-            price:'88.88',
-            payPrice:'-',
-            routeName: '雪山房车之旅 体验大自然 享受自由冒险',
-            tripTime:'2023-03-18 10:00~11:30',
-            createTime: new Date()
-          },
-          {
-            orderId: 100,
-            orderNo: 'O202303141635475492190617602',
-            status: 1,
-            price:'88.88',
-            payPrice:'88.88',
-            routeName: '雪山房车之旅 体验大自然 享受自由冒险',
-            tripTime:'2023-03-18 10:00~11:30',
-            createTime: new Date()
-          }
-        ]
-      }
-    });
+  return pageConfig.api.list({
+    ...obj,
+    orderByColumn: pageConfig.orderByColumn,
+    isAsc: pageConfig.isAsc
   });
 }
 function searchReset() {
   searchFormRef.value?.resetFields();
+  searchForm.minPriceAmount = ''
+  searchForm.maxPriceAmount = ''
+  travelDate.value = ''
+  orderDate.value = ''
 }
 function searchRefresh() {
   searchReset();

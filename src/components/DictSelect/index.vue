@@ -28,7 +28,7 @@ const props = defineProps({
   }
 });
 
-const emit = defineEmits(['update:model-value']);
+const emit = defineEmits(['update:model-value', 'change']);
 
 const dicts = useDictTypes(props.type!);
 
@@ -38,6 +38,7 @@ const value = computed({
   },
   set: (val) => {
     emit('update:model-value', val);
+    emit('change', val);
   }
 });
 </script>
