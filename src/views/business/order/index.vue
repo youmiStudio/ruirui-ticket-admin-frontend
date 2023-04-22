@@ -4,7 +4,7 @@
       <div class="search-form">
         <el-form ref="searchFormRef" :model="searchForm">
           <el-row :gutter="20">
-            <el-col :span="12">
+            <el-col :span="6">
               <el-form-item label="订单编号" prop="orderNo">
                 <el-input
                   v-model="searchForm.orderNo"
@@ -16,7 +16,7 @@
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col :offset="6" :pull="24" :span="6">
+            <el-col  :span="6">
               <el-form-item label="用户名称" prop="nickName">
                 <el-input
                   v-model="searchForm.nickName"
