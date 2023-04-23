@@ -41,6 +41,29 @@ export type OrderItem = {
   status: string;
 };
 
+export type OrderItemListVO = {
+  orderItemId: number;
+  orderNo: string;
+  passengerId: number;
+  seatSchemePositionId: number;
+  seatId: number;
+  seatName: string;
+  seatPosition: SeatPosition;
+  seatSize: SeatSize;
+  seatDescribe: string;
+  seatPrice: number;
+  passengerName: string;
+  passengerIdType: string;
+  passengerIdNumber: string;
+  passengerPhone: string;
+  passengerGender: string;
+  status: string;
+  buyer: OrderBuyerVO;
+  route: OrderRouteVO;
+  routeSku: OrderRouteSkuVO;
+  car: OrderCarVO;
+};
+
 export type OrderItemVo = OrderItem;
 
 export type OrderVO = Order;
@@ -89,4 +112,20 @@ export type OrderPageSearchDTO = {
   endTravelDate?: string;
   beginOrderTime?: string;
   endOrderTime?: string;
+};
+
+export type OrderItemPageSearchDTO = {
+  orderNo?: string;
+  passengerName?: string;
+  passengerPhone?: string;
+  passengerIdNumber?: string;
+  routeName?: string;
+  carName?: string;
+  carNo?: string;
+  minPayAmount?: string;
+  maxPayAmount?: string;
+  beginTravelDate?: string; // Assuming that the date will be represented as a string in ISO 8601 format (YYYY-MM-DD)
+  endTravelDate?: string; // Assuming that the date will be represented as a string in ISO 8601 format (YYYY-MM-DD)
+  beginOrderTime?: string; // Assuming that the date will be represented as a string in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)
+  endOrderTime?: string; // Assumin
 };

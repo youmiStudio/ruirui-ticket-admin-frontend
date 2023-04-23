@@ -211,17 +211,23 @@
                       ? item.unSafeIdCard
                       : item.passengerIdNumber
                   }}</span>
-                  <span class="ml-3px link" @click="triggerViewIdCard(item)">{{
-                    item.idCardVisible ? '隐藏' : '查看'
-                  }}</span>
+                  <span
+                    v-authority="[pageConfig.authorites.sensitive]"
+                    class="ml-3px link"
+                    @click="triggerViewIdCard(item)"
+                    >{{ item.idCardVisible ? '隐藏' : '查看' }}</span
+                  >
                 </td>
                 <td>
                   <span>{{
                     item.phoneVisible ? item.unSafePhone : item.passengerPhone
                   }}</span>
-                  <span class="ml-3px link" @click="triggerViewPhone(item)">{{
-                    item.phoneVisible ? '隐藏' : '查看'
-                  }}</span>
+                  <span
+                    v-authority="[pageConfig.authorites.sensitive]"
+                    class="ml-3px link"
+                    @click="triggerViewPhone(item)"
+                    >{{ item.phoneVisible ? '隐藏' : '查看' }}</span
+                  >
                 </td>
                 <td>
                   <span>{{ item.seatName }}</span>
@@ -350,7 +356,8 @@ const pageConfig = reactive({
     refund: 'ticket:order:refund',
     cancel: 'ticket:order:cancel',
     itemReceipt: 'ticket:orderItem:delivery',
-    itemRefund: 'ticket:orderItem:refund'
+    itemRefund: 'ticket:orderItem:refund',
+    sensitive: 'ticket:passenger:view:sensitive'
   }
 });
 
@@ -481,7 +488,9 @@ function cancelOrderFn() {
 
 function refundOrderFn() {
   ElMessageBox.confirm(
-    `提交退款后，将退款${fenToYuan(orderInfo.value.payAmount - orderInfo.value.refundAmount)}元给用户，确定退款吗？`,
+    `提交退款后，将退款${fenToYuan(
+      orderInfo.value.payAmount - orderInfo.value.refundAmount
+    )}元给用户，确定退款吗？`,
     '警告',
     {
       confirmButtonText: '确定',
@@ -500,11 +509,15 @@ function refundOrderFn() {
 }
 
 function receiptOrderItemFn(row: OrderItemVO) {
-  ElMessageBox.confirm(`确认出行后，此订单项将无法发起“退款”，确认出行吗？`, '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
+  ElMessageBox.confirm(
+    `确认出行后，此订单项将无法发起“退款”，确认出行吗？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
     .then(() => {
       pageConfig.api
         .receiptOrderItem({

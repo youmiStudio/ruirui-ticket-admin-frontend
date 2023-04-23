@@ -1,12 +1,18 @@
 import { get, post, put, del, download } from '~/utils/http/axios';
 import type { R, PageVo } from '../../types';
-import type { OrderVO, OrderPageSearchDTO, OrderItem } from './types';
+import type {
+  OrderVO,
+  OrderPageSearchDTO,
+  OrderItem,
+  OrderItemPageSearchDTO
+} from './types';
 
 const BASE_URL = '/admin/order';
 
 enum URL {
   list = '/list',
-  itemList = '/items',
+  itemDetailList = '/item/detail',
+  itemPageList = '/item/list',
   refund = '/refund',
   cancel = '/cancel',
   itemReceipt = '/item/receipt',
@@ -15,8 +21,13 @@ enum URL {
 
 export const orderList = async (body?: OrderPageSearchDTO) =>
   get<R<PageVo<OrderVO[]>>>({ url: BASE_URL + URL.list, params: body });
+
 export const orderItemList = async (orderNo?: string) =>
-  get<R<PageVo<OrderItem[]>>>({ url: BASE_URL + URL.itemList + `/${orderNo}` });
+  get<R<PageVo<OrderItem[]>>>({ url: BASE_URL + URL.itemDetailList + `/${orderNo}` });
+
+export const orderItemPageList = async (body?: OrderItemPageSearchDTO) =>
+  get<R<PageVo<OrderItem[]>>>({ url: BASE_URL + URL.itemPageList, params: body });
+
 export const getOrder = async (orderNo?: string) =>
   get<R<OrderVO>>({ url: BASE_URL + `/${orderNo}` });
 export const cancelOrder = async (orderNo?: string) =>

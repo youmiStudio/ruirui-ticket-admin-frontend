@@ -302,7 +302,6 @@ const router = useRouter();
  * 页面配置，抽离公共部分，少搬点砖
  */
 const pageConfig = reactive({
-  title: '车辆',
   id: 'orderId',
   isAsc: 'desc',
   orderByColumn: 'order_time',
