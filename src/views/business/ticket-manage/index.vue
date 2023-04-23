@@ -178,6 +178,11 @@
             <DictTag type="sys_order_item_status" :value="row.status"></DictTag>
           </template>
         </el-table-column>
+        <el-table-column label="座位金额(元)" align="center" width="150">
+          <template #default="{ row }">
+            <div> {{ fenToYuan(row.seatPrice) }} </div>
+          </template>
+        </el-table-column>
         <el-table-column width="100" label="乘车人名称" align="center">
           <template #default="{ row }">
             <div> {{ row.passengerName }} </div>
@@ -255,11 +260,6 @@
         >
           <template #default="{ row }">
             <div> {{ row.car.no }} </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="座位金额(元)" align="center" width="150">
-          <template #default="{ row }">
-            <div> {{ fenToYuan(row.seatPrice) }} </div>
           </template>
         </el-table-column>
         <el-table-column label="选座情况" align="center" width="150">
