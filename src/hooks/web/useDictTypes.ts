@@ -15,6 +15,8 @@ const dicts = reactive({
   type: {} as Recordable<DictData[]>
 });
 
+const existTypeKey: string[] = [];
+
 /**
  * 获取该字典类型的所有字典
  *
@@ -23,7 +25,6 @@ const dicts = reactive({
  */
 function requestDictDataByDictType(dictType: string | symbol): Promise<any[]> {
   return new Promise((resolve, reject) => {
-    if (hasDictType(dictType as string)) return;
     getDictType(dictType as string).then((res) => {
       const { data } = res;
       if (data.length > 0) {
@@ -64,12 +65,10 @@ function dictMetaConvert(dictDataRawList: any[]): DictData[] {
  * @param types 字典类型
  */
 function hasDictType(types: string[] | string): boolean {
-  let objKeys = Object.keys(dicts.type);
-
   if (typeof types === 'string') {
-    return objKeys.includes(types);
+    return existTypeKey.includes(types);
   } else if (types instanceof Array) {
-    return types.some((type) => objKeys.includes(type));
+    return types.some((type) => existTypeKey.includes(type));
   }
 
   return false;
@@ -77,14 +76,20 @@ function hasDictType(types: string[] | string): boolean {
 
 /**
  * 获取字典数据，并设置到本地字典上
- * 
+ *
  * @param type 字典字段
  */
 function loadAndSetDictTypes(type: string) {
-  requestDictDataByDictType(type).then((res) => {
-    const dictTypes = dictMetaConvert(res);
-    dicts.type[type] = dictTypes;
-  });
+  if (hasDictType(type as string)) return;
+  existTypeKey.push(type);
+  requestDictDataByDictType(type)
+    .then((res) => {
+      const dictTypes = dictMetaConvert(res);
+      dicts.type[type] = dictTypes;
+    })
+    .catch(() => {
+      existTypeKey.splice(existTypeKey.indexOf(type), 1);
+    });
 }
 
 export default function useDictTypes(types: string[] | string) {
