@@ -15,8 +15,7 @@ import { isExternal as isExternalFn } from '~/utils/validate';
 
 const props = defineProps({
   iconClass: {
-    type: String,
-    required: true
+    type: String
   },
   className: {
     type: String,
@@ -24,7 +23,7 @@ const props = defineProps({
   }
 });
 
-const isExternal = computed(() => isExternalFn(props.iconClass));
+const isExternal = computed(() => isExternalFn(props.iconClass!));
 const iconName = computed(() => `#icon-${props.iconClass}`);
 const svgClass = computed(() => {
   if (props.className) {

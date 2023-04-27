@@ -269,8 +269,9 @@ function fetchList(obj: any) {
 
 function handleAdd() {
   formReset();
-  dialogState.title = `添加${pageConfig.title}`;
-  dialogState.dialogVisible = true;
+  router.push(`/ticket/route/add`);
+  // dialogState.title = `添加${pageConfig.title}`;
+  // dialogState.dialogVisible = true;
 }
 
 function handleEdit(row: any) {
