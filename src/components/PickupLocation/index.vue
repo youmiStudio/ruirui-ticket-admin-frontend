@@ -4,7 +4,7 @@
     v-model="visible"
     :title="state.title"
     width="80vw"
-    @close="handleAction('close')"
+    @close="doClose()"
   >
     <iframe
       ref="iframeRef"

@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" :title="state.title" width="400px" @close="handleAction('close')">
+  <el-dialog v-model="visible" :title="state.title" width="400px" @close="doClose()">
     <el-form
       :model="form"
       :rules="rules"
