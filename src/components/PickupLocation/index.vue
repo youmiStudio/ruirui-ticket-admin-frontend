@@ -7,6 +7,7 @@
     @close="doClose()"
   >
     <iframe
+      allow="geolocation; microphone; camera; midi; encrypted-media;"
       ref="iframeRef"
       class="w100%"
       style="height: 60vh"
