@@ -1,6 +1,6 @@
 <template>
   <div class="relative" ref="rootRef">
-    <el-image :src="image"></el-image>
+    <el-image :src="image" @load="imageOnLoad"></el-image>
     <div class="seat-list">
       <img
         class="seat"
@@ -21,6 +21,8 @@
 import type { PropType } from 'vue';
 import { SeatPosition } from '../types';
 import { useDebounceFn } from '@vueuse/shared';
+import { deepClone } from '~/utils';
+import { ar } from 'element-plus/es/locale';
 
 const props = defineProps({
   image: {
@@ -55,16 +57,10 @@ const events = [
 
 watch(
   () => props.positions,
-  (arr) => {
-    if (!props.positions || props.positions.length === 0) {
-      _positions.value = [];
-    }
-    _positions.value = [];
-    _positions.value = [...props.positions!];
-    setParentSize();
-    calcSeatXYByCurParentSize()
+  () => {
+    getPositions();
   },
-  { immediate: true, deep: true }
+  { deep: true }
 );
 
 watch(
@@ -75,9 +71,23 @@ watch(
   { deep: true }
 );
 
-onMounted(() => {
+onMounted(() => {});
+
+const imageOnLoad = () => {
   pageInit();
-});
+  getPositions()
+};
+
+const getPositions = () => {
+  const arr = props.positions;
+  if (!arr || arr.length === 0) {
+    _positions.value = [];
+  }
+  _positions.value = deepClone(arr);
+
+  setParentSize();
+  calcSeatXYByCurParentSize();
+};
 
 function pageInit() {
   setParentSize();
@@ -103,6 +113,7 @@ function registerEvents() {
 
 function calcSeatXYByCurParentSize() {
   const { width: cpw, height: cph } = currentParentSize.value;
+
   _positions.value.forEach((item) => {
     const { sizeData, positionData } = item;
     if (!sizeData) return;
@@ -110,8 +121,8 @@ function calcSeatXYByCurParentSize() {
     const wScale = cpw / pw;
 
     if (!item.firstPositionData && !item.firstSize) {
-      item.firstPositionData = { ...item.positionData };
-      item.firstSize = { ...item.sizeData! };
+      item.firstPositionData = { ...positionData };
+      item.firstSize = { ...sizeData! };
     }
 
     item.sizeData!.width = item.firstSize?.width! * wScale;

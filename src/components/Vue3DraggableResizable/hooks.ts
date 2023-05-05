@@ -331,8 +331,9 @@ export function initDraggableContainer(
     const [pageX, pageY] = getPosition(e);
     const { axis } = containerProps;
 
-    let deltaX = (pageX - lstPageX) / parentScaleX.value;
-    let deltaY = (pageY - lstPageY) / parentScaleY.value;
+    let deltaX = (pageX - lstPageX) / scaleX;
+    let deltaY = (pageY - lstPageY) / scaleX;
+    
 
     if (axis.value === 'x') {
       deltaY = 0;

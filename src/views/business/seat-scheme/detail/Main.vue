@@ -10,6 +10,7 @@
       :style="{
         transform: `translateY(-3rem) scale(${parentScale}) rotate(0deg)`
       }"
+      :key="parentScale"
       @dragover.prevent
       @drop="onDrop"
     >
@@ -18,6 +19,7 @@
         parent
         class="absolute"
         v-for="seat in positionList"
+        :key="seat.seatSchemePositionId"
         :lockAspectRatio="true"
         :init-w="seat.size.width ? seat.size.width : seatConfig.iconSize.width"
         :init-h="
@@ -122,8 +124,10 @@ const parentScale = computed(() => {
   return offsetWidth.value / seatImageSize.value.width;
 });
 
-watch(carPlaneImage, () => {
-  pageInit();
+watch(carPlaneImage, (value, oldValue) => {
+  if (value) {
+    pageInit();
+  }
 });
 
 watch(currentParentSize, () => {
@@ -141,11 +145,13 @@ onBeforeUnmount(() => {
 function pageInit() {
   nextTick(async () => {
     getImageSize(carPlaneImage.value).then((res) => {
-      seatImageSize.value.width = res.width;
-      seatImageSize.value.height = res.height;
+      seatImageSize.value = {
+        width: res.width,
+        height: res.height
+      };
+      setParentSize();
+      registerEvents();
     });
-    setParentSize();
-    registerEvents();
   });
 }
 
@@ -175,13 +181,12 @@ function onContextMenu(e: MouseEvent, seat: SeatPosition) {
           ElMessageBox.prompt('', '修改名称', {
             confirmButtonText: '修改',
             cancelButtonText: '取消',
-            inputValue:seat.name
+            inputValue: seat.name
           })
             .then(({ value }) => {
-              seat.name = value
+              seat.name = value;
             })
-            .catch(() => {
-            });
+            .catch(() => {});
         }
       },
       {
@@ -200,7 +205,7 @@ async function onResize() {
 
 async function setParentSize() {
   const parentSize = await getParentSize();
-  currentParentSize.value = parentSize;
+  seatSchemeStore.setParentSize(parentSize);
 }
 
 function registerEvents() {
@@ -289,7 +294,7 @@ async function addPosition(seatData: SeatVo, position: Position) {
 }
 
 function goBack() {
-  $router.push("/ticket/seat-scheme")
+  $router.push('/ticket/seat-scheme');
 }
 </script>
 

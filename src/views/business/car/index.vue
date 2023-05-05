@@ -153,8 +153,7 @@
                     :image="currentSeatScheme?.carPlaneImage"
                     :icon="currentSeatScheme?.unSelectedIcon"
                     :positions="currentSeatScheme?.positions as SeatPosition[]"
-                  ></position-view>
-                  <!-- <el-image :src="currentSeatScheme?.carPlaneImage"></el-image> -->
+                  />
                   <span>方案名称:{{ currentSeatScheme?.seatSchemeName }}</span>
                 </div>
                 <el-button type="primary" @click="openSeatScheme"
