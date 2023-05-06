@@ -10,6 +10,7 @@ declare module '@vue/runtime-core' {
     DictRadio: typeof import('./../src/components/DictRadio/index.vue')['default']
     DictSelect: typeof import('./../src/components/DictSelect/index.vue')['default']
     DictTag: typeof import('./../src/components/DictTag/index.vue')['default']
+    ElAlert: typeof import('element-plus/es')['ElAlert']
     ElBadge: typeof import('element-plus/es')['ElBadge']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']

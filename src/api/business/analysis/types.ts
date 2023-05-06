@@ -11,6 +11,16 @@ export type RealTime = {
   refundRate: number;
 };
 
+export type AnalysisSearchDTO = {
+  beginDate:string;
+  endDate:string
+}
+
+export type FlowsVO = {
+  ip: number;
+  uv: number;
+}
+
 export type RealTimeVO = {
   today: RealTime;
   yesterday: RealTime;

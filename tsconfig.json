@@ -2,6 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "target": "esnext",
+    "allowSyntheticDefaultImports": true,
     "useDefineForClassFields": true,
     "suppressImplicitAnyIndexErrors": true,
     "module": "esnext",
@@ -20,6 +21,7 @@
     "skipLibCheck": true,
     "types": ["vite/client"]
   },
+  "exclude": ["node_modules", "dist"],
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
@@ -28,6 +30,6 @@
     "types/**/*.ts",
     "types/**/*.d.ts",
     "build/**/*.ts",
-    "build/**/*.d.ts"
-, "src/store/modules/seatScheme/index.ts.back"  ]
+    "src/store/modules/seatScheme/index.ts.back"
+  ]
 }

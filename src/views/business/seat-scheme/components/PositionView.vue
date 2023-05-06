@@ -22,7 +22,6 @@ import type { PropType } from 'vue';
 import { SeatPosition } from '../types';
 import { useDebounceFn } from '@vueuse/shared';
 import { deepClone } from '~/utils';
-import { ar } from 'element-plus/es/locale';
 
 const props = defineProps({
   image: {

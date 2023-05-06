@@ -12,8 +12,9 @@
         <el-date-picker
           v-if="item.type === 'date'"
           v-model="pickDate"
-          type="date"
+          type="daterange"
           value-format="YYYY-MM-DD"
+          :disabled-date="item.disabledDate"
           @change="datePickerOnChange(item, $event)"
         />
       </div>
@@ -74,7 +75,7 @@ function onClick(item: DatePickerItem) {
   }
 }
 
-function datePickerOnChange(item: DatePickerItem, value: string) {
+function datePickerOnChange(item: DatePickerItem, value: string[]) {
   changeActiveIndex(item.id);
   emitClickEvent({ ...item, pickDate: value });
 }
