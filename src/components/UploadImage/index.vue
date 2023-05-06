@@ -10,6 +10,8 @@
 </template>
 
 <script lang="ts" setup>
+import Multiple from './src/multiple.vue'
+import Item from './src/item.vue'
 import { PropType } from 'vue';
 import { Gallery } from './types';
 
@@ -27,8 +29,8 @@ const emit = defineEmits(['update:modelValue', 'success']);
 
 const constructor = computed({
   get: () => {
-    const file = props.multiple ? 'multiple.vue' : 'item.vue';
-    return defineAsyncComponent(() => import(`./src/` + file));
+    const file = props.multiple ? Multiple : Item;
+    return file
   },
   set: () => {}
 });
