@@ -37,6 +37,13 @@ const state = reactive({
 });
 // const center = ref<string>();
 
+const open = () => {
+  if (visible.value) return;
+  visible.value = true;
+};
+
+defineExpose({ open });
+
 watch(
   () => iframeRef.value,
   () => {

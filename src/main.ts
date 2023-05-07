@@ -16,9 +16,11 @@ import 'element-plus/es/components/message-box/style/index'
 import 'element-plus/es/components/message/style/index'
 import 'element-plus/es/components/loading/style/index'
 
+
 const app = createApp(App);
 app.use(router);
 app.use(pinia);
+
 
 // app.use(ElementPlus);
 app.mount('#app');

@@ -74,7 +74,10 @@ const showBox = (options: any, appContext?: AppContext) => {
     }
   }
 
-  vm.visible = true;
+  
+  if (instance?.exposed && instance?.exposed.open && typeof instance?.exposed.open === 'function') {
+    instance?.exposed.open();
+  }
 
   return vm;
 };

@@ -240,7 +240,7 @@ const state = reactive({
     height: 250,
     custom_images_upload: true,
     language: 'zh-Hans',
-    language_url: '/tinymce/langs/zh-Hans.js',
+    language_url: './tinymce/langs/zh-Hans.js',
     menubar: false,
     toolbar:
       'bold italic underline h1 h2 blockquote codesample numlist bullist link image | removeformat fullscreen',

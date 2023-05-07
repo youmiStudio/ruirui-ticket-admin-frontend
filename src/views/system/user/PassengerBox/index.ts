@@ -18,6 +18,7 @@ import type {
 const CustomBoxInstance = new Map<
   ComponentPublicInstance<{ doClose: () => void }>,
   {
+    options: any,
     resolve: (value: any) => void;
     reject: () => void;
   }
@@ -75,8 +76,11 @@ const showBox = (options: any, appContext?: AppContext) => {
       vm[prop] = options[prop];
     }
   }
-
-  vm.visible = true;
+  
+    
+  if (instance?.exposed && instance?.exposed.open && typeof instance?.exposed.open === 'function') {
+    instance?.exposed.open();
+  }
 
   return vm;
 };
@@ -93,6 +97,7 @@ function CustomBox(
     const vm = showBox(options, appContext ?? (CustomBox as IBox)._context);
 
     CustomBoxInstance.set(vm, {
+      options,
       resolve,
       reject
     });
