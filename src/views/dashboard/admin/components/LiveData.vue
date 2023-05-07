@@ -6,7 +6,7 @@
     <el-row class="statistic">
       <el-col
         class="statistic-item"
-        :span="6"
+        :span="4"
         v-for="(item, index) in list"
         :key="index"
       >
@@ -17,7 +17,20 @@
             :suffix="item.suffix"
           >
             <template #title>
-              <div> {{ item.label }} </div>
+              <div class="flex items-center">
+                <div class="mr-5px"> {{ item.label }} </div>
+                <el-tooltip
+                  v-if="item.tip"
+                  class="box-item"
+                  effect="dark"
+                  :content="item.tip"
+                  placement="top"
+                >
+                  <el-icon>
+                    <WarningFilled />
+                  </el-icon>
+                </el-tooltip>
+              </div>
             </template>
           </el-statistic>
           <div class="statistic-footer">
@@ -32,6 +45,7 @@
 </template>
 
 <script lang="ts" setup>
+import { WarningFilled } from '@element-plus/icons-vue';
 import { parseTime } from '@/utils';
 import SectionBox from '@/components/SectionBox/index.vue';
 
@@ -46,6 +60,12 @@ const list = ref([
   {
     flag: 'ip',
     label: '路线访客数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'uv',
+    label: '路线浏览数',
     value: 0,
     yesterday: 0
   },
@@ -74,6 +94,18 @@ const list = ref([
     yesterday: 0
   },
   {
+    flag: 'writeOffReceiptCount',
+    label: '核销出行数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'writeOffRefundCount',
+    label: '核销退款数',
+    value: 0,
+    yesterday: 0
+  },
+  {
     flag: 'payAmount',
     label: '支付金额',
     value: 0,
@@ -97,9 +129,22 @@ const list = ref([
   },
   {
     flag: 'payRate',
-    label: '支付转化率',
+    label: '订单支付率',
+    tip: '订单支付率 = 支付订单数 / 创建订单数',
     format: (v: number) => {
-      if(!v) return 0
+      if (!v) return 0;
+      return v * 100;
+    },
+    value: 0,
+    yesterday: 0,
+    suffix: '%'
+  },
+  {
+    flag: 'refundRate',
+    label: '订单退款率',
+    tip: '订单退款率 = 退款订单数 / 支付订单数',
+    format: (v: number) => {
+      if (!v) return 0;
       return v * 100;
     },
     value: 0,

@@ -25,3 +25,8 @@ export type RealTimeVO = {
   today: RealTime;
   yesterday: RealTime;
 };
+
+export type WriteOffLogVO = {
+  receiptCount:number;
+  refundCount:number;
+}
