@@ -101,15 +101,37 @@ p {
   }
 }
 
+.carousel-dialog {
+  .el-dialog__body {
+    padding-top: 15px !important;
+    padding-bottom: 0 !important;
+  }
+}
+
 .dialog-body-p0 {
   .el-dialog__body {
     padding: 0 !important;
   }
 }
 
+
 .dialog-body-scroll {
   .el-dialog__body {
     max-height: 50vh;
     overflow: auto;
+  }
+}
+
+.carousel-upload {
+  width: 100%;
+  .image-uploader,
+  .image-uploader-icon {
+    width: 100%!important;
+    height: 150px !important;
+  }
+
+  .preview {
+    width: 100% !important;
+    height: 100% !important;
   }
 }
