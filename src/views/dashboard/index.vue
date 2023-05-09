@@ -18,9 +18,9 @@ const userStoreRefs = storeToRefs(userStore);
 const roles = unref<string[] | undefined>(userStoreRefs.roles);
 const currentRole = shallowRef<DefineComponent<{}, {}, any>>(AdminDashboard);
 
-onMounted(() => {
-  if (roles && !roles.includes(RoleEnum.ADMIN)) {
-    currentRole.value = EditorDashboard;
-  }
-});
+// onMounted(() => {
+//   if (roles && !roles.includes(RoleEnum.ADMIN)) {
+//     currentRole.value = EditorDashboard;
+//   }
+// });
 </script>
