@@ -222,11 +222,11 @@ function removeEvents() {
 }
 
 function onKeyUp(e: KeyboardEvent) {
-  if (e.key === 'Backspace') {
-    if (currentSeatPosition.value) {
-      removeSeat(currentSeatPosition.value);
-    }
-  }
+  // if (e.key === 'Backspace') {
+  //   if (currentSeatPosition.value) {
+  //     removeSeat(currentSeatPosition.value);
+  //   }
+  // }
 }
 
 function onClick(seat: SeatPosition) {
