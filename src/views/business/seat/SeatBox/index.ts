@@ -49,10 +49,10 @@ const showBox = (options: any, appContext?: AppContext) => {
     seatBoxInstance.delete(vm);
   };
 
-  options.onAction = (action: Action) => {    
+  options.onAction = (action: Action) => {
     const currentBox = seatBoxInstance.get(vm);
-    let resolve: Action
-    
+    let resolve: Action;
+
     resolve = action;
 
     if (action === 'cancel' || action === 'close') {
@@ -68,7 +68,6 @@ const showBox = (options: any, appContext?: AppContext) => {
     visible: boolean;
     doClose: () => void;
   }>;
-  
 
   for (const prop in options) {
     if (Object.hasOwn(options, prop) && !Object.hasOwn(vm.$props, prop)) {
@@ -76,7 +75,10 @@ const showBox = (options: any, appContext?: AppContext) => {
     }
   }
 
-  vm.visible = true;
+
+  if (instance?.exposed && instance?.exposed.open && typeof instance?.exposed.open === 'function') {
+    instance?.exposed.open();
+  }
 
   return vm;
 };

@@ -39,11 +39,33 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="路线图片" prop="gallery">
+              <el-alert
+                style="padding: 0px !important; margin-bottom: 10px"
+                title="建议主图尺寸：750 * 375 像素"
+                type="warning"
+                :closable="false"
+              />
               <upload-image
                 multiple
                 v-model="form.gallery"
                 idKey="routeGalleryId"
               ></upload-image>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="上车地点" prop="pickupLocation">
+              <div class="flex">
+                <div class="mr-10px">{{
+                  form.pickupLocation.name
+                    ? `${form.pickupLocation.name}（${form.pickupLocation.address}）`
+                    : '暂无选择'
+                }}</div>
+                <el-button type="primary" @click="openPickupLocation"
+                  >选择</el-button
+                >
+              </div>
             </el-form-item>
           </el-col>
         </el-row>
@@ -135,6 +157,16 @@
             </el-form-item>
           </el-col>
         </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="预订须知" prop="routeNotice">
+              <vue3-tinymce
+                v-model="form.routeNotice"
+                :setting="state.setting"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
       </el-form>
       <div class="flex flex-row-reverse">
         <el-button class="ml-10px" type="primary" @click="submitHandler"
@@ -171,6 +203,8 @@ import { getToken } from '~/utils/auth';
 
 import { addRoute, editRoute, getRoute } from '@/api/business/route';
 
+import PickupLocationBox from '@/components/PickupLocation';
+
 const route = useRoute();
 const router = useRouter();
 
@@ -206,7 +240,7 @@ const state = reactive({
     height: 250,
     custom_images_upload: true,
     language: 'zh-Hans',
-    language_url: '/tinymce/langs/zh-Hans.js',
+    language_url: './tinymce/langs/zh-Hans.js',
     menubar: false,
     toolbar:
       'bold italic underline h1 h2 blockquote codesample numlist bullist link image | removeformat fullscreen',
@@ -231,6 +265,12 @@ const form = ref<RouteDTO>({
   routeName: '',
   routeDescribe: '',
   routeDetail: '',
+  routeNotice: '',
+  pickupLocation: {
+    address: '',
+    name: '',
+    location: ''
+  },
   mainImgUrl: '',
   beginTime: '',
   endTime: '',
@@ -272,8 +312,29 @@ const rules = ref<FormRules>({
       trigger: 'blur'
     }
   ],
+  pickupLocation: [
+    {
+      required: true,
+      validator: (rule, value, callback) => {
+        if (rule.required && !value) {
+          return callback(new Error('请设置路线sku'));
+        }
+        Object.keys(value).forEach((key) => {
+          if (!value[key]) {
+            return callback(new Error('请选择上车地点'));
+          }
+        });
+
+        callback();
+      },
+      trigger: 'blur'
+    }
+  ],
   routeDetail: [
     { required: true, message: '路线详情不能为空', trigger: 'blur' }
+  ],
+  routeNotice: [
+    { required: true, message: '预订须知不能为空', trigger: 'blur' }
   ],
   routeDescribe: [
     { required: true, message: '路线描述不能为空', trigger: 'blur' }
@@ -387,6 +448,15 @@ const submitHandler = () => {
       });
     }
   });
+};
+
+const openPickupLocation = () => {
+  PickupLocationBox.show({center:form.value.pickupLocation.location})
+    .then((res) => {
+      const data = res.data;
+      form.value.pickupLocation = data;      
+    })
+    .catch(() => {});
 };
 </script>
 

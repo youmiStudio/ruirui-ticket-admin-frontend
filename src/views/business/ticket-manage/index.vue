@@ -5,7 +5,7 @@
         <el-form ref="searchFormRef" :model="searchForm">
           <el-row :gutter="20">
             <el-col :span="6">
-              <el-form-item label="订单编号" prop="carName">
+              <el-form-item label="订单编号" prop="orderNo">
                 <el-input
                   v-model="searchForm.orderNo"
                   placeholder="请输入订单编号"
@@ -17,10 +17,10 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="乘车人" prop="carName">
+              <el-form-item label="乘车人姓名" prop="passengerName">
                 <el-input
-                  v-model="searchForm.orderNo"
-                  placeholder="请输入乘车人名称"
+                  v-model="searchForm.passengerName"
+                  placeholder="请输入乘车人姓名"
                   clearable
                   maxlength="100"
                   @clear="search"
@@ -29,9 +29,9 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="手机号码" prop="carName">
+              <el-form-item label="手机号码" prop="passengerPhone">
                 <el-input
-                  v-model="searchForm.orderNo"
+                  v-model="searchForm.passengerPhone"
                   placeholder="请输入乘车人手机号码"
                   clearable
                   maxlength="100"
@@ -41,9 +41,9 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="证件号" prop="carName">
+              <el-form-item label="证件号" prop="passengerIdNumber">
                 <el-input
-                  v-model="searchForm.orderNo"
+                  v-model="searchForm.passengerIdNumber"
                   placeholder="请输入乘车人证件号"
                   clearable
                   maxlength="100"
@@ -53,9 +53,9 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="路线名称" prop="carName">
+              <el-form-item label="路线名称" prop="routeName">
                 <el-input
-                  v-model="searchForm.orderNo"
+                  v-model="searchForm.routeName"
                   placeholder="请输入路线名称"
                   clearable
                   maxlength="100"
@@ -65,11 +65,35 @@
               </el-form-item>
             </el-col>
             <el-col :span="6">
-              <el-form-item label="实收金额" prop="seatName">
+              <el-form-item label="车辆名称" prop="carName">
+                <el-input
+                  v-model="searchForm.carName"
+                  placeholder="请输入车辆名称"
+                  clearable
+                  maxlength="100"
+                  @clear="search"
+                  @change="search"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="车牌号码" prop="carNo">
+                <el-input
+                  v-model="searchForm.carNo"
+                  placeholder="请输入车牌号码"
+                  clearable
+                  maxlength="100"
+                  @clear="search"
+                  @change="search"
+                ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="实收金额" prop="minPayAmount">
                 <el-row :gutter="10">
                   <el-col :span="11">
                     <el-input
-                      v-model="searchForm.minPrice"
+                      v-model="searchForm.minPayAmount"
                       placeholder="最少价格"
                       clearable
                       maxlength="20"
@@ -79,7 +103,7 @@
                   <el-col :span="2"> - </el-col>
                   <el-col :span="11">
                     <el-input
-                      v-model="searchForm.maxPrice"
+                      v-model="searchForm.maxPayAmount"
                       placeholder="最多价格"
                       clearable
                       maxlength="20"
@@ -92,6 +116,7 @@
             <el-col :span="6">
               <el-form-item label="出行时间">
                 <el-date-picker
+                  v-model="travelDate"
                   class="w100%"
                   value-format="YYYY-MM-DD"
                   type="daterange"
@@ -105,6 +130,7 @@
             <el-col :span="6">
               <el-form-item label="下单时间">
                 <el-date-picker
+                  v-model="orderDate"
                   class="w100%"
                   value-format="YYYY-MM-DD"
                   type="daterange"
@@ -136,50 +162,104 @@
         :url="fetchList"
         :primary-key="pageConfig.id"
         :selectType="false"
+        :formatter="formatter"
         @select-change="handleTableSelectChange"
-        border="true"
       >
         <el-table-column
-          width="150"
+          width="200"
           label="订单编号"
           prop="orderNo"
           align="center"
           :show-overflow-tooltip="true"
         >
         </el-table-column>
-        <el-table-column
-          width="150"
-          label="路线名称"
-          prop="routeName"
-          align="center"
-          :show-overflow-tooltip="true"
-        >
-        </el-table-column>
-        <el-table-column width="150" label="乘车人名称" align="center">
-          <template #default>
-            <div> 李浩辉 </div>
+        <el-table-column width="150" label="乘车状态" align="center">
+          <template #default="{ row }">
+            <DictTag type="sys_order_item_status" :value="row.status"></DictTag>
           </template>
         </el-table-column>
-        <el-table-column width="150" label="证件类型" align="center">
-          <template #default>
-            <div> 身份证 </div>
+        <el-table-column label="座位金额(元)" align="center" width="150">
+          <template #default="{ row }">
+            <div> {{ fenToYuan(row.seatPrice) }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column width="100" label="乘车人名称" align="center">
+          <template #default="{ row }">
+            <div> {{ row.passengerName }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column width="100" label="证件类型" align="center">
+          <template #default="{ row }">
+            <dict-tag
+              type="sys_passenger_idType"
+              :value="row.passengerIdType"
+            ></dict-tag>
           </template>
         </el-table-column>
         <el-table-column width="200" label="证件号码" align="center">
-          <template #default>
-            <span>4466**********3333</span>
-            <span class="ml-3px link">查看</span>
+          <template #default="{ row }">
+            <span>{{
+              row.idCardVisible ? row.unSafeIdCard : row.passengerIdNumber
+            }}</span>
+            <span
+              v-authority="[pageConfig.authorites.sensitive]"
+              class="ml-3px link"
+              @click="triggerViewIdCard(row)"
+              >{{ row.idCardVisible ? '隐藏' : '查看' }}</span
+            >
           </template>
         </el-table-column>
         <el-table-column width="200" label="手机号码" align="center">
-          <template #default>
-            <span>131****1111</span>
-            <span class="ml-3px link">查看</span>
+          <template #default="{ row }">
+            <span>{{
+              row.phoneVisible ? row.unSafePhone : row.passengerPhone
+            }}</span>
+            <span
+              v-authority="[pageConfig.authorites.sensitive]"
+              class="ml-3px link"
+              @click="triggerViewPhone(row)"
+              >{{ row.phoneVisible ? '隐藏' : '查看' }}</span
+            >
           </template>
         </el-table-column>
-        <el-table-column label="实收金额(元)" align="center" width="150">
+        <el-table-column width="100" label="买家头像" align="center">
           <template #default="{ row }">
-            <div> {{ row.payPrice }} </div>
+            <el-image class="w-50px h-50px" :src="row.buyer.avatar"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column width="100" label="买家昵称" align="center">
+          <template #default="{ row }">
+            <div>{{ row.buyer.nickname }}</div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="150"
+          label="路线名称"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
+          <template #default="{ row }">
+            <div> {{ row.route.name }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="150"
+          label="车辆名称"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
+          <template #default="{ row }">
+            <div> {{ row.car.name }} </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="100"
+          label="车牌号码"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
+          <template #default="{ row }">
+            <div> {{ row.car.no }} </div>
           </template>
         </el-table-column>
         <el-table-column label="选座情况" align="center" width="150">
@@ -187,35 +267,41 @@
             <span class="link">点击查看</span>
           </template>
         </el-table-column>
-        <el-table-column label="核销二维码" align="center" width="150">
-          <template #default="{ row }">
-            <span class="link">点击查看</span>
-          </template>
-        </el-table-column>
-        <el-table-column width="150" label="乘车状态" align="center">
-          <template #default="{ row }">
-            <DictTag
-              :options="dicts.type.sys_order_status"
-              :value="row.status"
-            ></DictTag>
-          </template>
-        </el-table-column>
         <el-table-column label="出行时间" width="220px" align="center">
           <template #default="{ row }">
-            <span>{{ row.tripTime }}</span>
+            <span>{{
+              row.travelDate && parseTime(row.travelDate, '{y}-{m}-{d}')
+            }}</span>
           </template>
         </el-table-column>
         <el-table-column label="下单时间" width="150px" align="center">
           <template #default="{ row }">
             <span>{{
-              row.createTime && parseTime(row.createTime, '{y}-{m}-{d} {h}:{i}')
+              row.orderTime && parseTime(row.orderTime, '{y}-{m}-{d} {h}:{i}')
             }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="操作" align="center" width="150">
+        <el-table-column fixed="right" label="操作" align="center" width="120">
           <template #default="{ row }">
-            <el-button size="small" link type="primary">核销</el-button>
-            <el-button size="small" link type="danger">退款</el-button>
+            <div v-if="row.status === '1'">
+              <el-button
+                v-authority="[pageConfig.authorites.itemReceipt]"
+                size="small"
+                link
+                type="primary"
+                @click.stop="receiptOrderItemFn(row)"
+                >核销</el-button
+              >
+              <el-button
+                v-authority="[pageConfig.authorites.itemRefund]"
+                size="small"
+                link
+                type="danger"
+                @click.stop="refundOrderItemFn(row)"
+                >退款</el-button
+              >
+            </div>
+            <div v-else>-</div>
           </template>
         </el-table-column>
       </TablePanel>
@@ -240,9 +326,22 @@ import { parseTime } from '@/utils';
 import type { FormInstance, FormRules } from 'element-plus';
 import { ElMessageBox, ElMessage } from 'element-plus';
 import { useDebounceFn } from '@vueuse/shared';
+import {
+  orderItemPageList,
+  receiptOrderItem,
+  refundOrderItem
+} from '@/api/business/order/index';
+import {
+  getPassengerIdCard,
+  getPassengerPhone
+} from '@/api/business/passenger';
+import type { OrderItemPageSearchDTO } from '@/api/business/order/types';
+import type { R } from '@/api/types';
 import { vAuthority } from '@/directive/authority';
+import { fenToYuan, yuanToFen } from '@/utils/price';
 
-type ModelSearchBody = any;
+import AES from '@/utils/aes';
+type ModelSearchBody = OrderItemPageSearchDTO;
 type ModelBody = any;
 type ModelVo = any;
 
@@ -250,25 +349,23 @@ type ModelVo = any;
  * 页面配置，抽离公共部分，少搬点砖
  */
 const pageConfig = reactive({
-  title: '车辆',
-  id: 'carId',
-  isAsc: 'asc',
-  orderByColumn: 'car_id',
+  id: 'orderItemId',
+  isAsc: 'desc',
+  orderByColumn: 'order_time',
   api: {
-    list: null,
-    get: null,
-    add: null,
-    remove: null,
+    getPassengerIdCard,
+    getPassengerPhone,
+    receiptOrderItem,
+    refundOrderItem,
+    list: orderItemPageList,
     edit: null,
     export: null
   },
   authorites: {
-    list: 'ticket:car:list',
-    get: 'ticket:car:query',
-    add: 'ticket:car:add',
-    edit: 'ticket:car:edit',
-    remove: 'ticket:car:remove',
-    export: 'ticket:car:export'
+    list: 'ticket:order-item:list',
+    itemReceipt: 'ticket:orderItem:delivery',
+    itemRefund: 'ticket:orderItem:refund',
+    sensitive: 'ticket:passenger:view:sensitive'
   }
 });
 
@@ -280,11 +377,50 @@ const formLoading = ref<boolean>(false);
 const batchDeleteDisable = ref<boolean>(true);
 const tableRecordRows = ref<ModelVo[]>([]);
 
+const travelDate = ref();
+const orderDate = ref();
+
 const searchForm = reactive<ModelSearchBody>({
   orderNo: '',
+  passengerName: '',
+  passengerPhone: '',
+  passengerIdNumber: '',
+  routeName: '',
+  carName: '',
   carNo: '',
-  status: ''
+  minPayAmount: '',
+  maxPayAmount: '',
+  beginTravelDate: '',
+  endTravelDate: '',
+  beginOrderTime: '',
+  endOrderTime: ''
 });
+
+watch(
+  () => travelDate.value,
+  (arr) => {
+    if (!arr) {
+      searchForm.beginTravelDate = '';
+      searchForm.endTravelDate = '';
+      return;
+    }
+    searchForm.beginTravelDate = arr[0];
+    searchForm.endTravelDate = arr[1];
+  }
+);
+
+watch(
+  () => orderDate.value,
+  (arr) => {
+    if (!arr) {
+      searchForm.beginOrderTime = '';
+      searchForm.endOrderTime = '';
+      return;
+    }
+    searchForm.beginOrderTime = arr[0];
+    searchForm.endOrderTime = arr[1];
+  }
+);
 
 onMounted(() => {
   search();
@@ -299,8 +435,67 @@ watch(
 );
 
 const search = useDebounceFn(() => {
-  tableRef.value && tableRef.value.search<ModelVo>({ ...searchForm });
+  const params: ModelSearchBody = Object.assign({}, searchForm, {
+    minPayAmount: searchForm.minPayAmount
+      ? yuanToFen(searchForm.minPayAmount)
+      : '',
+    maxPayAmount: searchForm.maxPayAmount
+      ? yuanToFen(searchForm.maxPayAmount)
+      : ''
+  });
+  tableRef.value && tableRef.value.search<ModelVo>(params);
 }, 200);
+
+const formatter = (res: any) => {
+  const { data } = res;
+  if (!data.items) return [];
+  const list = [...data.items];
+
+  return list;
+};
+
+const processViewEncryptField = (opt: {
+  visibleKey: string;
+  key: string;
+  api: (passengerId: number) => Promise<R<string>>;
+  row: any;
+}) => {
+  const { visibleKey, key, api, row } = opt;
+  row[visibleKey] = !row[visibleKey];
+  if (!row[key]) {
+    api(row.passengerId).then((res) => {
+      if (res.code === 200 && res.data) {
+        row[key] = AES.decrypt(res.data);
+      }
+    });
+  }
+};
+
+const triggerViewIdCard = (row: any) => {
+  const visibleKey = 'idCardVisible';
+  const key = 'unSafeIdCard';
+  const api = pageConfig.api.getPassengerIdCard;
+
+  processViewEncryptField({
+    visibleKey,
+    key,
+    api,
+    row
+  });
+};
+
+const triggerViewPhone = (row: any) => {
+  const visibleKey = 'phoneVisible';
+  const key = 'unSafePhone';
+  const api = pageConfig.api.getPassengerPhone;
+
+  processViewEncryptField({
+    visibleKey,
+    key,
+    api,
+    row
+  });
+};
 
 function switchBatchDelete(selectRowsLength: number) {
   if (selectRowsLength > 0) {
@@ -314,39 +509,75 @@ function handleTableSelectChange(recordRows: any[]) {
   tableRecordRows.value = recordRows;
 }
 
-function fetchList(obj: ModelSearchBody) {
-  // return pageConfig.api.list({
-  //   ...obj,
-  //   orderByColumn: pageConfig.orderByColumn,
-  //   isAsc: pageConfig.isAsc
-  // });
-  return new Promise((resolve, reject) => {
-    resolve({
-      code: 200,
-      data: {
-        total: 1,
-        items: [
-          {
-            orderId: 100,
-            orderNo: 'O202303141635475492190617601',
-            status: 1,
-            price: '88.88',
-            payPrice: '88.88',
-            routeName: '雪山房车之旅 体验大自然 享受自由冒险',
-            tripTime: '2023-03-18 10:00~11:30',
-            createTime: new Date()
-          }
-        ]
-      }
-    });
+function fetchList(obj: any) {
+  return pageConfig.api.list({
+    ...obj,
+    orderByColumn: pageConfig.orderByColumn,
+    isAsc: pageConfig.isAsc
   });
 }
 function searchReset() {
   searchFormRef.value?.resetFields();
+  searchForm.minPayAmount = '';
+  searchForm.maxPayAmount = '';
+  travelDate.value = '';
+  orderDate.value = '';
 }
 function searchRefresh() {
   searchReset();
   search();
+}
+
+function receiptOrderItemFn(row: any) {
+  ElMessageBox.confirm(
+    `确认出行后，此订单项将无法发起“退款”，确认出行吗？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
+    .then(() => {
+      pageConfig.api
+        .receiptOrderItem({
+          orderNo: row.orderNo,
+          orderItemId: row.orderItemId
+        })
+        .then((res) => {
+          if (res.code === 200) {
+            ElMessage.success('确认出行成功');
+            search();
+          }
+        });
+    })
+    .catch(() => {});
+}
+
+function refundOrderItemFn(row: any) {
+  ElMessageBox.confirm(
+    `提交退款后，将退款${fenToYuan(row.seatPrice)}元给用户，确定退款吗？`,
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
+    .then(() => {
+      pageConfig.api
+        .refundOrderItem({
+          orderNo: row.orderNo,
+          orderItemId: row.orderItemId
+        })
+        .then((res) => {
+          if (res.code === 200) {
+            ElMessage.success('提交退款成功');
+            search();
+          }
+        });
+    })
+    .catch(() => {});
 }
 </script>
 

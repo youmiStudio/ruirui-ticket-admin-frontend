@@ -140,7 +140,7 @@ const VdrProps = {
     type: String,
     default: 'both'
   },
-  conflict:{
+  conflict: {
     type: Boolean,
     default: false
   }

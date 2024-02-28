@@ -38,6 +38,8 @@ declare global {
      * If you want to also use it in dev, you can pass ['production', 'development']
      */
     errorLog?: string;
+
+    websocketUrl?: string;
   }
 
   interface ViteEnvConfig {
@@ -58,5 +60,7 @@ declare global {
     readonly VITE_GLOB_UPLOAD_URL: string;
 
     readonly OUTPUT_DIR: string;
+
+    readonly VITE_GLOB_WEBSOCKET_URL: string;
   }
 }

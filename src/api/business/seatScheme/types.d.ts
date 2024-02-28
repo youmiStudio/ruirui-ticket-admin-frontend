@@ -1,4 +1,4 @@
-import { SeatSize, Position } from '@/views/business/seat-scheme/types';
+import { SeatSize, Position, SeatPosition } from '@/views/business/seat-scheme/types';
 
 export type SeatSchemePosition = {
   seatSchemePositionId?: number;

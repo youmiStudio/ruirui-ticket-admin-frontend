@@ -257,7 +257,10 @@ function loadData<T = any>(params: any) {
           } else {
             tableData.value = resultData[list];
           }
-          nextTick(() => {
+          nextTick(() => {            
+            if(!tableData.value) {
+              recordRows.value = []
+            }
             setSelection();
           });
           if (pageObj) {

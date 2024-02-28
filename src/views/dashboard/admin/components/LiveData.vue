@@ -17,12 +17,25 @@
             :suffix="item.suffix"
           >
             <template #title>
-              <div> {{ item.label }} </div>
+              <div class="flex items-center">
+                <div class="mr-5px"> {{ item.label }} </div>
+                <el-tooltip
+                  v-if="item.tip"
+                  class="box-item"
+                  effect="dark"
+                  :content="item.tip"
+                  placement="top"
+                >
+                  <el-icon>
+                    <WarningFilled />
+                  </el-icon>
+                </el-tooltip>
+              </div>
             </template>
           </el-statistic>
           <div class="statistic-footer">
             <div class="footer-item">
-              <span>昨天{{ item.yesterday }}</span>
+              <span>昨天 {{ item.yesterday }}{{ item.suffix }} </span>
             </div>
           </div>
         </div>
@@ -32,8 +45,12 @@
 </template>
 
 <script lang="ts" setup>
+import { WarningFilled } from '@element-plus/icons-vue';
 import { parseTime } from '@/utils';
 import SectionBox from '@/components/SectionBox/index.vue';
+
+import * as ANALYSIS_API from '@/api/business/analysis';
+import { fenToYuan } from '@/utils/price';
 
 const currentTime = computed(() => {
   return new Date().getTime();
@@ -41,39 +58,122 @@ const currentTime = computed(() => {
 
 const list = ref([
   {
+    flag: 'ip',
     label: '路线访客数',
-    value: 6,
-    yesterday: 2
-  },
-  {
-    label: '路线浏览数',
-    value: 22,
-    yesterday: 7
-  },
-  {
-    label: '创建订单数',
-    value: 2,
-    yesterday: 1
-  },
-  {
-    label: '支付订单数',
-    value: 1,
+    value: 0,
     yesterday: 0
   },
   {
-    label: '支付金额',
-    value: 88.88,
-    yesterday: 0,
-    precision: 2,
-    suffix:'元'
+    flag: 'uv',
+    label: '路线浏览数',
+    value: 0,
+    yesterday: 0
   },
   {
-    label: '支付转化率',
-    value: 100,
+    flag: 'payBuyerCount',
+    label: '支付买家数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'orderCount',
+    label: '创建订单数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'payOrderCount',
+    label: '支付订单数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'refundOrderCount',
+    label: '退款订单数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'writeOffReceiptCount',
+    label: '核销出行数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'writeOffRefundCount',
+    label: '核销退款数',
+    value: 0,
+    yesterday: 0
+  },
+  {
+    flag: 'payAmount',
+    label: '支付金额',
+    value: 0,
     yesterday: 0,
-    suffix:'%'
+    precision: 2,
+    format: (v: number) => {
+      return Number(fenToYuan(v));
+    },
+    suffix: '元'
+  },
+  {
+    flag: 'refundAmount',
+    label: '退款金额',
+    value: 0,
+    yesterday: 0,
+    precision: 2,
+    format: (v: number) => {
+      return Number(fenToYuan(v));
+    },
+    suffix: '元'
+  },
+  {
+    flag: 'payRate',
+    label: '订单支付率',
+    tip: '订单支付率 = 支付订单数 / 创建订单数',
+    format: (v: number) => {
+      if (!v) return 0;
+      return v * 100;
+    },
+    value: 0,
+    yesterday: 0,
+    suffix: '%'
+  },
+  {
+    flag: 'refundRate',
+    label: '订单退款率',
+    tip: '订单退款率 = 退款订单数 / 支付订单数',
+    format: (v: number) => {
+      if (!v) return 0;
+      return v * 100;
+    },
+    value: 0,
+    yesterday: 0,
+    suffix: '%'
   }
 ]);
+
+onMounted(() => {
+  getDate();
+});
+
+const getDate = () => {
+  ANALYSIS_API.realTime().then((res) => {
+    const { data } = res;
+    list.value.forEach((item) => {
+      const flag = item.flag;
+
+      item.value =
+        item.format && typeof item.format === 'function'
+          ? item.format(data?.today[flag])
+          : data?.today[flag];
+      item.yesterday =
+        item.format && typeof item.format === 'function'
+          ? item.format(data?.yesterday[flag])
+          : data?.yesterday[flag];
+    });
+  });
+};
 </script>
 
 <style lang="scss" scoped>

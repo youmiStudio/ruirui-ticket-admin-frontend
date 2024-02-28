@@ -1,5 +1,10 @@
 <template>
-  <el-dialog v-model="visible" :title="state.title" width="400px">
+  <el-dialog
+    v-model="visible"
+    :title="state.title"
+    width="400px"
+    @close="doClose()"
+  >
     <el-form
       :model="seat"
       :rules="rules"
@@ -45,20 +50,30 @@ import type { InternalRuleItem } from 'async-validator/dist-types/interface';
 import { isAmount, isImage } from '@/utils/is';
 
 import { yuanToFen, fenToYuan } from '@/utils/price';
-import { da } from 'element-plus/es/locale';
 
 type Mode = 'add' | 'edit';
+
+const props = defineProps({
+  id:Number
+})
 
 const emit = defineEmits(['vanish', 'action']);
 
 const seatForm = ref<FormInstance>();
-const id = ref<number>();
+const id = ref<number>(props.id!);
 const visible = ref(false);
 const state = reactive({
   title: '',
   mode: '' as Mode,
   action: '' as Action
 });
+
+const open = () => {
+  if (visible.value) return;
+  visible.value = true;
+};
+
+defineExpose({ open });
 
 const seat = ref<SeatVo>({
   seatName: '',

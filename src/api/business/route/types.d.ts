@@ -2,6 +2,12 @@ import type { SiteVo } from '~/api/business/site/types';
 import type { BaseSearchBody, BaseVo } from '../../types';
 import { CarVo } from '../car/types';
 
+export type PickupLocation = {
+  name: string;
+  location: string;
+  address: string;
+};
+
 /**
  * 路线信息 - 请求对象
  */
@@ -123,6 +129,10 @@ export type RouteVo = {
   gallery: RouteGallery[];
 
   sku: RouteSku[];
+
+  pickupLocation: PickupLocation;
+
+  routeNotice: string;
 
   /**
    * 状态

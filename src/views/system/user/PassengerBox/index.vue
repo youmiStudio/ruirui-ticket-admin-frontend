@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" :title="state.title" width="400px">
+  <el-dialog v-model="visible" :title="state.title" width="400px" @close="doClose()">
     <el-form
       :model="form"
       :rules="rules"
@@ -55,20 +55,34 @@ import {
 import type { FormInstance, FormRules } from 'element-plus';
 import { PassengerDTO } from '~/api/business/passenger/types';
 import { encrypt } from '@/utils/rsa';
+import AES from '@/utils/aes';
 
 type Mode = 'add' | 'edit';
 
 const emit = defineEmits(['vanish', 'action']);
 
+const props = defineProps({
+  id:Number,
+  userId:Number
+})
+
 const formRef = ref<FormInstance>();
-const id = ref<number>();
-const userId = ref<number>();
+const id = ref<number>(props.id!);
+const userId = ref<number>(props.userId!);
 const visible = ref(false);
 const state = reactive({
   title: '',
   mode: '' as Mode,
   action: '' as Action
 });
+
+
+const open = () => {
+  if (visible.value) return;
+  visible.value = true;
+};
+
+defineExpose({ open });
 
 const form = ref<PassengerDTO>({
   passengerId: undefined,
@@ -133,11 +147,11 @@ const getDetail = () => {
     if (res.code === 200) {
       const { data } = res;
       if (!data) return;
-      form.value['name'] = data.name;
-      form.value['idNumber'] = data.idNumber;
+      form.value['name'] = AES.decrypt(data.name);
+      form.value['idNumber'] = AES.decrypt(data.idNumber);
       form.value['idType'] = data.idType;
       form.value['passengerId'] = data.passengerId;
-      form.value['phone'] = data.phone;
+      form.value['phone'] = AES.decrypt(data.phone);
       form.value['userId'] = data.userId;
     }
   });

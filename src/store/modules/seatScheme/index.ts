@@ -16,6 +16,8 @@ import type {
   SeatSchemePosition
 } from '~/api/business/seatScheme/types';
 
+import type { ParentSize } from '~/views/business/seat-scheme/types';
+
 const SERVER_PROFILE = '/profile';
 const ICON_KEYS = [
   'carPlaneImage',
@@ -70,6 +72,9 @@ export const useSeatSchemeStore = defineStore({
         return;
       }
       this.$reset();
+    },
+    setParentSize(size: ParentSize) {
+      this.currentParentSize = size
     },
     setSeatSchemeId(id: number) {
       this.seatSchemeId = id;
@@ -243,7 +248,7 @@ export const useSeatSchemeStore = defineStore({
           return obj;
         });
       };
-     
+
       const convertUploadPath = (path: string) => {
         if (!path.startsWith(SERVER_PROFILE)) {
           return path.substring(path.indexOf(SERVER_PROFILE));

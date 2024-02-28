@@ -84,7 +84,7 @@
 
       <TablePanel
         ref="tableRef"
-        :show-expand="true"
+        :show-expand="checkAuthority([pageConfig.authorites.passenger.list])"
         :url="fetchList"
         :primary-key="pageConfig.id"
         @select-change="handleTableSelectChange"
@@ -109,7 +109,7 @@
               <el-table-column label="操作">
                 <template #default="{ row }">
                   <el-button
-                    v-authority="[pageConfig.authorites.edit]"
+                    v-authority="[pageConfig.authorites.passenger.edit]"
                     size="small"
                     link
                     type="primary"
@@ -119,7 +119,7 @@
                   >
 
                   <el-button
-                    v-authority="[pageConfig.authorites.remove]"
+                    v-authority="[pageConfig.authorites.passenger.remove]"
                     link
                     size="small"
                     type="danger"
@@ -249,7 +249,7 @@
                         >分配角色</el-dropdown-item
                       >
                     </div>
-                    <div v-authority="[pageConfig.authorites.add]">
+                    <div v-authority="[pageConfig.authorites.passenger.add]">
                       <el-dropdown-item
                         command="handleAddPassenger"
                         :icon="CircleCheck"
@@ -436,7 +436,10 @@ import { passengerList, deletePssenger } from '@/api/business/passenger/index';
 import PassengerBox from './PassengerBox/index';
 import { PassengerDTO, PassengerVO } from '~/api/business/passenger/types';
 import { emitWarning } from 'process';
-import { encrypt } from '@/utils/rsa'
+import { encrypt } from '@/utils/rsa';
+import { checkAuthority} from '@/utils/permission'
+
+import AES from '@/utils/aes';
 
 type ModelSearchBody = UserSearchBody;
 type ModelBody = UserBody;
@@ -466,7 +469,14 @@ const pageConfig = reactive({
     edit: 'system:user:edit',
     remove: 'system:user:remove',
     export: 'system:user:export',
-    resetPwd: 'system:user:resetPwd'
+    resetPwd: 'system:user:resetPwd',
+    passenger: {
+      list: 'ticket:passenger:list',
+      get: 'ticket:passenger:query',
+      add: 'ticket:passenger:add',
+      edit: 'ticket:passenger:edit',
+      remove: 'ticket:passenger:remove'
+    }
   }
 });
 
@@ -772,9 +782,17 @@ function fetchPassengerList(row: any) {
         passengerMap.value[row.userId] = [];
         return;
       }
-      passengerMap.value[row.userId] = data;
+
+      passengerMap.value[row.userId] = [...data].map(aesDecryptPassenger);
     }
   });
+}
+
+function aesDecryptPassenger(passenger: PassengerVO) {
+  passenger.name = AES.decrypt(passenger.name);
+  passenger.phone = AES.decrypt(passenger.phone);
+  passenger.idNumber = AES.decrypt(passenger.idNumber);
+  return passenger;
 }
 
 function handlePassengerEdit(row: any) {

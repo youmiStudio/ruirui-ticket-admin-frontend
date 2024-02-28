@@ -31,7 +31,7 @@
             </el-form-item>
           </el-col>
 
-          <el-col :span="8">
+          <el-col v-if="!checkMode" :span="8">
             <el-form-item label="状态" prop="status">
               <el-select
                 class="w100%"
@@ -81,8 +81,11 @@
           edit: [pageConfig.authorites.edit],
           delete: [pageConfig.authorites.remove]
         }"
+        :show-delete="!checkMode"
+        :show-setting="!checkMode"
         @edit="handleEdit"
         @delete="handleRowDelete"
+        @click="(item) => emit('check', item)"
       >
         <template #default="{ element }">
           <div>
@@ -141,6 +144,15 @@ import type {
   RouteVo
 } from '~/api/business/route/types';
 import router from '~/router';
+
+const props = defineProps({
+  checkMode: {
+    type: Boolean,
+    default: false
+  }
+});
+
+const emit = defineEmits(['check']);
 
 type ModelSearchBody = RouteSearchBody;
 type ModelBody = RouteBody;
@@ -269,8 +281,9 @@ function fetchList(obj: any) {
 
 function handleAdd() {
   formReset();
-  dialogState.title = `添加${pageConfig.title}`;
-  dialogState.dialogVisible = true;
+  router.push(`/ticket/route/add`);
+  // dialogState.title = `添加${pageConfig.title}`;
+  // dialogState.dialogVisible = true;
 }
 
 function handleEdit(row: any) {
