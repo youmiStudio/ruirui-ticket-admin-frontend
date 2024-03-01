@@ -7,7 +7,7 @@
       style="height: 60vh"
       :src="`https://m.amap.com/picker/?key=608d75903d29ad471362f8c58c550daf&center=${center}`"
     ></iframe> -->
-    <a-map-pickup @pick="sureAddress"></a-map-pickup>
+    <a-map-pickup @pick="sureAddress" :center="center"></a-map-pickup>
   </el-dialog>
 </template>
 

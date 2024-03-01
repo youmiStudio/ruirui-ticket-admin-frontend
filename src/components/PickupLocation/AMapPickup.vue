@@ -39,6 +39,13 @@ window._AMapSecurityConfig = {
     securityJsCode: "2d0df44c352ade94430f0ffe174a32bd"
 };
 
+const props = defineProps({
+    center: {
+        type: String,
+        defalut: ''
+    }
+});
+
 const instance = getCurrentInstance();
 
 const addressList = ref<any[]>([]);
@@ -87,7 +94,16 @@ onBeforeMount(() => {
             });
 
             function onComplete(data: any) {
-                map.setCenter(data.position);
+                let position: any = data.position
+                if (props.center) {
+                    const pTmp = props.center.split(",")
+                    position = [
+                        pTmp[0],
+                        pTmp[1]
+                    ]
+                }
+                map.setZoom(13);
+                map.setCenter(position);
             }
             function onError(error: unknown) {
                 console.log("error", error);

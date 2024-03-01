@@ -164,6 +164,8 @@ defineExpose({ search });
 $--el-color-primary: #409eff;
 
 .table-card-item {
+  margin-top: 20px;
+
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -175,10 +177,6 @@ $--el-color-primary: #409eff;
   &:hover {
     transform: translateY(-3px);
     box-shadow: 1px 0px 10px 1px rgba($color: #000000, $alpha: 0.1);
-  }
-
-  + & {
-    margin-top: 20px;
   }
 
   .table-card-item__content {
