@@ -8,7 +8,7 @@
               <el-select
                 class="w100%"
                 v-model="searchForm.status"
-                placeholder="座位状态"
+                placeholder="轮播状态"
                 @change="search"
               >
                 <el-option label="全部" value=""></el-option>

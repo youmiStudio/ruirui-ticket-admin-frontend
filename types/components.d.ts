@@ -5,6 +5,7 @@ import '@vue/runtime-core'
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AMapPickup: typeof import('./../src/components/PickupLocation/AMapPickup.vue')['default']
     Breadcrumb: typeof import('./../src/components/Breadcrumb/index.vue')['default']
     DatePicker: typeof import('./../src/components/DatePicker/index.vue')['default']
     DictRadio: typeof import('./../src/components/DictRadio/index.vue')['default']

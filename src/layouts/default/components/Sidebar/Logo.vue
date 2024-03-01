@@ -30,7 +30,7 @@ defineProps({
   }
 })
 
-const logo = ref<boolean>(true);
+const logo = ref<boolean>(false);
 const title = ref<string>(globSettings.title);
 
 </script>

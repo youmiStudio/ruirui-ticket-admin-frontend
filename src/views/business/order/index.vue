@@ -70,6 +70,7 @@
                   showNormal
                   v-model="searchForm.orderStatus"
                   type="sys_order_status"
+                  placeholder="订单状态"
                   @change="search"
                 ></dict-select>
               </el-form-item>

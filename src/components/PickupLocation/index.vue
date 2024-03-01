@@ -1,24 +1,20 @@
 <template>
-  <el-dialog
-    class="dialog-body-p0"
-    v-model="visible"
-    :title="state.title"
-    width="80vw"
-    @close="doClose()"
-  >
-    <iframe
+  <el-dialog class="dialog-body-p0" v-model="visible" :title="state.title" width="80vw" @close="doClose()">
+    <!-- <iframe
       allow="geolocation; microphone; camera; midi; encrypted-media;"
       ref="iframeRef"
       class="w100%"
       style="height: 60vh"
       :src="`https://m.amap.com/picker/?key=608d75903d29ad471362f8c58c550daf&center=${center}`"
-    ></iframe>
+    ></iframe> -->
+    <a-map-pickup @pick="sureAddress"></a-map-pickup>
   </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { Action } from './types';
+import AMapPickup from './AMapPickup.vue'
 
 defineProps({
   center: {
@@ -44,26 +40,38 @@ const open = () => {
 
 defineExpose({ open });
 
-watch(
-  () => iframeRef.value,
-  () => {
-    if (!iframeRef.value) return;
+// watch(
+//   () => iframeRef.value,
+//   () => {
+//     if (!iframeRef.value) return;
 
-    const iframe = iframeRef.value;
-    iframe.onload = function () {
-      iframe.contentWindow.postMessage('hello', 'https://m.amap.com/picker/');
-    };
-    window.addEventListener(
-      'message',
-      function (e) {
-        emit('action', { action: 'confrim', data: e.data });
-        doClose();
-      },
-      false
-    );
-  },
-  { immediate: true }
-);
+//     const iframe = iframeRef.value;
+//     iframe.onload = function () {
+//       iframe.contentWindow.postMessage('hello', 'https://m.amap.com/picker/');
+//     };
+//     window.addEventListener(
+//       'message',
+//       function (e) {
+//         emit('action', { action: 'confrim', data: e.data });
+//         doClose();
+//       },
+//       false
+//     );
+//   },
+//   { immediate: true }
+// );
+
+const sureAddress = (data: any) => {
+
+  const location: any = {
+    name: data.name,
+    address: data.address,
+    location: `${data.location.lng},${data.location.lat}`
+  }
+
+  emit('action', { action: 'confrim', data: location });
+  doClose();
+};
 
 const doClose = () => {
   if (!visible.value) return;
@@ -77,7 +85,7 @@ const doClose = () => {
   });
 };
 
-const doSubmit = async () => {};
+const doSubmit = async () => { };
 
 const handleAction = (action: Action) => {
   const close = () => {

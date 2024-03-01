@@ -24,7 +24,7 @@ export const constantRoutes: RouteItem[] = [
         component: () => import('~/views/dashboard/index.vue'),
         name: 'dashboard',
         meta: {
-          title: 'Dashboard',
+          title: '数据统计',
           icon: 'dashboard',
           affix: true,
           noCache: true
